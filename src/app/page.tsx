@@ -1,5 +1,9 @@
 import Tiptap from '../components/Tiptap'
 
 export default function Home() {
-  return <Tiptap />
+  return (
+    <div className="flex flex-col items-center  justify-center min-h-screen py-2">
+      <Tiptap />
+    </div>
+  )
 }
