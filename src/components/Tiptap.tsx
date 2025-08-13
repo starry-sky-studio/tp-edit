@@ -27,11 +27,14 @@ const Tiptap = () => {
     editorProps: {
       attributes: {
         class:
-          'prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none p-4 min-h-[300px] bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300'
+          'prose w-[1200px]  prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none p-4 min-h-[300px] bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300'
       }
     },
     autofocus: true,
-    editable: true
+    editable: true,
+    // Don't render immediately on the server to avoid SSR issues
+    immediatelyRender: false,
+    injectCSS: true // 注入默认样式（推荐保持true）
   })
 
   // 确保只在客户端渲染

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tiptap/extensions": "^3.1.0",
     "@tiptap/pm": "^3.1.0",
     "@tiptap/react": "^3.1.0",
     "@tiptap/starter-kit": "^3.1.0",
