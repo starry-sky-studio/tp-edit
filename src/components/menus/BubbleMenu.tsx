@@ -1,5 +1,6 @@
 import type { Editor } from '@tiptap/react'
 import { BubbleMenu } from '@tiptap/react/menus'
+import { HeadingButton } from '@/components/ui/tiptap-ui/heading-button'
 
 const BubbleMenuComp = ({ editor }: { editor: Editor | null }) => {
   // 如果编辑器未准备好或没有选中内容，则不渲染气泡菜单
@@ -10,7 +11,15 @@ const BubbleMenuComp = ({ editor }: { editor: Editor | null }) => {
       editor={editor}
       className="bg-white border border-gray-200 rounded-lg shadow-lg p-1 flex gap-0.5"
     >
-      <button
+      <HeadingButton
+        editor={editor}
+        level={1}
+        // text="Hasasdda 1"
+        hideWhenUnavailable={true}
+        showShortcut={true}
+        onToggled={() => console.log(`Heading  toggled!`)}
+      />
+      {/* <button
         onClick={() => editor.chain().focus().toggleBold().run()}
         className={`p-2 rounded-md hover:bg-gray-100 transition-colors ${
           editor.isActive('bold') ? 'bg-blue-100 text-blue-600' : ''
@@ -29,7 +38,7 @@ const BubbleMenuComp = ({ editor }: { editor: Editor | null }) => {
           <path d="M7 5h6a4 4 0 0 1 0 8H7z"></path>
           <path d="M7 12h7a4 4 0 0 1 0 8H7z"></path>
         </svg>
-      </button>
+      </button> */}
 
       <button
         onClick={() => editor.chain().focus().toggleItalic().run()}
