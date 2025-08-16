@@ -29,7 +29,7 @@ const Tiptap = () => {
     editorProps: {
       attributes: {
         class:
-          "prose w-[1200px] h-[clca(100vh-104px)]  prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none p-4 min-h-[300px] bg-white border border-gray-300 rounded-lg focus:outline-none",
+          "prose w-full h-[calc(100vh-104px)] prose-headings:font-bold prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none p-4 min-h-[300px] bg-white border border-gray-300 rounded-lg focus:outline-none",
       },
     },
     autofocus: true,
@@ -56,7 +56,7 @@ const Tiptap = () => {
     <div className="relative h-screen w-[1200px] bg-white">
       <FixedMenuComp editor={editor} />
       <BubbleMenu editor={editor} />
-      <EditorContent editor={editor} />
+      <EditorContent className="w-full [&_.ProseMirror]:w-full [&_.ProseMirror]:max-w-none" editor={editor} />
       <Footer />
     </div>
   );
