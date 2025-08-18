@@ -1,31 +1,18 @@
 "use client";
 
-import { Placeholder } from "@tiptap/extensions";
 import { EditorContent, useEditor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
 import { useEffect, useState } from "react";
 import { Loading } from "@/styles/svg";
 import Footer from "./components/Footer";
-import BubbleMenu from "./components/menus/BubbleMenu";
-import FixedMenuComp from "./components/menus/FixedMenu";
+import BubbleMenu from "./components/Menus/BubbleMenu";
+import FixedMenuComp from "./components/Menus/FixedMenu";
+import { baseExtensions } from "./extensions";
 
 const Tiptap = () => {
 	const [mounted, setMounted] = useState(false);
 
 	const editor = useEditor({
-		extensions: [
-			StarterKit.configure({
-				heading: {
-					levels: [1, 2, 3],
-				},
-				codeBlock: false,
-			}),
-			Placeholder.configure({
-				placeholder: "开始输入内容...",
-				emptyEditorClass:
-					"before:content-[attr(data-placeholder)] before:text-gray-400 before:float-left before:h-0",
-			}),
-		],
+		extensions: baseExtensions,
 		content: "<p>Hello World! 🌎️</p>",
 		editorProps: {
 			attributes: {
