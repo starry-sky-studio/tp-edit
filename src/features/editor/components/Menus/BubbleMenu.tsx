@@ -1,6 +1,6 @@
 import type { Editor } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react/menus";
-import { HeadingButton } from "@/components/tiptap-ui/heading-button";
+import { HeadingButton } from "@/features/editor/components/tiptap-ui/heading-button";
 
 const BubbleMenuComp = ({ editor }: { editor: Editor | null }) => {
 	// 如果编辑器未准备好或没有选中内容，则不渲染气泡菜单

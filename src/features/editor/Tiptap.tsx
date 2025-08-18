@@ -5,9 +5,9 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useEffect, useState } from "react";
 import { Loading } from "@/styles/svg";
-import Footer from "./Footer";
-import BubbleMenu from "./menus/BubbleMenu";
-import FixedMenuComp from "./menus/FixedMenu";
+import Footer from "./components/Footer";
+import BubbleMenu from "./components/menus/BubbleMenu";
+import FixedMenuComp from "./components/menus/FixedMenu";
 
 const Tiptap = () => {
 	const [mounted, setMounted] = useState(false);
