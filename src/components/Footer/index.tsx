@@ -1,19 +1,19 @@
-import Link from 'next/link'
-import { MingcuteGithubLine } from '@/styles/svg'
+import Link from "next/link";
+import { MingcuteGithubLine } from "@/styles/svg";
 
 const Footer = () => {
-  return (
-    <div className="w-full h-10 py-1 flex justify-center items-center gap-2">
-      <Link
-        href="https://github.com/starry-sky-studio/tp-edit"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="GitHub 仓库"
-      >
-        <MingcuteGithubLine />
-      </Link>
-    </div>
-  )
-}
+	return (
+		<div className="flex h-6 w-full items-center justify-center gap-2 border-x border-gray-300 py-1">
+			<Link
+				href="https://github.com/starry-sky-studio/tp-edit"
+				target="_blank"
+				rel="noopener noreferrer"
+				aria-label="GitHub 仓库"
+			>
+				<MingcuteGithubLine />
+			</Link>
+		</div>
+	);
+};
 
-export default Footer
+export default Footer;
