@@ -9,16 +9,16 @@ import { parseShortcutKeys } from "@/lib/tiptap-utils";
 import type {
 	Level,
 	UseHeadingConfig,
-} from "@/components/tiptap-ui/heading-button";
+} from "@/features/editor/components/tiptap-ui/heading-button";
 import {
 	HEADING_SHORTCUT_KEYS,
 	useHeading,
-} from "@/components/tiptap-ui/heading-button";
+} from "@/features/editor/components/tiptap-ui/heading-button";
 
 // --- UI Primitives ---
-import type { ButtonProps } from "@/components/tiptap-ui-primitive/button";
-import { Button } from "@/components/tiptap-ui-primitive/button";
-import { Badge } from "@/components/tiptap-ui-primitive/badge";
+import type { ButtonProps } from "@/features/editor/components/tiptap-ui-primitive/button";
+import { Button } from "@/features/editor/components/tiptap-ui-primitive/button";
+import { Badge } from "@/features/editor/components/tiptap-ui-primitive/badge";
 import { useTiptapEditor } from "@/hooks/use-tiptap-editor";
 
 export interface HeadingButtonProps

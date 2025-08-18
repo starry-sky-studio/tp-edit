@@ -5,8 +5,8 @@ import {
 	DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import type { Editor } from "@tiptap/react";
-import { useHeadingDropdownMenu } from "@/components/tiptap-ui/heading-dropdown-menu";
-import { ChevronDownIcon } from "../tiptap-icons/chevron-down-icon";
+import { useHeadingDropdownMenu } from "@/features/editor/components/tiptap-ui/heading-dropdown-menu";
+import { ChevronDownIcon } from "../Icons/chevron-down-icon";
 import { HeadingButton } from "../tiptap-ui/heading-button";
 
 const FixedMenuComp = ({ editor }: { editor: Editor | null }) => {

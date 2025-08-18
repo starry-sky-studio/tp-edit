@@ -7,7 +7,7 @@ import type { Editor } from "@tiptap/react";
 import { useTiptapEditor } from "@/hooks/use-tiptap-editor";
 
 // --- Icons ---
-import { HeadingIcon } from "@/components/tiptap-icons/heading-icon";
+import { HeadingIcon } from "@/features/editor/components/Icons/heading-icon";
 
 // --- Tiptap UI ---
 import {
@@ -16,7 +16,7 @@ import {
 	isHeadingActive,
 	canToggle,
 	shouldShowButton,
-} from "@/components/tiptap-ui/heading-button";
+} from "@/features/editor/components/tiptap-ui/heading-button";
 
 /**
  * Configuration for the heading dropdown menu functionality
