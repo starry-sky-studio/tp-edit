@@ -1,139 +1,83 @@
 import type { Editor } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react/menus";
-import { HeadingButton } from "@/features/editor/components/tiptap-ui/heading-button";
+import { Button } from "@/components/ui/button";
+import {
+	Bold as IconBold,
+	Italic as IconItalic,
+	Underline as IconUnderline,
+	Strikethrough as IconStrikethrough,
+	Code as IconCode,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-const BubbleMenuComp = ({ editor }: { editor: Editor | null }) => {
-	// 如果编辑器未准备好或没有选中内容，则不渲染气泡菜单
-	if (!editor || !editor.isEditable) return null;
+interface BubbleMenuItem {
+	name: string;
+	isActive: () => boolean;
+	command: () => void;
+	icon: LucideIcon;
+}
+
+interface Props {
+	editor: Editor | null;
+}
+
+const BubbleMenuComp = (props: Props) => {
+	if (!props.editor || !props.editor.isEditable) return null;
+
+	const editor = props.editor;
+
+	const items: BubbleMenuItem[] = [
+		{
+			name: "Bold",
+			isActive: () => editor.isActive("bold"),
+			command: () => editor.chain().focus().toggleBold().run(),
+			icon: IconBold,
+		},
+		{
+			name: "Italic",
+			isActive: () => editor.isActive("italic"),
+			command: () => editor.chain().focus().toggleItalic().run(),
+			icon: IconItalic,
+		},
+		{
+			name: "Underline",
+			isActive: () => editor.isActive("underline"),
+			command: () => editor.chain().focus().toggleUnderline().run(),
+			icon: IconUnderline,
+		},
+		{
+			name: "Strike",
+			isActive: () => editor.isActive("strike"),
+			command: () => editor.chain().focus().toggleStrike().run(),
+			icon: IconStrikethrough,
+		},
+		{
+			name: "Code",
+			isActive: () => editor.isActive("code"),
+			command: () => editor.chain().focus().toggleCode().run(),
+			icon: IconCode,
+		},
+	];
 
 	return (
 		<BubbleMenu
 			editor={editor}
-			className="flex gap-0.5 rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
+			className="flex items-center gap-0.5 rounded-lg border bg-background p-1 shadow-lg"
 		>
-			<HeadingButton
-				editor={editor}
-				level={1}
-				// text="Hasasdda 1"
-				hideWhenUnavailable={true}
-				showShortcut={true}
-				onToggled={() => console.log(`Heading  toggled!`)}
-			/>
-			{/* <button
-        onClick={() => editor.chain().focus().toggleBold().run()}
-        className={`p-2 rounded-md hover:bg-gray-100 transition-colors ${
-          editor.isActive('bold') ? 'bg-blue-100 text-blue-600' : ''
-        }`}
-        type="button"
-        title="Bold"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path d="M7 5h6a4 4 0 0 1 0 8H7z"></path>
-          <path d="M7 12h7a4 4 0 0 1 0 8H7z"></path>
-        </svg>
-      </button> */}
-
-			<button
-				onClick={() => editor.chain().focus().toggleItalic().run()}
-				className={`rounded-md p-2 transition-colors hover:bg-gray-100 ${
-					editor.isActive("italic") ? "bg-blue-100 text-blue-600" : ""
-				}`}
-				type="button"
-				title="Italic"
-			>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					className="h-5 w-5"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					strokeWidth="2"
-				>
-					<line x1="19" y1="4" x2="10" y2="4"></line>
-					<line x1="14" y1="20" x2="5" y2="20"></line>
-					<line x1="15" y1="4" x2="9" y2="20"></line>
-				</svg>
-			</button>
-
-			<button
-				onClick={() => editor.chain().focus().toggleStrike().run()}
-				className={`rounded-md p-2 transition-colors hover:bg-gray-100 ${
-					editor.isActive("strike") ? "bg-blue-100 text-blue-600" : ""
-				}`}
-				type="button"
-				title="Strikethrough"
-			>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					className="h-5 w-5"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					strokeWidth="2"
-				>
-					<path d="M16 4H9l3 5m0 6H8m8 4H8m8-8H8M3 12h18"></path>
-				</svg>
-			</button>
-
-			<div className="mx-1 w-px bg-gray-200"></div>
-
-			<button
-				onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-				className={`rounded-md p-2 transition-colors hover:bg-gray-100 ${
-					editor.isActive("heading", { level: 1 })
-						? "bg-blue-100 text-blue-600"
-						: ""
-				}`}
-				type="button"
-				title="Heading 1"
-			>
-				H1
-			</button>
-
-			<button
-				onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-				className={`rounded-md p-2 transition-colors hover:bg-gray-100 ${
-					editor.isActive("heading", { level: 2 })
-						? "bg-blue-100 text-blue-600"
-						: ""
-				}`}
-				type="button"
-				title="Heading 2"
-			>
-				H2
-			</button>
-
-			<button
-				onClick={() => editor.chain().focus().toggleBulletList().run()}
-				className={`rounded-md p-2 transition-colors hover:bg-gray-100 ${
-					editor.isActive("bulletList") ? "bg-blue-100 text-blue-600" : ""
-				}`}
-				type="button"
-				title="Bullet List"
-			>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					className="h-5 w-5"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					strokeWidth="2"
-				>
-					<line x1="8" y1="6" x2="21" y2="6"></line>
-					<line x1="8" y1="12" x2="21" y2="12"></line>
-					<line x1="8" y1="18" x2="21" y2="18"></line>
-					<line x1="3" y1="6" x2="3.01" y2="6"></line>
-					<line x1="3" y1="12" x2="3.01" y2="12"></line>
-					<line x1="3" y1="18" x2="3.01" y2="18"></line>
-				</svg>
-			</button>
+			{items.map((item) => {
+				const Icon = item.icon;
+				return (
+					<Button
+						key={item.name}
+						variant={item.isActive() ? "secondary" : "ghost"}
+						size="icon"
+						onClick={() => item.command()}
+						title={item.name}
+					>
+						<Icon className="h-4 w-4" />
+					</Button>
+				);
+			})}
 		</BubbleMenu>
 	);
 };
