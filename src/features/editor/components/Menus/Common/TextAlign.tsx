@@ -1,5 +1,5 @@
 import type { Editor } from "@tiptap/react";
-import { Heading1, Heading2, Heading3, Type } from "lucide-react";
+import { AlignCenter, AlignJustify, AlignLeft, AlignRight } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,36 +9,38 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const Heading = ({ editor }: { editor: Editor | null }) => {
-	const [currentHead, setCurrentHead] = useState(<Type className="size-4" />);
+const TextAlign = ({ editor }: { editor: Editor | null }) => {
+	const [currentHead, setCurrentHead] = useState(
+		<AlignCenter className="size-4" />,
+	);
 
-	const getHeadList = useCallback(() => {
+	const getAlignList = useCallback(() => {
 		if (!editor) return [];
 
 		return [
 			{
-				icon: <Type className="size-4" />,
-				title: "text",
-				isActive: () => editor.isActive("paragraph"),
-				action: () => editor.chain().focus().setParagraph().run(),
+				icon: <AlignLeft className="size-4" />,
+				title: "左对齐",
+				isActive: () => editor.isActive({ textAlign: "left" }),
+				action: () => editor.chain().focus().setTextAlign("left").run(),
 			},
 			{
-				icon: <Heading1 className="size-4" />,
-				title: "Heading 1",
-				isActive: () => editor.isActive("heading", { level: 1 }),
-				action: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
+				icon: <AlignCenter className="size-4" />,
+				title: "居中对齐",
+				isActive: () => editor.isActive({ textAlign: "center" }),
+				action: () => editor.chain().focus().setTextAlign("center").run(),
 			},
 			{
-				icon: <Heading2 className="size-4" />,
-				title: "Heading 2",
-				isActive: () => editor.isActive("heading", { level: 2 }),
-				action: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
+				icon: <AlignRight className="size-4" />,
+				title: "右对齐",
+				isActive: () => editor.isActive({ textAlign: "right" }),
+				action: () => editor.chain().focus().setTextAlign("right").run(),
 			},
 			{
-				icon: <Heading3 className="size-4" />,
-				title: "Heading 3",
-				isActive: () => editor.isActive("heading", { level: 3 }),
-				action: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
+				icon: <AlignJustify className="size-4" />,
+				title: "两端对齐",
+				isActive: () => editor.isActive({ textAlign: "justify" }),
+				action: () => editor.chain().focus().setTextAlign("justify").run(),
 			},
 		];
 	}, [editor]);
@@ -46,10 +48,10 @@ const Heading = ({ editor }: { editor: Editor | null }) => {
 	const updateCurrentHead = useCallback(() => {
 		if (!editor) return;
 
-		const headList = getHeadList();
-		const activeItem = headList.find((item) => item.isActive()) ?? headList[0];
-		setCurrentHead(activeItem?.icon);
-	}, [editor, getHeadList]);
+		const alignList = getAlignList();
+		const active = alignList.find((i) => i.isActive()) ?? alignList[0];
+		setCurrentHead(active.icon);
+	}, [editor, getAlignList]);
 
 	useEffect(() => {
 		if (!editor || !editor.isEditable) return;
@@ -70,8 +72,7 @@ const Heading = ({ editor }: { editor: Editor | null }) => {
 	}, [editor, updateCurrentHead]);
 
 	if (!editor || !editor.isEditable) return null;
-
-	const headList = getHeadList();
+	const alignList = getAlignList();
 
 	return (
 		<DropdownMenu>
@@ -81,7 +82,7 @@ const Heading = ({ editor }: { editor: Editor | null }) => {
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent>
-				{headList.map((item) => (
+				{alignList.map((item) => (
 					<DropdownMenuCheckboxItem
 						key={item.title}
 						checked={item.isActive()}
@@ -101,4 +102,4 @@ const Heading = ({ editor }: { editor: Editor | null }) => {
 	);
 };
 
-export default Heading;
+export default TextAlign;
