@@ -47,14 +47,13 @@ const Heading = ({ editor }: { editor: Editor | null }) => {
 		if (!editor) return;
 
 		const headList = getHeadList();
-		const activeItem = headList.find((item) => item.isActive());
-		setCurrentHead(activeItem?.icon || <Type className="size-4" />);
+		const activeItem = headList.find((item) => item.isActive()) ?? headList[0];
+		setCurrentHead(activeItem?.icon);
 	}, [editor, getHeadList]);
 
 	useEffect(() => {
 		if (!editor || !editor.isEditable) return;
 
-		// 初始更新
 		updateCurrentHead();
 
 		const handleUpdate = () => {
@@ -88,12 +87,12 @@ const Heading = ({ editor }: { editor: Editor | null }) => {
 						checked={item.isActive()}
 						onCheckedChange={() => {
 							item.action();
-							// 立即更新图标
 							setTimeout(updateCurrentHead, 0);
 						}}
 					>
 						<span className="flex items-center gap-2">
-							{item.icon} {item.title}
+							{item.icon}
+							{item.title}
 						</span>
 					</DropdownMenuCheckboxItem>
 				))}
