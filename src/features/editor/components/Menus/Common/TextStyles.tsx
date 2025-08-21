@@ -1,14 +1,13 @@
 import type { Editor } from "@tiptap/react";
-import { BubbleMenu } from "@tiptap/react/menus";
-import { Button } from "@/components/ui/button";
+import type { LucideIcon } from "lucide-react";
 import {
 	Bold as IconBold,
-	Italic as IconItalic,
-	Underline as IconUnderline,
-	Strikethrough as IconStrikethrough,
 	Code as IconCode,
+	Italic as IconItalic,
+	Strikethrough as IconStrikethrough,
+	Underline as IconUnderline,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface BubbleMenuItem {
 	name: string;
@@ -21,7 +20,7 @@ interface Props {
 	editor: Editor | null;
 }
 
-const BubbleMenuComp = (props: Props) => {
+const TextStyles = (props: Props) => {
 	if (!props.editor || !props.editor.isEditable) return null;
 
 	const editor = props.editor;
@@ -60,10 +59,7 @@ const BubbleMenuComp = (props: Props) => {
 	];
 
 	return (
-		<BubbleMenu
-			editor={editor}
-			className="flex items-center gap-0.5 rounded-lg border bg-background p-1 shadow-lg"
-		>
+		<>
 			{items.map((item) => {
 				const Icon = item.icon;
 				return (
@@ -78,8 +74,8 @@ const BubbleMenuComp = (props: Props) => {
 					</Button>
 				);
 			})}
-		</BubbleMenu>
+		</>
 	);
 };
 
-export default BubbleMenuComp;
+export default TextStyles;
