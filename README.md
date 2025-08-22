@@ -17,3 +17,4 @@ bun dev
 ## features
 
 - Biome + Husky + lint-staged + Prettier (Biome 处理 JS/TS，Prettier 处理其他文件，避免功能重叠)
+- ui.shadcn 作为组件UI框架

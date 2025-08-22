@@ -4,8 +4,8 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import { useEffect, useState } from "react";
 import { Loading } from "@/styles/svg";
 import Footer from "./components/Footer";
-import BubbleMenu from "./components/Menus/BubbleMenu";
-import FixedMenuComp from "./components/Menus/FixedMenu";
+import BubbleMenu from "./components/Menus/BubbleMenu/index";
+import FixedMenuComp from "./components/Menus/FixedMenu/index";
 import { baseExtensions } from "./extensions";
 
 const Tiptap = () => {
