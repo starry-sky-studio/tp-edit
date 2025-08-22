@@ -42,43 +42,35 @@ const TextColor = ({ editor }: { editor: Editor | null }) => {
 	const [currentColor, setCurrentColor] = useState("#000000");
 	const [currentBgColor, setCurrentBgColor] = useState("transparent");
 
-	// 更新当前文本颜色和背景颜色
 	const updateCurrentColors = useCallback(() => {
 		if (!editor) return;
 
-		// 获取当前文本颜色
 		const textColor = editor.getAttributes("textStyle").color || "#000000";
 		setCurrentColor(textColor);
 
-		// 获取当前背景颜色
 		const bgColor =
 			editor.getAttributes("textStyle").backgroundColor || "transparent";
 		setCurrentBgColor(bgColor);
 	}, [editor]);
 
-	// 设置文本颜色
 	const setTextColor = useCallback(
 		(color: string) => {
 			if (!editor) return;
-
 			editor.chain().focus().setColor(color).run();
 			setCurrentColor(color);
 		},
 		[editor],
 	);
 
-	// 设置文本背景颜色
 	const setTextBgColor = useCallback(
 		(bgColor: string) => {
 			if (!editor) return;
-
 			editor.chain().focus().setBackgroundColor(bgColor).run();
 			setCurrentBgColor(bgColor);
 		},
 		[editor],
 	);
 
-	// 监听编辑器变化
 	useEffect(() => {
 		if (!editor || !editor.isEditable) return;
 
