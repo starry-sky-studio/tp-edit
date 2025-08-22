@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const TextAlign = ({ editor }: { editor: Editor | null }) => {
-	const [currentHead, setCurrentHead] = useState(
+	const [currentAlign, setCurrentAlign] = useState(
 		<AlignCenter className="size-4" />,
 	);
 
@@ -45,21 +45,21 @@ const TextAlign = ({ editor }: { editor: Editor | null }) => {
 		];
 	}, [editor]);
 
-	const updateCurrentHead = useCallback(() => {
+	const updateCurrentAlign = useCallback(() => {
 		if (!editor) return;
 
 		const alignList = getAlignList();
 		const active = alignList.find((i) => i.isActive()) ?? alignList[0];
-		setCurrentHead(active.icon);
+		setCurrentAlign(active.icon);
 	}, [editor, getAlignList]);
 
 	useEffect(() => {
 		if (!editor || !editor.isEditable) return;
 
-		updateCurrentHead();
+		updateCurrentAlign();
 
 		const handleUpdate = () => {
-			updateCurrentHead();
+			updateCurrentAlign();
 		};
 
 		editor.on("selectionUpdate", handleUpdate);
@@ -69,7 +69,7 @@ const TextAlign = ({ editor }: { editor: Editor | null }) => {
 			editor.off("selectionUpdate", handleUpdate);
 			editor.off("transaction", handleUpdate);
 		};
-	}, [editor, updateCurrentHead]);
+	}, [editor, updateCurrentAlign]);
 
 	if (!editor || !editor.isEditable) return null;
 	const alignList = getAlignList();
@@ -78,7 +78,7 @@ const TextAlign = ({ editor }: { editor: Editor | null }) => {
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button variant="ghost" size="icon" className="border-none border-0">
-					{currentHead}
+					{currentAlign}
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent>
@@ -88,7 +88,7 @@ const TextAlign = ({ editor }: { editor: Editor | null }) => {
 						checked={item.isActive()}
 						onCheckedChange={() => {
 							item.action();
-							setTimeout(updateCurrentHead, 0);
+							setTimeout(updateCurrentAlign, 0);
 						}}
 					>
 						<span className="flex items-center gap-2">
