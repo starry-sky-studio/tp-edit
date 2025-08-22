@@ -102,47 +102,25 @@ const TextColor = ({ editor }: { editor: Editor | null }) => {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<Button
-					variant="ghost"
-					size="icon"
-					className={clsx(
-						"border-none border-0 relative",
-						"transition-all duration-200",
-						"hover:bg-gray-100 active:bg-gray-200",
-						"h-9 w-9", // 确保按钮尺寸一致
-					)}
-				>
+				<Button variant="ghost" size="icon" className="border-none border-0">
 					<div
-						className={clsx(
-							"relative flex items-center justify-center w-6 h-6 rounded transition-all",
-							currentBgColor !== "transparent" && "p-1",
-						)}
+						className="flex items-center justify-center size-6 rounded transition-all"
 						style={{ backgroundColor: currentBgColor }}
 					>
 						<FontIcon
-							name="text-color"
-							className={clsx(
-								"size-4 transition-colors",
-								currentBgColor !== "transparent"
-									? "text-white"
-									: "text-gray-700",
-							)}
+							className="size-4 transition-colors"
 							style={{ color: currentColor }}
 						/>
 					</div>
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent
-				className="w-64 p-4 shadow-xl rounded-lg"
-				align="start"
-				sideOffset={5}
-			>
+			<DropdownMenuContent className="p-4 shadow-xl rounded-lg">
 				<div className="mb-4">
 					<div className="flex items-center justify-between mb-3">
 						<div className="text-sm font-medium text-gray-800">文本颜色</div>
 						<div className="flex items-center justify-center gap-1">
 							<div
-								className="w-4 h-4 rounded-full border border-gray-300 shadow-sm"
+								className="size-4 rounded-full border border-gray-300 shadow-sm"
 								style={{ backgroundColor: currentColor }}
 							/>
 							<div className="text-sm text-gray-500">{currentColor}</div>
@@ -153,14 +131,12 @@ const TextColor = ({ editor }: { editor: Editor | null }) => {
 							<button
 								key={color}
 								className={clsx(
-									"size-6 rounded-full",
+									"size-6 rounded-full cursor-pointer",
 									"hover:scale-110 transition-all duration-150",
 									currentColor === color && "scale-110 shadow-md",
 								)}
 								style={{ backgroundColor: color }}
 								onClick={() => setTextColor(color)}
-								title={color}
-								aria-label={`设置文本颜色为 ${color}`}
 							/>
 						))}
 					</div>
@@ -182,12 +158,11 @@ const TextColor = ({ editor }: { editor: Editor | null }) => {
 							<button
 								key={bgColor}
 								className={clsx(
-									"size-6 rounded-full border-2 transition-all duration-150",
+									"size-6 rounded-full transition-all duration-150 cursor-pointer",
 									"hover:scale-110",
-									currentBgColor === bgColor && "scale-110  shadow-md",
-									bgColor === "transparent"
-										? "border-gray-400 bg-white"
-										: "border-transparent",
+									currentBgColor === bgColor && "scale-110 shadow-md",
+									bgColor === "transparent" &&
+										"border-gray-400 bg-white border",
 								)}
 								style={{
 									backgroundColor:
@@ -202,8 +177,6 @@ const TextColor = ({ editor }: { editor: Editor | null }) => {
 										bgColor === "transparent" ? "0 0, 4px 4px" : undefined,
 								}}
 								onClick={() => setTextBgColor(bgColor)}
-								title={bgColor === "transparent" ? "无背景" : bgColor}
-								aria-label={`设置背景颜色为 ${bgColor === "transparent" ? "无" : bgColor}`}
 							/>
 						))}
 					</div>
