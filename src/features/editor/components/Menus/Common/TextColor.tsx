@@ -39,17 +39,18 @@ export const textBgColorList: string[] = [
 ];
 
 const TextColor = ({ editor }: { editor: Editor | null }) => {
-	const [currentColor, setCurrentColor] = useState("#000000");
-	const [currentBgColor, setCurrentBgColor] = useState("transparent");
+	const [currentColor, setCurrentColor] = useState(textColorList[0]);
+	const [currentBgColor, setCurrentBgColor] = useState(textBgColorList[0]);
 
 	const updateCurrentColors = useCallback(() => {
 		if (!editor) return;
 
-		const textColor = editor.getAttributes("textStyle").color || "#000000";
+		const textColor =
+			editor.getAttributes("textStyle").color || textColorList[0];
 		setCurrentColor(textColor);
 
 		const bgColor =
-			editor.getAttributes("textStyle").backgroundColor || "transparent";
+			editor.getAttributes("textStyle").backgroundColor || textBgColorList[0];
 		setCurrentBgColor(bgColor);
 	}, [editor]);
 
