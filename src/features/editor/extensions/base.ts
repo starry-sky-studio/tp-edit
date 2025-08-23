@@ -20,9 +20,9 @@ export const baseExtensions = [
 	}),
 	Underline,
 	Link,
-	TextStyle, // 必须有这个，Color 才能工作
+	TextStyle,
 	Color,
 	Highlight.configure({
-		multicolor: true, // 支持多色高亮
+		multicolor: true,
 	}),
 ];
