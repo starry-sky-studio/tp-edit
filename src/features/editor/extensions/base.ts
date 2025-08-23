@@ -1,13 +1,23 @@
+import TextAlign from "@tiptap/extension-text-align";
+import {
+	BackgroundColor,
+	Color,
+	TextStyle,
+} from "@tiptap/extension-text-style";
 import { Placeholder } from "@tiptap/extensions";
 import StarterKit from "@tiptap/starter-kit";
 
 export const baseExtensions = [
 	StarterKit.configure({
-		heading: {
-			levels: [1, 2, 3],
-		},
+		heading: { levels: [1, 2, 3] },
 		codeBlock: false,
 	}),
+	TextAlign.configure({
+		types: ["heading", "paragraph"],
+	}),
+	Color,
+	TextStyle,
+	BackgroundColor,
 	Placeholder.configure({
 		placeholder: "开始输入内容...",
 		emptyEditorClass:
