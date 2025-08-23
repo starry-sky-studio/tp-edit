@@ -1,104 +1,157 @@
 import type { Editor } from "@tiptap/react";
-import { Heading1, Heading2, Heading3, Type } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useState, useRef, useEffect } from "react";
 import {
-	DropdownMenu,
-	DropdownMenuCheckboxItem,
-	DropdownMenuContent,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+	ChevronDown,
+	Heading as HeadingIcon,
+	Heading1,
+	Heading2,
+	Heading3,
+} from "lucide-react";
 
-const Heading = ({ editor }: { editor: Editor | null }) => {
-	const [currentHead, setCurrentHead] = useState(<Type className="size-4" />);
+interface Props {
+	editor: Editor | null;
+}
 
-	const getHeadList = useCallback(() => {
-		if (!editor) return [];
+interface HeadingOption {
+	level: 1 | 2 | 3;
+	label: string;
+	icon: React.ReactNode;
+}
 
-		return [
-			{
-				icon: <Type className="size-4" />,
-				title: "text",
-				isActive: () => editor.isActive("paragraph"),
-				action: () => editor.chain().focus().setParagraph().run(),
-			},
-			{
-				icon: <Heading1 className="size-4" />,
-				title: "Heading 1",
-				isActive: () => editor.isActive("heading", { level: 1 }),
-				action: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
-			},
-			{
-				icon: <Heading2 className="size-4" />,
-				title: "Heading 2",
-				isActive: () => editor.isActive("heading", { level: 2 }),
-				action: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
-			},
-			{
-				icon: <Heading3 className="size-4" />,
-				title: "Heading 3",
-				isActive: () => editor.isActive("heading", { level: 3 }),
-				action: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
-			},
-		];
-	}, [editor]);
+export default function Heading({ editor }: Props) {
+	const [isHover, setIsHover] = useState(false);
+	const [position, setPosition] = useState<"top" | "bottom">("bottom");
+	const timeoutRef = useRef<number | null>(null);
+	const menuRef = useRef<HTMLDivElement>(null);
 
-	const updateCurrentHead = useCallback(() => {
-		if (!editor) return;
+	const headings: HeadingOption[] = [
+		{ level: 1, label: "一级标题", icon: <Heading1 className="h-4 w-4" /> },
+		{ level: 2, label: "二级标题", icon: <Heading2 className="h-4 w-4" /> },
+		{ level: 3, label: "三级标题", icon: <Heading3 className="h-4 w-4" /> },
+	];
 
-		const headList = getHeadList();
-		const activeItem = headList.find((item) => item.isActive()) ?? headList[0];
-		setCurrentHead(activeItem?.icon);
-	}, [editor, getHeadList]);
+	const paragraphIcon = <HeadingIcon className="h-4 w-4" />;
 
+	const currentIcon = () => {
+		if (!editor) return paragraphIcon;
+		if (editor.isActive("paragraph")) return paragraphIcon;
+		const activeHeading = headings.find(({ level }) =>
+			editor.isActive("heading", { level }),
+		);
+		return activeHeading?.icon ?? paragraphIcon;
+	};
+
+	const handleMouseEnter = () => {
+		if (timeoutRef.current) clearTimeout(timeoutRef.current);
+		timeoutRef.current = null;
+		setIsHover(true);
+	};
+
+	const handleMouseLeave = () => {
+		timeoutRef.current = window.setTimeout(() => setIsHover(false), 150);
+	};
+
+	// 根据光标位置动态决定菜单显示在上方还是下方
 	useEffect(() => {
-		if (!editor || !editor.isEditable) return;
+		if (!isHover || !menuRef.current || !editor) return;
 
-		updateCurrentHead();
+		const selection = window.getSelection();
+		if (!selection || selection.rangeCount === 0) return;
 
-		const handleUpdate = () => {
-			updateCurrentHead();
-		};
+		const range = selection.getRangeAt(0);
+		const rect = range.getBoundingClientRect();
+		const menuHeight = menuRef.current.offsetHeight;
+		const viewportHeight = window.innerHeight;
 
-		editor.on("selectionUpdate", handleUpdate);
-		editor.on("transaction", handleUpdate);
+		if (rect.bottom + menuHeight + 8 > viewportHeight) {
+			setPosition("top");
+		} else {
+			setPosition("bottom");
+		}
+	}, [isHover, editor]);
 
-		return () => {
-			editor.off("selectionUpdate", handleUpdate);
-			editor.off("transaction", handleUpdate);
-		};
-	}, [editor, updateCurrentHead]);
-
-	if (!editor || !editor.isEditable) return null;
-
-	const headList = getHeadList();
+	if (!editor) return null;
 
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button variant="ghost" size="icon" className="border-none">
-					{currentHead}
-				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent>
-				{headList.map((item) => (
-					<DropdownMenuCheckboxItem
-						key={item.title}
-						checked={item.isActive()}
-						onCheckedChange={() => {
-							item.action();
-							setTimeout(updateCurrentHead, 0);
-						}}
-					>
-						<span className="flex items-center gap-2">
-							{item.icon}
-							{item.title}
-						</span>
-					</DropdownMenuCheckboxItem>
-				))}
-			</DropdownMenuContent>
-		</DropdownMenu>
-	);
-};
+		<span
+			className="relative inline-block"
+			role="group"
+			onMouseEnter={handleMouseEnter}
+			onMouseLeave={handleMouseLeave}
+		>
+			{/* 触发按钮 */}
+			<button
+				type="button"
+				className="flex items-center gap-1 p-1.5 rounded hover:bg-gray-100 transition-colors cursor-pointer"
+				title="标题样式"
+				aria-haspopup="true"
+				aria-expanded={isHover}
+			>
+				{currentIcon()}
+				<ChevronDown
+					className={`h-3 w-3 text-gray-500 transform transition-transform duration-300 ease-in-out ${
+						isHover ? "rotate-180" : "rotate-0"
+					}`}
+				/>
+			</button>
 
-export default Heading;
+			{/* 下拉面板 */}
+			<div
+				ref={menuRef}
+				className={`absolute left-1/2 transform -translate-x-1/2 bg-white border rounded-md shadow-lg z-50 min-w-28
+                    transition-all duration-200 ease-out
+                    ${
+											position === "bottom"
+												? "origin-top mt-3"
+												: "origin-bottom mb-3 bottom-full"
+										}
+                    ${
+											isHover
+												? "opacity-100 translate-y-0 pointer-events-auto"
+												: "opacity-0 -translate-y-2 pointer-events-none"
+										}`}
+				role="menu"
+			>
+				{/* 正文 */}
+				<button
+					type="button"
+					role="menuitem"
+					className={`w-full text-left px-3 py-1.5 text-sm cursor-pointer transition-colors ${
+						editor.isActive("paragraph")
+							? "bg-blue-100 text-blue-600"
+							: "hover:bg-gray-100"
+					}`}
+					onClick={() => editor.chain().focus().setParagraph().run()}
+				>
+					<div className="flex items-center gap-2 whitespace-nowrap">
+						{paragraphIcon}
+						<span>正文</span>
+					</div>
+				</button>
+
+				{/* 标题选项 */}
+				{headings.map(({ level, label, icon }) => {
+					const isActive = editor.isActive("heading", { level });
+					return (
+						<button
+							key={label}
+							type="button"
+							role="menuitem"
+							className={`w-full text-left px-3 py-1.5 text-sm cursor-pointer transition-colors ${
+								isActive ? "bg-blue-100 text-blue-600" : "hover:bg-gray-100"
+							}`}
+							onClick={() =>
+								editor.chain().focus().toggleHeading({ level }).run()
+							}
+						>
+							<div className="flex items-center gap-2 whitespace-nowrap">
+								{icon}
+								<span>{label}</span>
+							</div>
+						</button>
+					);
+				})}
+			</div>
+		</span>
+	);
+}
