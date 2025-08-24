@@ -82,7 +82,7 @@ export default function Heading({ editor }: Props) {
 			{/* 触发按钮 */}
 			<button
 				type="button"
-				className="flex items-center gap-1 p-1.5 rounded hover:bg-gray-100 transition-colors cursor-pointer"
+				className="flex items-center gap-1 p-1.5 rounded hover:bg-gray-100 transition-colors "
 				title="标题样式"
 				aria-haspopup="true"
 				aria-expanded={isHover}
@@ -99,24 +99,24 @@ export default function Heading({ editor }: Props) {
 			<div
 				ref={menuRef}
 				className={`absolute left-1/2 transform -translate-x-1/2 bg-white border rounded-md shadow-lg z-50 min-w-28
-                    transition-all duration-200 ease-out
-                    ${
-											position === "bottom"
-												? "origin-top mt-3"
-												: "origin-bottom mb-3 bottom-full"
-										}
-                    ${
-											isHover
-												? "opacity-100 translate-y-0 pointer-events-auto"
-												: "opacity-0 -translate-y-2 pointer-events-none"
-										}`}
+							transition-all duration-200 ease-out
+							${
+								position === "bottom"
+									? "origin-top mt-3"
+									: "origin-bottom mb-3 bottom-full"
+							}
+							${
+								isHover
+									? "opacity-100 translate-y-0 pointer-events-auto"
+									: "opacity-0 -translate-y-2 pointer-events-none"
+							}`}
 				role="menu"
 			>
 				{/* 正文 */}
 				<button
 					type="button"
 					role="menuitem"
-					className={`w-full text-left px-3 py-1.5 text-sm cursor-pointer transition-colors ${
+					className={`w-full text-left px-3 py-1.5 text-sm transition-colors ${
 						editor.isActive("paragraph")
 							? "bg-blue-100 text-blue-600"
 							: "hover:bg-gray-100"
@@ -137,7 +137,7 @@ export default function Heading({ editor }: Props) {
 							key={label}
 							type="button"
 							role="menuitem"
-							className={`w-full text-left px-3 py-1.5 text-sm cursor-pointer transition-colors ${
+							className={`w-full text-left px-3 py-1.5 text-sm transition-colors ${
 								isActive ? "bg-blue-100 text-blue-600" : "hover:bg-gray-100"
 							}`}
 							onClick={() =>

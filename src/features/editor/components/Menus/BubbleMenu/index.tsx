@@ -2,6 +2,7 @@ import type { Editor } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react/menus";
 import TextStyles from "../Common/TextStyles";
 import Heading from "../Common/Heading";
+import { TextAlign } from "../Common/TextAlign";
 interface Props {
 	editor: Editor | null;
 }
@@ -17,6 +18,7 @@ const BubbleMenuComp = (props: Props) => {
 			className="flex items-center gap-0.5 rounded-lg border bg-background p-1 shadow-lg"
 		>
 			<Heading editor={editor} />
+			<TextAlign editor={editor} />
 			<TextStyles editor={editor} />
 		</BubbleMenu>
 	);

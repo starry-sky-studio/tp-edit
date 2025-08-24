@@ -5,6 +5,7 @@ import Link from "@tiptap/extension-link";
 import Highlight from "@tiptap/extension-highlight";
 import { TextStyle } from "@tiptap/extension-text-style";
 import Color from "@tiptap/extension-color";
+import TextAlign from "@tiptap/extension-text-align";
 
 export const baseExtensions = [
 	StarterKit.configure({
@@ -25,4 +26,5 @@ export const baseExtensions = [
 	Highlight.configure({
 		multicolor: true,
 	}),
+	TextAlign.configure({ types: ["heading", "paragraph", "listItem"] }),
 ];

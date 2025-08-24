@@ -1,6 +1,6 @@
 import type { Editor } from "@tiptap/react";
 import { useState, useRef, useEffect } from "react";
-import { Palette, Slash } from "lucide-react";
+import { Slash } from "lucide-react";
 
 interface Props {
 	editor: Editor | null;
@@ -74,6 +74,11 @@ export function BubbleTextStyleMenu({ editor }: Props) {
 
 	if (!editor) return null;
 
+	// 获取当前选中的字体颜色 / 背景颜色
+	const currentFontColor = editor.getAttributes("textStyle").color || "#364152"; // 默认深灰
+	const currentBgColor =
+		editor.getAttributes("highlight").color || "transparent";
+
 	return (
 		<div
 			className="relative inline-block"
@@ -82,15 +87,23 @@ export function BubbleTextStyleMenu({ editor }: Props) {
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
 		>
-			{/* 触发按钮 */}
+			{/* 触发按钮：A */}
 			<button
 				type="button"
-				className="p-1.5 rounded hover:bg-gray-100 transition-colors cursor-pointer"
+				className="p-1.5 rounded-md hover:bg-gray-100 transition-colors"
 				title="字体与背景颜色"
 				aria-haspopup="true"
 				aria-expanded={isHover}
 			>
-				<Palette className="h-4 w-4 text-gray-600" />
+				<div
+					className="flex items-center justify-center rounded text-lg font-light w-5 h-5"
+					style={{
+						color: currentFontColor,
+						backgroundColor: currentBgColor,
+					}}
+				>
+					A
+				</div>
 			</button>
 
 			{/* 下拉菜单 */}
@@ -117,12 +130,12 @@ export function BubbleTextStyleMenu({ editor }: Props) {
 								key={`font-${color}`}
 								type="button"
 								role="menuitem"
-								className={`rounded cursor-pointer flex items-center justify-center
+								className={`rounded flex items-center justify-center
                             transition-transform duration-200
                             ${
 															editor.isActive("textStyle", { color })
 																? "border-2 border-[#336df4] bg-white"
-																: "hover:scale-110 hover:border-2 hover:border-[#336df4] hover:bg-white"
+																: "hover: hover:border-2 hover:border-[#bfd1fc] hover:bg-white"
 														}`}
 								style={{ width: 26, height: 26 }}
 								onClick={() => editor.chain().focus().setColor(color).run()}
@@ -144,24 +157,24 @@ export function BubbleTextStyleMenu({ editor }: Props) {
 						<button
 							type="button"
 							role="menuitem"
-							className="flex items-center justify-center border rounded cursor-pointer"
+							className="flex items-center justify-center border rounded"
 							style={{ width: 24, height: 24 }}
 							onClick={() => editor.chain().focus().unsetHighlight().run()}
 							title="清除高亮"
 						>
-							<Slash className="h-4 w-4 text-gray-600" />
+							<Slash className="h-4 w-4 text-gray-500" />
 						</button>
 						{highlightColors.map((color) => (
 							<button
 								key={`highlight-${color}`}
 								type="button"
 								role="menuitem"
-								className={`rounded cursor-pointer flex items-center justify-center
+								className={`rounded flex items-center justify-center
                             transition-transform duration-200
                             ${
 															editor.isActive("highlight", { color })
 																? "border-2 border-[#336df4] bg-white"
-																: "hover:scale-110 hover:border-2 hover:border-[#336df4] hover:bg-white"
+																: "hover: hover:border-2 hover:border-[#bfd1fc] hover:bg-white"
 														}`}
 								style={{ width: 26, height: 26 }}
 								onClick={() =>

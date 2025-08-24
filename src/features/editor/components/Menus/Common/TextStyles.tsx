@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-import { BubbleTextStyleMenu } from "../BubbleTextStyleMenu";
+import { BubbleTextStyleMenu } from "./TextColorStyle";
 
 interface BubbleMenuItem {
 	name: string;
