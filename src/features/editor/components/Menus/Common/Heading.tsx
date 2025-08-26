@@ -76,7 +76,7 @@ const Heading = ({ editor }: { editor: Editor | null }) => {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<Button variant="ghost" size="icon" className="border-none">
+				<Button variant="ghost" size="icon" className="border-none border-0">
 					{currentHead}
 				</Button>
 			</DropdownMenuTrigger>

@@ -4,6 +4,8 @@ import {
 	Bold as IconBold,
 	Code as IconCode,
 	Italic as IconItalic,
+	List as IconList,
+	ListOrdered as IconListOrdered,
 	Strikethrough as IconStrikethrough,
 	Underline as IconUnderline,
 } from "lucide-react";
@@ -56,6 +58,18 @@ const TextStyles = (props: Props) => {
 			command: () => editor.chain().focus().toggleCode().run(),
 			icon: IconCode,
 		},
+		{
+			name: "orderedList",
+			isActive: () => editor.isActive("orderedList"),
+			command: () => editor.chain().focus().toggleOrderedList().run(),
+			icon: IconListOrdered,
+		},
+		{
+			name: "bulletList",
+			isActive: () => editor.isActive("bulletList"),
+			command: () => editor.chain().focus().toggleBulletList().run(),
+			icon: IconList,
+		},
 	];
 
 	return (
@@ -70,7 +84,7 @@ const TextStyles = (props: Props) => {
 						onClick={() => item.command()}
 						title={item.name}
 					>
-						<Icon className="h-4 w-4" />
+						<Icon className="size-4" />
 					</Button>
 				);
 			})}
