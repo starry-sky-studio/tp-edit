@@ -87,6 +87,27 @@
 		margin-top: 0;
 	}
 }
+.tiptap code {
+	all: unset; /* 重置浏览器默认样式 */
+	background-color: #f3f4f6;
+	padding: 0 0.25rem;
+	border-radius: 0.25rem;
+	font-family: "Source Code Pro", monospace;
+	/* font-size: 0.7em; */
+	content: normal;
+}
+.tiptap code::before,
+.tiptap code::after {
+	content: none;
+}
+blockquote {
+	quotes: none;
+}
+
+blockquote::before,
+blockquote::after {
+	content: none;
+}
 
 .dark {
 	--background: oklch(0.145 0 0);

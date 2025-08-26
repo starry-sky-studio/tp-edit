@@ -6,6 +6,9 @@ import {
 	Heading1,
 	Heading2,
 	Heading3,
+	List as ListIcon,
+	ListOrdered,
+	Quote,
 } from "lucide-react";
 
 interface Props {
@@ -98,7 +101,7 @@ export default function Heading({ editor }: Props) {
 			{/* 下拉面板 */}
 			<div
 				ref={menuRef}
-				className={`absolute left-1/2 transform -translate-x-1/2 bg-white border rounded-md shadow-lg z-50 min-w-28
+				className={`absolute left-1/2 transform -translate-x-1/2 bg-white border rounded-md shadow-lg z-50 min-w-32
 							transition-all duration-200 ease-out
 							${
 								position === "bottom"
@@ -116,14 +119,14 @@ export default function Heading({ editor }: Props) {
 				<button
 					type="button"
 					role="menuitem"
-					className={`w-full text-left px-3 py-1.5 text-sm transition-colors ${
+					className={`w-full text-left px-5 py-2 text-sm transition-colors ${
 						editor.isActive("paragraph")
 							? "bg-blue-100 text-blue-600"
 							: "hover:bg-gray-100"
 					}`}
 					onClick={() => editor.chain().focus().setParagraph().run()}
 				>
-					<div className="flex items-center gap-2 whitespace-nowrap">
+					<div className="flex items-center gap-4 whitespace-nowrap">
 						{paragraphIcon}
 						<span>正文</span>
 					</div>
@@ -137,20 +140,75 @@ export default function Heading({ editor }: Props) {
 							key={label}
 							type="button"
 							role="menuitem"
-							className={`w-full text-left px-3 py-1.5 text-sm transition-colors ${
+							className={`w-full text-left px-5 py-2 text-sm transition-colors ${
 								isActive ? "bg-blue-100 text-blue-600" : "hover:bg-gray-100"
 							}`}
 							onClick={() =>
 								editor.chain().focus().toggleHeading({ level }).run()
 							}
 						>
-							<div className="flex items-center gap-2 whitespace-nowrap">
+							<div className="flex items-center gap-4 whitespace-nowrap">
 								{icon}
 								<span>{label}</span>
 							</div>
 						</button>
 					);
 				})}
+				{/* 有序列表 */}
+				<button
+					type="button"
+					role="menuitem"
+					className={` w-full text-left px-5 py-2 text-sm transition-colors ${
+						editor.isActive("bulletList")
+							? "bg-blue-100 text-blue-600"
+							: "hover:bg-gray-100"
+					}`}
+					onClick={() => editor.chain().focus().toggleOrderedList().run()}
+				>
+					<div className="flex items-center gap-4 whitespace-nowrap">
+						<ListOrdered className="h-4 w-4" />
+						<span>有序列表</span>
+					</div>
+				</button>
+				{/* 无序列表 */}
+				<button
+					type="button"
+					role="menuitem"
+					className={` w-full text-left px-5 py-2 text-sm transition-colors ${
+						editor.isActive("bulletList")
+							? "bg-blue-100 text-blue-600"
+							: "hover:bg-gray-100"
+					}`}
+					onClick={() => editor.chain().focus().toggleBulletList().run()}
+				>
+					<div className="flex items-center gap-4 whitespace-nowrap">
+						<ListIcon className="h-4 w-4" />
+						<span>无序列表</span>
+					</div>
+				</button>
+
+				<div className="my-1 border-t" />
+				<button
+					type="button"
+					role="menuitem"
+					className={` w-full text-left px-5 py-2 text-sm transition-colors ${
+						editor.isActive("blockquote")
+							? " bg-blue-100 text-blue-600"
+							: "hover:bg-gray-100"
+					}`}
+					onClick={() => {
+						if (editor.isActive("blockquote")) {
+							editor.chain().focus().setParagraph().run();
+						} else {
+							editor.chain().focus().setBlockquote().run();
+						}
+					}}
+				>
+					<div className="flex items-center gap-4 whitespace-nowrap">
+						<Quote className="h-4 w-4 " />
+						<span>引用</span>
+					</div>
+				</button>
 			</div>
 		</span>
 	);

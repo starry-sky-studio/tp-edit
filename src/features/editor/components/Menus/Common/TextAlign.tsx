@@ -107,11 +107,11 @@ export function TextAlign({ editor }: Props) {
 			<div
 				ref={menuRef}
 				className={`
-          absolute left-0 w-28 bg-white border border-gray-200 rounded-md shadow-lg z-50
-          transition-all duration-200 ease-out
-          ${position === "bottom" ? "origin-top mt-3" : "bottom-full mb-3 origin-bottom"}
-          ${isHover ? "opacity-100 scale-100 translate-y-0 pointer-events-auto" : "opacity-0 scale-95 -translate-y-2 pointer-events-none"}
-        `}
+                            absolute left-0 bg-white border border-gray-200 rounded-md shadow-lg z-50 w-32
+                            transition-all duration-200 ease-out
+                            ${position === "bottom" ? "origin-top mt-3" : "bottom-full mb-3 origin-bottom"}
+                            ${isHover ? "opacity-100 scale-100 translate-y-0 pointer-events-auto" : "opacity-0 scale-95 -translate-y-2 pointer-events-none"}
+                          `}
 			>
 				{alignItems.map((item) => {
 					const isActive = editor.isActive({ textAlign: item.value });
@@ -119,9 +119,9 @@ export function TextAlign({ editor }: Props) {
 						<button
 							type="button"
 							key={item.value}
-							className={`flex items-center gap-2 px-2 py-1.5 text-sm
-                ${isActive ? "bg-blue-100 text-blue-600" : "hover:bg-gray-100"}
-              `}
+							className={`flex w-full items-center gap-4 px-5 py-2 text-sm whitespace-nowrap
+                                ${isActive ? "bg-blue-100 text-blue-600" : "hover:bg-gray-100"}
+                            `}
 							onClick={() => {
 								editor.chain().focus().setTextAlign(item.value).run();
 								setIsHover(false);
