@@ -1,15 +1,10 @@
-import { Extension } from "@tiptap/core";
 import type { Editor } from "@tiptap/core";
-import { PluginKey } from "@tiptap/pm/state";
+import { Extension } from "@tiptap/core";
 import type { Range } from "@tiptap/pm/model";
+import { PluginKey } from "@tiptap/pm/state";
 import Suggestion from "@tiptap/suggestion";
-import renderItems from "@/features/editor/components/Menus/slash-menu/render-items";
 import getSuggestionItems from "@/features/editor/components/Menus/slash-menu/menu-items";
-
-export interface CommandProps {
-	editor: Editor;
-	range: Range;
-}
+import renderItems from "@/features/editor/components/Menus/slash-menu/render-items";
 
 export const slashMenuPluginKey = new PluginKey("slash-command");
 
