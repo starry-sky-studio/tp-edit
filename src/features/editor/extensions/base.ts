@@ -6,6 +6,7 @@ import {
 } from "@tiptap/extension-text-style";
 import { Placeholder } from "@tiptap/extensions";
 import StarterKit from "@tiptap/starter-kit";
+import SlashCommand from "./command/slash";
 
 export const baseExtensions = [
 	StarterKit.configure({
@@ -19,8 +20,9 @@ export const baseExtensions = [
 	TextStyle,
 	BackgroundColor,
 	Placeholder.configure({
-		placeholder: "开始输入内容...",
+		placeholder: "Type '/' for commands...",
 		emptyEditorClass:
 			"before:content-[attr(data-placeholder)] before:text-gray-400 before:float-left before:h-0",
 	}),
+	SlashCommand,
 ];
