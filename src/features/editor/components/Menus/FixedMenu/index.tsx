@@ -1,4 +1,5 @@
 import type { Editor } from "@tiptap/react";
+import EmojiCommand from "../Common/Emoji";
 import Heading from "../Common/Heading";
 import TextAlign from "../Common/TextAlign";
 import ColorComp from "../Common/TextColor";
@@ -13,6 +14,7 @@ const FixedMenuComp = ({ editor }: { editor: Editor | null }) => {
 			<TextStyles editor={editor} />
 			<TextAlign editor={editor} />
 			<ColorComp editor={editor} />
+			<EmojiCommand editor={editor} />
 		</div>
 	);
 };
