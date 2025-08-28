@@ -12,6 +12,11 @@ export const baseExtensions = [
 	StarterKit.configure({
 		heading: { levels: [1, 2, 3] },
 		codeBlock: false,
+		blockquote: {
+			HTMLAttributes: {
+				class: "custom-blockquote",
+			},
+		},
 	}),
 	TextAlign.configure({
 		types: ["heading", "paragraph"],
