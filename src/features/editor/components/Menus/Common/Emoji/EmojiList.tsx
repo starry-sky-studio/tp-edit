@@ -75,39 +75,22 @@ const EmojiList = forwardRef<EmojiListRef, EmojiListProps>((props, ref) => {
 	}, [upHandler, downHandler, enterHandler]);
 
 	return (
-		<div className="dropdown-menu">
+		<div className="z-50 h-auto max-h-[330px] w-fit overflow-y-auto rounded-xl border border-gray-200 bg-white/95 p-2 shadow-2xl backdrop-blur-lg ring-1 ring-black/5 animate-[zoom_0.2s_ease-out]">
 			{props.items.map((item: EmojiItem, index: number) => (
-				<button
-					className={index === selectedIndex ? "is-selected" : ""}
-					key={index}
-					onClick={() => selectItem(index)}
-				>
-					{item.fallbackImage ? (
-						<span
-							style={{
-								display: "inline-block",
-								width: "1em",
-								height: "1em",
-								verticalAlign: "middle",
-								backgroundImage: `url(${item.fallbackImage})`,
-								backgroundSize: "contain",
-								backgroundRepeat: "no-repeat",
-								backgroundPosition: "center",
-							}}
-							aria-label={item.name}
-							role="img"
-						/>
-					) : (
-						item.emoji
-					)}
-					:{item.name}:
-				</button>
+				<div key={index}>
+					<button
+						key={index}
+						onClick={() => selectItem(index)}
+						className={`flex cursor-pointer w-full hover:bg-gray-50 items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-all duration-200`}
+					>
+						{item.emoji} : {item.name}
+					</button>
+				</div>
 			))}
 		</div>
 	);
 });
 
-// 设置组件显示名称（便于调试）
 EmojiList.displayName = "EmojiList";
 
 export default EmojiList;

@@ -47,6 +47,42 @@ const positionConfig: Partial<ComputePositionConfig> = {
 	placement: "bottom-start",
 };
 
+/**
+ * 获取 clientRect 并重新定位组件
+ * @param props - 组件属性
+ * @param component - 组件实例
+ */
+const getClientRectAndReposition = (
+	props: SuggestionProps,
+	component: ComponentInstance | undefined,
+): void => {
+	if (!component || !component.element) return;
+
+	const clientRect =
+		typeof props.clientRect === "function" ? props.clientRect() : null;
+
+	if (!clientRect) return;
+
+	const virtualElement: VirtualElement = {
+		getBoundingClientRect() {
+			return clientRect;
+		},
+	};
+
+	computePosition(
+		virtualElement,
+		component.element as HTMLElement,
+		positionConfig,
+	).then((pos: PositionResult) => {
+		if (!component?.element) return;
+		Object.assign((component.element as HTMLElement).style, {
+			left: `${pos.x}px`,
+			top: `${pos.y}px`,
+			position: pos.strategy === "fixed" ? "fixed" : "absolute",
+		});
+	});
+};
+
 const suggestion = {
 	items: ({
 		editor,
@@ -71,31 +107,6 @@ const suggestion = {
 	render: () => {
 		let component: ComponentInstance | undefined;
 
-		function repositionComponent(clientRect: DOMRect | null): void {
-			if (!component || !component.element || !clientRect) {
-				return;
-			}
-
-			const virtualElement: VirtualElement = {
-				getBoundingClientRect() {
-					return clientRect;
-				},
-			};
-
-			computePosition(
-				virtualElement,
-				component.element as HTMLElement,
-				positionConfig,
-			).then((pos: PositionResult) => {
-				if (!component?.element) return;
-				Object.assign((component.element as HTMLElement).style, {
-					left: `${pos.x}px`,
-					top: `${pos.y}px`,
-					position: pos.strategy === "fixed" ? "fixed" : "absolute",
-				});
-			});
-		}
-
 		return {
 			onStart: (props: any): void => {
 				component = new ReactRenderer(EmojiList, {
@@ -104,19 +115,13 @@ const suggestion = {
 				}) as unknown as ComponentInstance;
 
 				document.body.appendChild(component.element);
-
-				const clientRect =
-					typeof props.clientRect === "function" ? props.clientRect() : null;
-				repositionComponent(clientRect);
+				getClientRectAndReposition(props, component);
 			},
 
 			onUpdate(props: any): void {
 				if (component) {
 					component.updateProps(props);
-
-					const clientRect =
-						typeof props.clientRect === "function" ? props.clientRect() : null;
-					repositionComponent(clientRect);
+					getClientRectAndReposition(props, component);
 				}
 			},
 
