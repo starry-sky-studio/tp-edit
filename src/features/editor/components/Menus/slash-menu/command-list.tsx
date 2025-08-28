@@ -17,7 +17,9 @@ export interface CommandListRef {
 }
 
 export const CommandList = forwardRef<CommandListRef, CommandListProps>(
-	({ items, command }, ref) => {
+	(props, ref) => {
+		const { items, command } = props;
+
 		const [selectedIndex, setSelectedIndex] = useState(0);
 		const commandListRef = useRef<HTMLDivElement>(null);
 
