@@ -1,13 +1,13 @@
 import type { Editor } from "@tiptap/core";
 import {
+	Code,
 	Heading1,
 	Heading2,
 	Heading3,
 	List,
 	ListOrdered,
-	Text,
-	Code,
 	Quote,
+	Text,
 } from "lucide-react";
 
 export interface CommandItem {

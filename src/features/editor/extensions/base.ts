@@ -1,3 +1,4 @@
+import Emoji, { gitHubEmojis } from "@tiptap/extension-emoji";
 import TextAlign from "@tiptap/extension-text-align";
 import {
 	BackgroundColor,
@@ -6,12 +7,18 @@ import {
 } from "@tiptap/extension-text-style";
 import { Placeholder } from "@tiptap/extensions";
 import StarterKit from "@tiptap/starter-kit";
+import suggestion from "@/features/editor/components/Menus/Common/Emoji/suggestion";
 import SlashCommand from "./command/slash";
 
 export const baseExtensions = [
 	StarterKit.configure({
 		heading: { levels: [1, 2, 3] },
 		codeBlock: false,
+	}),
+	Emoji.configure({
+		emojis: gitHubEmojis,
+		enableEmoticons: true,
+		suggestion,
 	}),
 	TextAlign.configure({
 		types: ["heading", "paragraph"],
