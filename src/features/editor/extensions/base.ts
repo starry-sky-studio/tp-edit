@@ -18,6 +18,11 @@ export const baseExtensions = [
 				class: "custom-blockquote",
 			},
 		},
+		code: {
+			HTMLAttributes: {
+				class: "custom-blockquote",
+			},
+		},
 	}),
 	Emoji.configure({
 		emojis: gitHubEmojis,
