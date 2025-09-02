@@ -17,7 +17,9 @@ const eslintConfig = [
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": "off",
       "quotes": "off",
-      "semi": "off"
+      "semi": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "react/display-name": "off"
     }
   }
 ]
