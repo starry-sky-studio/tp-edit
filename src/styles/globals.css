@@ -111,6 +111,7 @@
   }
 
   .custom-code {
+  .custom-code {
     background-color: var(--purple-light);
     border-radius: 0.4rem;
     color: var(--primary);
@@ -119,9 +120,10 @@
 
     &::before,
     &::after {
-      content: none !important;
-      display: none !important;
-    }
+
+      content: none;
+      display: none;
+  }
   }
 }
 
