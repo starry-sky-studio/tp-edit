@@ -20,7 +20,7 @@ export const baseExtensions = [
 		},
 		code: {
 			HTMLAttributes: {
-				class: "custom-blockquote",
+				class: "custom-code",
 			},
 		},
 	}),

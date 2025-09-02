@@ -110,12 +110,18 @@
     }
   }
 
-  .custom-blockquote {
+  .custom-code {
     background-color: var(--purple-light);
     border-radius: 0.4rem;
     color: var(--primary);
     font-size: 0.85rem;
     padding: 0.25em 0.3em;
+
+    &::before,
+    &::after {
+      content: none !important;
+      display: none !important;
+    }
   }
 }
 
