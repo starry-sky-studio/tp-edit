@@ -1,6 +1,5 @@
-import type { Editor } from "@tiptap/core";
+import type { Editor, Range } from "@tiptap/core";
 import { Extension } from "@tiptap/core";
-import type { Range } from "@tiptap/pm/model";
 import { PluginKey } from "@tiptap/pm/state";
 import Suggestion from "@tiptap/suggestion";
 import getSuggestionItems from "@/features/editor/components/Menus/slash-menu/menu-items";
