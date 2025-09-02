@@ -86,6 +86,22 @@
 	:first-child {
 		margin-top: 0;
 	}
+
+	.custom-blockquote {
+		margin: 1em 0;
+		padding-left: 1em;
+		border-left: 3px solid var(--border);
+		font-style: italic;
+		position: relative;
+		quotes: none;
+
+		&::before,
+		&::after {
+			content: none !important;
+			display: none !important;
+		}
+	}
+
 	[data-type="emoji"] {
 		img {
 			height: 1em;

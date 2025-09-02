@@ -13,7 +13,11 @@ import SlashCommand from "./command/slash";
 export const baseExtensions = [
 	StarterKit.configure({
 		heading: { levels: [1, 2, 3] },
-		codeBlock: false,
+		blockquote: {
+			HTMLAttributes: {
+				class: "custom-blockquote",
+			},
+		},
 	}),
 	Emoji.configure({
 		emojis: gitHubEmojis,
