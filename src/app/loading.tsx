@@ -1,8 +1,13 @@
+import { Loading as LoadingIcon } from "@/styles/svg";
 export default function Loading() {
-	// Or a custom loading skeleton component
 	return (
 		<div className="flex h-screen w-screen items-center justify-center">
-			<p>Loading...</p>
+			<div className="h-screen flex w-screen animate-pulse items-center justify-center bg-white p-4">
+				<LoadingIcon
+					style={{ color: "var(--color-primary)" }}
+					className="text-7xl"
+				/>
+			</div>
 		</div>
 	);
 }

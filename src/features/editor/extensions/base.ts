@@ -1,4 +1,5 @@
 import Emoji, { gitHubEmojis } from "@tiptap/extension-emoji";
+import Image from "@tiptap/extension-image";
 import TextAlign from "@tiptap/extension-text-align";
 import {
 	BackgroundColor,
@@ -8,6 +9,7 @@ import {
 import { Placeholder } from "@tiptap/extensions";
 import StarterKit from "@tiptap/starter-kit";
 import suggestion from "@/features/editor/components/Menus/Common/Emoji/suggestion";
+import { ImageBlock } from "../components/Menus/ImageBlock/ImageBlock";
 import SlashCommand from "./command/slash";
 
 export const baseExtensions = [
@@ -24,6 +26,7 @@ export const baseExtensions = [
 			},
 		},
 	}),
+	ImageBlock,
 	Emoji.configure({
 		emojis: gitHubEmojis,
 		enableEmoticons: true,
