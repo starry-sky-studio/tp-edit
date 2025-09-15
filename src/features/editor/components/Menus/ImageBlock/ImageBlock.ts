@@ -42,10 +42,23 @@ export const ImageBlock = Image.extend({
 				}),
 			},
 			width: {
-				default: "100%",
-				parseHTML: (element: Element) => element.getAttribute("data-width"),
+				default: 300,
+				parseHTML: (element: Element) => {
+					const width = element.getAttribute("data-width");
+					return width ? parseInt(width) : 300;
+				},
 				renderHTML: (attributes: any) => ({
 					"data-width": attributes.width,
+				}),
+			},
+			height: {
+				default: 200,
+				parseHTML: (element: Element) => {
+					const height = element.getAttribute("data-height");
+					return height ? parseInt(height) : 200;
+				},
+				renderHTML: (attributes: any) => ({
+					"data-height": attributes.height,
 				}),
 			},
 			align: {

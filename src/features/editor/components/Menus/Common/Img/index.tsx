@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Editor } from "@tiptap/react";
-import { useId, useRef } from "react";
+import { type Editor, useEditorState } from "@tiptap/react";
+import { useCallback, useId, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ImgIcon } from "@/styles/svg/index";
+import { ImageBlockWidth } from "../../ImageBlock/components/ImageBlockWidth";
 
 const formSchema = z.object({
 	url: z.string().url("请输入有效的URL"),
@@ -72,6 +73,42 @@ const ImgCommand = ({ editor }: { editor: Editor | null }) => {
 			}
 		}
 	};
+
+	const onWidthChange = useCallback(
+		(value: number) => {
+			if (!editor) return;
+			editor
+				.chain()
+				.focus(undefined, { scrollIntoView: false })
+				.setImageBlockWidth(value)
+				.run();
+		},
+		[editor],
+	);
+
+	const {
+		isImageCenter,
+		isImageLeft,
+		isImageRight,
+		width = 100,
+	} = useEditorState({
+		editor,
+		selector: (ctx: { editor: typeof editor }) => {
+			if (!ctx.editor)
+				return {
+					isImageLeft: false,
+					isImageCenter: false,
+					isImageRight: false,
+					width: 0,
+				};
+			return {
+				isImageLeft: ctx.editor.isActive("imageBlock", { align: "left" }),
+				isImageCenter: ctx.editor.isActive("imageBlock", { align: "center" }),
+				isImageRight: ctx.editor.isActive("imageBlock", { align: "right" }),
+				width: parseInt(ctx.editor.getAttributes("imageBlock")?.width || "0"),
+			};
+		},
+	}) ?? {};
 	return (
 		<div className="flex flex gap-2">
 			<DropdownMenu modal={false}>
@@ -156,6 +193,7 @@ const ImgCommand = ({ editor }: { editor: Editor | null }) => {
 			>
 				right
 			</div>
+			<ImageBlockWidth onChange={onWidthChange} value={width} />
 		</div>
 	);
 };
