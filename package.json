@@ -43,17 +43,12 @@
     "emoji-mart": "^5.6.0",
     "lodash.throttle": "^4.1.1",
     "lucide-react": "^0.540.0",
-    "moveable": "^0.53.0",
     "next": "15.4.6",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.62.0",
     "react-hotkeys-hook": "^5.1.0",
-    "react-moveable": "^0.56.0",
     "tailwind-merge": "^3.3.1",
-    "tiptap-extension-resize-image": "^1.3.1",
-    "tiptap-imagresize": "^1.1.0",
-    "tiptap-media-resize": "^1.0.5",
     "zod": "^4.1.5"
   },
   "devDependencies": {
