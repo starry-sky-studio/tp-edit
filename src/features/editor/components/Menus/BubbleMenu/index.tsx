@@ -2,30 +2,39 @@ import { NodeSelection } from "@tiptap/pm/state";
 import type { Editor } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react/menus";
 import { useCallback, useEffect, useState } from "react";
-import TextStyles from "../Common/TextStyles";
+import { ImgAlign, TextStyles } from "../Common";
 
 interface Props {
 	editor: Editor | null;
 }
 
 const BubbleMenuComp = ({ editor }: Props) => {
-	const [isImageSelected, setIsImageSelected] = useState(false);
+	const [selectedNode, setSelectedNode] = useState<{
+		type: string;
+		isBlock: boolean;
+	} | null>(null);
 
 	const updateSelection = useCallback(() => {
 		if (!editor) return;
 		const { state } = editor;
 		const sel = state.selection;
 
-		let isImage = false;
+		// 重置选择状态
+		let nodeInfo = null;
 
-		if (
-			sel instanceof NodeSelection &&
-			(sel as NodeSelection).node?.type?.name === "image"
-		) {
-			isImage = true;
+		if (sel instanceof NodeSelection) {
+			const node = sel.node;
+			console.log(node, "node");
+			// 检查是否是图片节点（包括 image 和 imageBlock）
+			if (node.type.name === "image" || node.type.name === "imageBlock") {
+				nodeInfo = {
+					type: node.type.name,
+					isBlock: node.type.name === "imageBlock",
+				};
+			}
 		}
 
-		setIsImageSelected(isImage);
+		setSelectedNode(nodeInfo);
 	}, [editor]);
 
 	useEffect(() => {
@@ -47,7 +56,7 @@ const BubbleMenuComp = ({ editor }: Props) => {
 			editor={editor}
 			className="flex items-center gap-0.5 rounded-lg border bg-background p-1 shadow-lg"
 		>
-			<TextStyles editor={editor} />
+			{!selectedNode?.isBlock && <TextStyles editor={editor} />}
 		</BubbleMenu>
 	);
 };

@@ -3,9 +3,9 @@ import {
 	mergeAttributes,
 	type Range,
 } from "@tiptap/core";
+import { Image as BaseImage } from "@tiptap/extension-image";
 import { ReactNodeViewRenderer } from "@tiptap/react";
-import { Image } from "../Image";
-import ImageBlockView from "./components/imageBlockView";
+import ImageBlockView from "../../components/Menus/ImageBlock/imageBlockView";
 
 declare module "@tiptap/core" {
 	interface Commands<ReturnType> {
@@ -21,7 +21,7 @@ declare module "@tiptap/core" {
 	}
 }
 
-export const ImageBlock = Image.extend({
+const ImageBlock = BaseImage.extend({
 	name: "imageBlock",
 
 	group: "block",
@@ -42,23 +42,10 @@ export const ImageBlock = Image.extend({
 				}),
 			},
 			width: {
-				default: 300,
-				parseHTML: (element: Element) => {
-					const width = element.getAttribute("data-width");
-					return width ? parseInt(width) : 300;
-				},
+				default: "100%",
+				parseHTML: (element: Element) => element.getAttribute("data-width"),
 				renderHTML: (attributes: any) => ({
 					"data-width": attributes.width,
-				}),
-			},
-			height: {
-				default: 200,
-				parseHTML: (element: Element) => {
-					const height = element.getAttribute("data-height");
-					return height ? parseInt(height) : 200;
-				},
-				renderHTML: (attributes: any) => ({
-					"data-height": attributes.height,
 				}),
 			},
 			align: {
@@ -76,22 +63,6 @@ export const ImageBlock = Image.extend({
 				}),
 			},
 		};
-	},
-
-	parseHTML() {
-		return [
-			// {
-			//   tag: 'img[src]:not([src^="http"]):not([src^="//"])',
-			//   getAttrs: (element: HTMLElement) => {
-			//     const src = (element as HTMLElement).getAttribute('src')?.trim();
-			//     // 确保不是外部链接
-			//     if (src && !src.startsWith('http') && !src.startsWith('//')) {
-			//       return { src };
-			//     }
-			//     return false;
-			//   },
-			// },
-		];
 	},
 
 	renderHTML({ HTMLAttributes }: { HTMLAttributes: Record<string, any> }) {

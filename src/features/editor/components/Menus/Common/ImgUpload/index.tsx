@@ -21,7 +21,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ImgIcon } from "@/styles/svg/index";
-import { ImageBlockWidth } from "../../ImageBlock/components/ImageBlockWidth";
 
 const formSchema = z.object({
 	url: z.string().url("请输入有效的URL"),
@@ -29,7 +28,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-const ImgCommand = ({ editor }: { editor: Editor | null }) => {
+const ImgUpload = ({ editor }: { editor: Editor | null }) => {
 	const fileInputId = useId();
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const form = useForm<FormData>({
@@ -86,29 +85,29 @@ const ImgCommand = ({ editor }: { editor: Editor | null }) => {
 		[editor],
 	);
 
-	const {
-		isImageCenter,
-		isImageLeft,
-		isImageRight,
-		width = 100,
-	} = useEditorState({
-		editor,
-		selector: (ctx: { editor: typeof editor }) => {
-			if (!ctx.editor)
-				return {
-					isImageLeft: false,
-					isImageCenter: false,
-					isImageRight: false,
-					width: 0,
-				};
-			return {
-				isImageLeft: ctx.editor.isActive("imageBlock", { align: "left" }),
-				isImageCenter: ctx.editor.isActive("imageBlock", { align: "center" }),
-				isImageRight: ctx.editor.isActive("imageBlock", { align: "right" }),
-				width: parseInt(ctx.editor.getAttributes("imageBlock")?.width || "0"),
-			};
-		},
-	}) ?? {};
+	// const {
+	// 	isImageCenter,
+	// 	isImageLeft,
+	// 	isImageRight,
+	// 	width = 100,
+	// } = useEditorState({
+	// 	editor,
+	// 	selector: (ctx: { editor: typeof editor }) => {
+	// 		if (!ctx.editor)
+	// 			return {
+	// 				isImageLeft: false,
+	// 				isImageCenter: false,
+	// 				isImageRight: false,
+	// 				width: 0,
+	// 			};
+	// 		return {
+	// 			isImageLeft: ctx.editor.isActive("imageBlock", { align: "left" }),
+	// 			isImageCenter: ctx.editor.isActive("imageBlock", { align: "center" }),
+	// 			isImageRight: ctx.editor.isActive("imageBlock", { align: "right" }),
+	// 			width: parseInt(ctx.editor.getAttributes("imageBlock")?.width || "0"),
+	// 		};
+	// 	},
+	// }) ?? {};
 	return (
 		<div className="flex flex gap-2">
 			<DropdownMenu modal={false}>
@@ -173,29 +172,8 @@ const ImgCommand = ({ editor }: { editor: Editor | null }) => {
 					</Tabs>
 				</DropdownMenuContent>
 			</DropdownMenu>
-			<div
-				onClick={() => {
-					console.log("center");
-					editor?.chain().setImageBlockAlign("center").focus().run();
-				}}
-			>
-				center
-			</div>
-			<div
-				onClick={() => editor?.chain().setImageBlockAlign("left").focus().run()}
-			>
-				left
-			</div>
-			<div
-				onClick={() =>
-					editor?.chain().setImageBlockAlign("right").focus().run()
-				}
-			>
-				right
-			</div>
-			<ImageBlockWidth onChange={onWidthChange} value={width} />
 		</div>
 	);
 };
 
-export default ImgCommand;
+export default ImgUpload;
