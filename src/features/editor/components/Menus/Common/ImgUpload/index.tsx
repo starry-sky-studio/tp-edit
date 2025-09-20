@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type Editor, useEditorState } from "@tiptap/react";
+import type { Editor } from "@tiptap/react";
 import { useCallback, useId, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -85,31 +85,8 @@ const ImgUpload = ({ editor }: { editor: Editor | null }) => {
 		[editor],
 	);
 
-	// const {
-	// 	isImageCenter,
-	// 	isImageLeft,
-	// 	isImageRight,
-	// 	width = 100,
-	// } = useEditorState({
-	// 	editor,
-	// 	selector: (ctx: { editor: typeof editor }) => {
-	// 		if (!ctx.editor)
-	// 			return {
-	// 				isImageLeft: false,
-	// 				isImageCenter: false,
-	// 				isImageRight: false,
-	// 				width: 0,
-	// 			};
-	// 		return {
-	// 			isImageLeft: ctx.editor.isActive("imageBlock", { align: "left" }),
-	// 			isImageCenter: ctx.editor.isActive("imageBlock", { align: "center" }),
-	// 			isImageRight: ctx.editor.isActive("imageBlock", { align: "right" }),
-	// 			width: parseInt(ctx.editor.getAttributes("imageBlock")?.width || "0"),
-	// 		};
-	// 	},
-	// }) ?? {};
 	return (
-		<div className="flex flex gap-2">
+		<div className="flex gap-2">
 			<DropdownMenu modal={false}>
 				<DropdownMenuTrigger asChild>
 					<Button
