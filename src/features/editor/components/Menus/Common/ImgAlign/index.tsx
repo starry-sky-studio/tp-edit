@@ -48,14 +48,14 @@ const ImgAlign = ({
 	if (!editor || !editor.isEditable) return null;
 
 	return (
-		<div className={clsx("flex gap-1 shadow p-1 rounded-md", className)}>
+		<div className={clsx("flex gap-1", className)}>
 			{items.map((item) => {
 				const Icon = item.icon;
 				return (
 					<Button
 						key={item.name}
 						variant={item.isActive() ? "secondary" : "ghost"}
-						size="icon"
+						size="sm"
 						onClick={() => handleImgAlign(item.name as any)}
 						title={item.title}
 					>

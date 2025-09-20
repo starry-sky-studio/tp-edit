@@ -42,7 +42,7 @@ const ImageBlock = BaseImage.extend({
 				}),
 			},
 			width: {
-				default: "100%",
+				default: null,
 				parseHTML: (element: Element) => element.getAttribute("data-width"),
 				renderHTML: (attributes: any) => ({
 					"data-width": attributes.width,

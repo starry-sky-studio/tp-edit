@@ -2,6 +2,8 @@
 
 import { EditorContent, useEditor } from "@tiptap/react";
 import { useEffect, useState } from "react";
+import { useImageControls } from "@/hooks/use-image-controls";
+import { useImageSelection } from "@/hooks/use-image-selection";
 import { Loading } from "@/styles/svg";
 import Footer from "./components/Footer";
 import BubbleMenuComp from "./components/Menus/BubbleMenu/index";
@@ -26,6 +28,17 @@ const Tiptap = () => {
 		injectCSS: true,
 	});
 
+	const { selectedImageNode, imageDom, hoveredImageNode, hoveredImageDom } =
+		useImageSelection(editor);
+
+	useImageControls({
+		imageDom,
+		selectedImageNode,
+		hoveredImageDom,
+		hoveredImageNode,
+		editor,
+	});
+
 	useEffect(() => {
 		setMounted(true);
 	}, []);
@@ -44,10 +57,12 @@ const Tiptap = () => {
 		<div className="relative h-screen w-[1200px] bg-white">
 			<FixedMenuComp editor={editor} />
 			<BubbleMenuComp editor={editor} />
-			<EditorContent
-				className="w-full [&_.ProseMirror]:w-full [&_.ProseMirror]:max-w-none"
-				editor={editor}
-			/>
+			<div className="relative">
+				<EditorContent
+					className="w-full [&_.ProseMirror]:w-full [&_.ProseMirror]:max-w-none"
+					editor={editor}
+				/>
+			</div>
 			<Footer />
 		</div>
 	);
