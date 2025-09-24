@@ -9,6 +9,7 @@ import { Placeholder } from "@tiptap/extensions";
 import StarterKit from "@tiptap/starter-kit";
 import suggestion from "@/features/editor/components/Menus/Common/Emoji/suggestion";
 import SlashCommand from "./command/slash";
+import { tableExtensions } from "./table";
 
 export const baseExtensions = [
 	StarterKit.configure({
@@ -41,4 +42,5 @@ export const baseExtensions = [
 			"before:content-[attr(data-placeholder)] before:text-gray-400 before:float-left before:h-0",
 	}),
 	SlashCommand,
+	...tableExtensions,
 ];
