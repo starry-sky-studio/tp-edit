@@ -19,7 +19,7 @@ const TableGridSelector = ({ editor, onClose }: TableGridSelectorProps) => {
 		editor
 			.chain()
 			.focus()
-			.insertTable({ rows, cols, withHeaderRow: true })
+			.insertTable({ rows, cols, withHeaderRow: false })
 			.run();
 
 		onClose();

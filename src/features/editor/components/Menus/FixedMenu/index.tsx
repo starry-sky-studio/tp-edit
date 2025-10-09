@@ -1,9 +1,7 @@
 import type { Editor } from "@tiptap/react";
-import CodeBlock from "../Common/CodeBlock";
+import TableCommand from "../Common/AddTable";
 import EmojiCommand from "../Common/Emoji";
 import Heading from "../Common/Heading";
-import type ImgUpload from "../Common/ImgUpload";
-import TableCommand from "../Common/Table";
 import TextAlign from "../Common/TextAlign";
 import ColorComp from "../Common/TextColor";
 import TextStyles from "../Common/TextStyles";

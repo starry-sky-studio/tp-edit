@@ -2,7 +2,7 @@ import { NodeSelection } from "@tiptap/pm/state";
 import type { Editor } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react/menus";
 import { useCallback, useEffect, useState } from "react";
-import { TextStyles } from "../Common";
+import TextStyles from "../Common/TextStyles";
 
 interface Props {
 	editor: Editor | null;
