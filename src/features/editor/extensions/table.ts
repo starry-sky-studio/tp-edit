@@ -1,10 +1,16 @@
 import { Table } from "@tiptap/extension-table";
 import { TableCell } from "@tiptap/extension-table-cell";
-import { TableHeader } from "@tiptap/extension-table-header";
-import { TableRow } from "@tiptap/extension-table-row";
 import { NodeSelection } from "prosemirror-state";
+import { TableHeader } from "./table/TableHeader";
+import { TableRow } from "./table/TableRow";
 
-// 扩展 Table：当整体表格（NodeSelection）被选中时，Delete/Backspace 直接删除该表格
+// 表格相关扩展：
+// - 不使用真实表头节点（tableHeader），表格行仅允许 tableCell
+// - 通过 TableHeader 扩展提供列头部的交互装饰（grip 选择整列）
+
+// 扩展 Table：
+// 1) 整表被 NodeSelection 选中时，Backspace/Delete 直接删除表格
+// 2) 其他行为沿用默认 Table 扩展
 const SelectableTable = Table.extend({
 	addKeyboardShortcuts() {
 		return {
@@ -46,11 +52,14 @@ export const tableExtensions = [
 			class: "border border-gray-300",
 		},
 	}),
+	// 仅启用 TableHeader 扩展以提供列头部的装饰与交互（不强制插入表头行）
 	TableHeader.configure({
 		HTMLAttributes: {
 			class: "border border-gray-300 bg-gray-50 font-semibold p-2 text-left",
 		},
 	}),
+	// 行/列首插入点（基于单元格的点）
+
 	TableCell.configure({
 		HTMLAttributes: {
 			class: "border border-gray-300 p-2",

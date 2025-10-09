@@ -86,6 +86,7 @@
 .tiptap {
   :first-child {
     margin-top: 0;
+    margin-bottom: 0;
   }
 
   :where([data-type='emoji']) {
@@ -131,7 +132,6 @@
     /* 让表格宽度按列宽自然展开（列宽固定为 200px → 表格宽度 = 200px * 列数）*/
     width: max-content;
     margin: 1rem 0;
-    overflow: hidden;
   }
 
   th,
@@ -148,6 +148,7 @@
 
     > * {
       margin-bottom: 0;
+      margin-top: 0;
     }
   }
 
@@ -157,24 +158,6 @@
     overflow-y: hidden;
   }
 
-  /* 整体表格被选中时（TipTap 会把 .ProseMirror-selectednode 加在 table 元素上） */
-  table.ProseMirror-selectednode,
-  table.is-selected {
-    box-shadow: inset 0 0 0 1px #c9d7f5;
-  }
-
-  table.ProseMirror-selectednode td,
-  table.is-selected td {
-    background-color: #eaf2fe;
-    border-color: #c9d7f5;
-  }
-
-  table.ProseMirror-selectednode th,
-  table.is-selected th {
-    background-color: var(--muted); /* 维持表头浅灰 */
-    border-color: #c9d7f5;
-  }
-
   th {
     background-color: var(--muted);
     font-weight: 600;
@@ -182,7 +165,9 @@
   }
 
   .selectedCell:after {
-    background: rgba(200, 200, 255, 0.4);
+    box-shadow: inset 0 0 0 1px #c9d7f5;
+    background: #c9d7f5;
+    opacity: 0.2;
     content: '';
     left: 0;
     right: 0;
@@ -208,7 +193,7 @@
     overflow-x: auto;
   }
 
-  .resize-cursor {
+  &.resize-cursor {
     cursor: ew-resize;
   }
 }

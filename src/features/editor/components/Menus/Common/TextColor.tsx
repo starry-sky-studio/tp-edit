@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
+	DropdownMenuPortal,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { FontIcon } from "@/styles/svg";
@@ -107,74 +108,82 @@ const TextColor = ({ editor }: { editor: Editor | null }) => {
 					</div>
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent className="p-4 shadow-xl rounded-lg">
-				<div className="mb-4">
-					<div className="flex items-center justify-between mb-3">
-						<div className="text-sm font-medium text-gray-800">文本颜色</div>
-						<div className="flex items-center justify-center gap-1">
-							<div
-								className="size-4 rounded-full border border-gray-300 shadow-sm"
-								style={{ backgroundColor: currentColor }}
-							/>
-							<div className="text-sm text-gray-500">{currentColor}</div>
+			<DropdownMenuPortal>
+				<DropdownMenuContent
+					className="p-4 shadow-xl rounded-lg z-[1000]"
+					side="bottom"
+					align="start"
+					sideOffset={8}
+					collisionPadding={12}
+				>
+					<div className="mb-4">
+						<div className="flex items-center justify-between mb-3">
+							<div className="text-sm font-medium text-gray-800">文本颜色</div>
+							<div className="flex items-center justify-center gap-1">
+								<div
+									className="size-4 rounded-full border border-gray-300 shadow-sm"
+									style={{ backgroundColor: currentColor }}
+								/>
+								<div className="text-sm text-gray-500">{currentColor}</div>
+							</div>
+						</div>
+						<div className="grid grid-cols-8 gap-1.5">
+							{textColorList.map((color) => (
+								<button
+									key={color}
+									className={clsx(
+										"size-6 rounded-full cursor-pointer",
+										"hover:scale-110 transition-all duration-150",
+										currentColor === color && "scale-110 shadow-md",
+									)}
+									style={{ backgroundColor: color }}
+									onClick={() => setTextColor(color)}
+								/>
+							))}
 						</div>
 					</div>
-					<div className="grid grid-cols-8 gap-1.5">
-						{textColorList.map((color) => (
-							<button
-								key={color}
-								className={clsx(
-									"size-6 rounded-full cursor-pointer",
-									"hover:scale-110 transition-all duration-150",
-									currentColor === color && "scale-110 shadow-md",
-								)}
-								style={{ backgroundColor: color }}
-								onClick={() => setTextColor(color)}
-							/>
-						))}
-					</div>
-				</div>
 
-				<div className="mb-4">
-					<div className="flex items-center justify-between mb-3">
-						<div className="text-sm font-medium text-gray-800">背景颜色</div>
-						<div className="flex items-center justify-center gap-1">
-							<div
-								className="w-4 h-4 rounded-full border border-gray-300 shadow-sm"
-								style={{ backgroundColor: currentBgColor }}
-							/>
-							<div className="text-sm text-gray-500">{currentBgColor}</div>
+					<div className="mb-4">
+						<div className="flex items-center justify-between mb-3">
+							<div className="text-sm font-medium text-gray-800">背景颜色</div>
+							<div className="flex items-center justify-center gap-1">
+								<div
+									className="w-4 h-4 rounded-full border border-gray-300 shadow-sm"
+									style={{ backgroundColor: currentBgColor }}
+								/>
+								<div className="text-sm text-gray-500">{currentBgColor}</div>
+							</div>
+						</div>
+						<div className="grid grid-cols-8 gap-1.5">
+							{textBgColorList.map((bgColor) => (
+								<button
+									key={bgColor}
+									className={clsx(
+										"size-6 rounded-full transition-all duration-150 cursor-pointer",
+										"hover:scale-110",
+										currentBgColor === bgColor && "scale-110 shadow-md",
+										bgColor === "transparent" &&
+											"border-gray-400 bg-white border",
+									)}
+									style={{
+										backgroundColor:
+											bgColor !== "transparent" ? bgColor : "#f8fafc",
+										backgroundImage:
+											bgColor === "transparent"
+												? "linear-gradient(45deg, #e2e8f0 25%, transparent 25%, transparent 75%, #e2e8f0 75%, #e2e8f0), linear-gradient(45deg, #e2e8f0 25%, transparent 25%, transparent 75%, #e2e8f0 75%, #e2e8f0)"
+												: undefined,
+										backgroundSize:
+											bgColor === "transparent" ? "8px 8px" : undefined,
+										backgroundPosition:
+											bgColor === "transparent" ? "0 0, 4px 4px" : undefined,
+									}}
+									onClick={() => setTextBgColor(bgColor)}
+								/>
+							))}
 						</div>
 					</div>
-					<div className="grid grid-cols-8 gap-1.5">
-						{textBgColorList.map((bgColor) => (
-							<button
-								key={bgColor}
-								className={clsx(
-									"size-6 rounded-full transition-all duration-150 cursor-pointer",
-									"hover:scale-110",
-									currentBgColor === bgColor && "scale-110 shadow-md",
-									bgColor === "transparent" &&
-										"border-gray-400 bg-white border",
-								)}
-								style={{
-									backgroundColor:
-										bgColor !== "transparent" ? bgColor : "#f8fafc",
-									backgroundImage:
-										bgColor === "transparent"
-											? "linear-gradient(45deg, #e2e8f0 25%, transparent 25%, transparent 75%, #e2e8f0 75%, #e2e8f0), linear-gradient(45deg, #e2e8f0 25%, transparent 25%, transparent 75%, #e2e8f0 75%, #e2e8f0)"
-											: undefined,
-									backgroundSize:
-										bgColor === "transparent" ? "8px 8px" : undefined,
-									backgroundPosition:
-										bgColor === "transparent" ? "0 0, 4px 4px" : undefined,
-								}}
-								onClick={() => setTextBgColor(bgColor)}
-							/>
-						))}
-					</div>
-				</div>
-			</DropdownMenuContent>
+				</DropdownMenuContent>
+			</DropdownMenuPortal>
 		</DropdownMenu>
 	);
 };

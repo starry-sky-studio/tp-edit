@@ -3,7 +3,7 @@
 import { EditorContent, useEditor } from "@tiptap/react";
 import { useEffect, useState } from "react";
 import { Loading } from "@/styles/svg";
-import Footer from "./components/Footer";
+import Footer from "../../components/Footer";
 import BubbleMenu from "./components/Menus/BubbleMenu/index";
 import FixedMenuComp from "./components/Menus/FixedMenu/index";
 import { baseExtensions } from "./extensions";
@@ -44,7 +44,7 @@ const Tiptap = () => {
 
 	return (
 		<div className="w-full h-full shadow-sm relative max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-7xl 2xl:max-w-8xl">
-			<div className="sticky top-0 z-50 bg-white border-b border-gray-200  px-2 py-1">
+			<div className="sticky top-0 bg-white border-b border-gray-200  px-2 py-1">
 				<FixedMenuComp editor={editor} />
 			</div>
 			<div className="relative flex-1 ">
