@@ -2,6 +2,7 @@
 @import '../styles/_variables.scss';
 @import '../styles/_keyframe-animations.scss';
 @import 'tw-animate-css';
+@import './drag-handle.css';
 
 @custom-variant dark (&:is(.dark *));
 @plugin "@tailwindcss/typography";

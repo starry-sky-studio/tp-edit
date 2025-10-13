@@ -7,6 +7,7 @@ import {
 } from "@tiptap/extension-text-style";
 import { Placeholder } from "@tiptap/extensions";
 import StarterKit from "@tiptap/starter-kit";
+import GlobalDragHandle from "tiptap-extension-global-drag-handle";
 import suggestion from "@/features/editor/components/Menus/Common/Emoji/suggestion";
 import SlashCommand from "./command/slash";
 
@@ -41,4 +42,5 @@ export const baseExtensions = [
 			"before:content-[attr(data-placeholder)] before:text-gray-400 before:float-left before:h-0",
 	}),
 	SlashCommand,
+	GlobalDragHandle,
 ];
