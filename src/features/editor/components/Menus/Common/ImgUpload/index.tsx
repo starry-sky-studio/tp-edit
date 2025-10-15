@@ -39,8 +39,10 @@ const ImgUpload = ({ editor }: { editor: Editor | null }) => {
 	});
 
 	const onSubmit = (data: FormData) => {
+		console.log(data);
 		if (editor && data.url) {
 			editor.chain().setImageBlock({ src: data.url }).focus().run();
+			form.reset();
 		}
 	};
 
