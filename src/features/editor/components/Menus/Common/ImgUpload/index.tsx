@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Editor } from "@tiptap/react";
-import { useCallback, useId, useRef } from "react";
+import { useId, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,6 @@ import {
 import {
 	Form,
 	FormControl,
-	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
@@ -23,7 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ImgIcon } from "@/styles/svg/index";
 
 const formSchema = z.object({
-	url: z.string().url("请输入有效的URL"),
+	url: z.url("请输入有效的URL"),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -38,10 +37,24 @@ const ImgUpload = ({ editor }: { editor: Editor | null }) => {
 		},
 	});
 
-	const onSubmit = (data: FormData) => {
-		console.log(data);
-		if (editor && data.url) {
-			editor.chain().setImageBlock({ src: data.url }).focus().run();
+	// 基础扩展名校验（避免 HEAD/CORS 受限场景）
+	const isImageUrlByExtension = (url: string) =>
+		/\.(png|jpe?g|gif|webp|bmp|svg)(\?.*)?$/i.test(url);
+
+	const onSubmit = async (data: FormData) => {
+		const url = data.url?.trim();
+		if (!url) return;
+
+		if (!isImageUrlByExtension(url)) {
+			form.setError("url", {
+				type: "validate",
+				message: "请输入图片直链（如 .png/.jpg/.webp 等）",
+			});
+			return;
+		}
+
+		if (editor) {
+			editor.chain().setImageBlock({ src: url }).focus().run();
 			form.reset();
 		}
 	};
@@ -74,18 +87,6 @@ const ImgUpload = ({ editor }: { editor: Editor | null }) => {
 			}
 		}
 	};
-
-	const onWidthChange = useCallback(
-		(value: number) => {
-			if (!editor) return;
-			editor
-				.chain()
-				.focus(undefined, { scrollIntoView: false })
-				.setImageBlockWidth(value)
-				.run();
-		},
-		[editor],
-	);
 
 	return (
 		<div className="flex gap-2">
@@ -135,9 +136,6 @@ const ImgUpload = ({ editor }: { editor: Editor | null }) => {
 												<FormControl>
 													<Input placeholder="请输入图片URL" {...field} />
 												</FormControl>
-												<FormDescription>
-													请输入有效的图片链接地址
-												</FormDescription>
 												<FormMessage />
 											</FormItem>
 										)}

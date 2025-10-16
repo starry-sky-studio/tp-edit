@@ -1,3 +1,4 @@
+import { useEventListener, useThrottleFn } from "ahooks";
 import { useCallback, useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import { ImgAlign } from "@/features/editor/components/Menus/Common";
@@ -18,6 +19,54 @@ export const useImageControls = ({
 	editor,
 }: UseImageControlsProps) => {
 	const rootRef = useRef<any>(null);
+	const editorRef = useRef<any>(editor);
+	editorRef.current = editor;
+
+	// 拖拽过程所需的上下文
+	const isDraggingRef = useRef<boolean>(false);
+	const dragSideRef = useRef<"left" | "right">("right");
+	const startXRef = useRef<number>(0);
+	const startWRef = useRef<number>(0);
+	const totalRef = useRef<number>(0);
+
+	// 节流的全局 mousemove 处理
+	const { run: handleGlobalMouseMove } = useThrottleFn(
+		(ev: MouseEvent) => {
+			if (!isDraggingRef.current) return;
+			const side = dragSideRef.current;
+			const startX = startXRef.current;
+			const startW = startWRef.current;
+			const total = totalRef.current;
+
+			const dx = ev.clientX - startX;
+			const delta = side === "right" ? dx : -dx;
+			const newW = Math.max(20, Math.min(total, startW + delta));
+			const percent = Math.max(
+				0,
+				Math.min(100, Math.round((newW / total) * 100)),
+			);
+
+			editorRef.current?.commands.updateAttributes("imageBlock", {
+				width: `${percent}%`,
+			});
+		},
+		{ wait: 16, leading: true, trailing: true },
+	);
+
+	// 顶层监听，不随拖拽函数重建
+	useEventListener("mousemove", handleGlobalMouseMove, {
+		target: () => document,
+	});
+
+	useEventListener(
+		"mouseup",
+		() => {
+			if (!isDraggingRef.current) return;
+			isDraggingRef.current = false;
+			editorRef.current?.commands.focus();
+		},
+		{ target: () => document },
+	);
 
 	const startResize = useCallback(
 		(side: "left" | "right") => (e: React.MouseEvent) => {
@@ -36,29 +85,12 @@ export const useImageControls = ({
 			const editorRect = editor.view.dom.getBoundingClientRect();
 			const total = editorRect.width;
 
-			const onMove = (ev: MouseEvent) => {
-				const dx = ev.clientX - startX;
-				const delta = side === "right" ? dx : -dx;
-				const newW = Math.max(20, Math.min(total, startW + delta));
-				const percent = Math.max(
-					0,
-					Math.min(100, Math.round((newW / total) * 100)),
-				);
-
-				// 更新图片宽度
-				editor.commands.updateAttributes("imageBlock", {
-					width: `${percent}%`,
-				});
-			};
-
-			const onUp = () => {
-				document.removeEventListener("mousemove", onMove);
-				document.removeEventListener("mouseup", onUp);
-				editor.commands.focus();
-			};
-
-			document.addEventListener("mousemove", onMove);
-			document.addEventListener("mouseup", onUp);
+			// 初始化拖拽上下文
+			isDraggingRef.current = true;
+			dragSideRef.current = side;
+			startXRef.current = startX;
+			startWRef.current = startW;
+			totalRef.current = total;
 		},
 		[editor, selectedImageNode, imageDom, hoveredImageNode, hoveredImageDom],
 	);
@@ -126,7 +158,7 @@ export const useImageControls = ({
 			rootRef.current = newRoot;
 
 			newRoot.render(
-				<div className="relative w-full h-full pointer-events-none">
+				<div className="relative  w-full h-full pointer-events-none">
 					<div
 						className="absolute top-1/2 -translate-y-1/2 left-2 w-1 h-1/5 bg-gray-400 opacity-50 rounded-full cursor-ew-resize pointer-events-auto shadow-md hover:shadow-lg transition-all duration-200 hover:border-blue-400"
 						onMouseDown={startResize("left")}
@@ -136,7 +168,7 @@ export const useImageControls = ({
 						onMouseDown={startResize("right")}
 					/>
 
-					<div className="absolute -top-10 -translate-y-1 translate-x-1/2 right-1/2 pointer-events-auto border shadow-sm rounded-md">
+					<div className="absolute -top-10 bg-white -translate-y-1 translate-x-1/2 right-1/2 pointer-events-auto border shadow-sm rounded-md">
 						<ImgAlign editor={editor} />
 					</div>
 				</div>,

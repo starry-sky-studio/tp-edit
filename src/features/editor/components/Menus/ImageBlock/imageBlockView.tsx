@@ -51,7 +51,7 @@ export const ImageBlockView = (props: ImageBlockViewProps) => {
 		align === "left" && "ml-0 mr-auto flex justify-start",
 		align === "right" && "ml-auto mr-0 flex justify-end",
 		align === "center" && "mx-auto flex justify-center",
-		"items-center relative",
+		"items-center relative my-2",
 	);
 
 	const imageClassName = clsx(
