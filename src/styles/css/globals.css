@@ -5,6 +5,7 @@
 @import './code-block.scss';
 @import 'tw-animate-css';
 @import './drag-handle.css';
+@import './table.css';
 
 @custom-variant dark (&:is(.dark *));
 @plugin "@tailwindcss/typography";
@@ -130,58 +131,43 @@
 
   /* 表格样式 */
   table {
-    border-collapse: collapse;
-    table-layout: fixed;
+    /* border-collapse: collapse;
+    table-layout: fixed; */
     /* 让表格宽度按列宽自然展开（列宽固定为 200px → 表格宽度 = 200px * 列数）*/
-    width: max-content;
-    margin: 1rem 0;
+    /* width: max-content; */
+    /* margin: 1rem 0;
+    overflow: hidden;
+    width: 100%; */
   }
 
   th,
   td {
-    border: 1px solid var(--border);
+    /* border: 1px solid var(--border);
     box-sizing: border-box;
-    /* 固定单元格宽度为 200px */
-    width: 200px;
     min-width: 200px;
-    max-width: 200px;
     padding: 0.5rem;
     position: relative;
-    vertical-align: top;
-
+    vertical-align: top; */
+    /*
     > * {
       margin-bottom: 0;
       margin-top: 0;
-    }
+    } */
   }
 
   /* 外层容器用于横向滚动（给包裹 table 的 div 加这个类）*/
-  .table-scroll {
+  /* .table-scroll {
     overflow-x: auto;
     overflow-y: hidden;
-  }
+  } */
 
-  th {
+  /* th {
     background-color: var(--muted);
     font-weight: 600;
     text-align: left;
-  }
+  } */
 
-  .selectedCell:after {
-    box-shadow: inset 0 0 0 1px #c9d7f5;
-    background: #c9d7f5;
-    opacity: 0.2;
-    content: '';
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    pointer-events: none;
-    position: absolute;
-    z-index: 2;
-  }
-
-  .column-resize-handle {
+  /* .column-resize-handle {
     background-color: #adf;
     bottom: -2px;
     position: absolute;
@@ -189,16 +175,16 @@
     pointer-events: none;
     top: 0;
     width: 4px;
-  }
+  } */
 
-  .tableWrapper {
+  /* .tableWrapper {
     padding: 1rem 0;
     overflow-x: auto;
   }
 
   &.resize-cursor {
     cursor: ew-resize;
-  }
+  } */
 }
 
 .dark {
