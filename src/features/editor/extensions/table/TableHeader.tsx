@@ -144,9 +144,18 @@ const selectRow = (rowIndex: number) => (tr: Transaction) => {
 // - 基于 decorations 在第一行每个单元格上方插入绝对定位的交互区
 export const TableHeader = TiptapTableHeader.extend({
 	addProseMirrorPlugins() {
+		// 标记：由列/行 grip 触发的选择，抑制滚动到选区
+		let suppressScrollToSelection = false;
 		return [
 			new Plugin({
 				props: {
+					handleScrollToSelection: () => {
+						if (suppressScrollToSelection) {
+							suppressScrollToSelection = false;
+							return true; // 阻止默认滚动
+						}
+						return false;
+					},
 					decorations: (state) => {
 						const { isEditable } = this.editor;
 
@@ -156,10 +165,17 @@ export const TableHeader = TiptapTableHeader.extend({
 
 						const { doc, selection } = state;
 						const decorations: Decoration[] = [];
-						const cells = getCellsInRow(0)(selection);
+						const tableNode = findTable(selection);
 
-						if (cells) {
-							cells.forEach(({ pos }: { pos: number }, index: number) => {
+						// 列头 grips：基于 TableMap 列数稳定渲染，避免因单元格合并导致索引错位
+						if (tableNode) {
+							const map = TableMap.get(tableNode.node);
+							console.log(map, "map1");
+							for (let index = 0; index < map.width; index += 1) {
+								const firstRow = 0;
+								const cellPosInDoc =
+									tableNode.start + map.map[firstRow * map.width + index];
+								const pos = cellPosInDoc;
 								decorations.push(
 									Decoration.widget(pos + 1, () => {
 										const colSelected = isColumnSelected(index)(selection);
@@ -173,7 +189,7 @@ export const TableHeader = TiptapTableHeader.extend({
 											className += " first";
 										}
 
-										if (index === cells.length - 1) {
+										if (index === map.width - 1) {
 											className += " last";
 										}
 
@@ -212,76 +228,33 @@ export const TableHeader = TiptapTableHeader.extend({
 										}
 
 										// 悬停显示效果
-										setTimeout(() => {
-											const tableElement = grip.closest("table");
-											if (tableElement) {
-												// 为了让左侧 -12px 的 grip 可见：
-												// 1) 将 table 右移 12px（margin-left），留出可视空间
-												// 2) 确保 table 自身允许溢出可见并可作为定位上下文
-												if (
-													!(tableElement as HTMLElement).dataset
-														.__rowGripMarginApplied
-												) {
-													(tableElement as HTMLElement).style.marginLeft =
-														"12px";
-													(
-														tableElement as HTMLElement
-													).dataset.__rowGripMarginApplied = "1";
-												}
-												const tableCS = getComputedStyle(
-													tableElement as HTMLElement,
-												);
-												if (tableCS.overflow !== "visible") {
-													(tableElement as HTMLElement).style.overflow =
-														"visible";
-												}
-												if (tableCS.position === "static") {
-													(tableElement as HTMLElement).style.position =
-														"relative";
-												}
-												const showGrip = () => {
-													grip.style.opacity = "1";
-													if (colSelected)
-														grip.style.backgroundColor = "#3b82f6";
-												};
-												const hideGrip = () => {
-													// 只有在没有选中且不在表格内时才隐藏
-													const isSelected =
-														colSelected ||
-														(selection.$anchor && findTable(selection)) ||
-														(selection.$head && findTable(selection));
-													if (!isSelected) {
-														grip.style.opacity = "0";
-														grip.style.backgroundColor = "#f5f5f5";
-													}
-												};
-												tableElement.addEventListener("mouseenter", showGrip);
-												tableElement.addEventListener("mouseleave", hideGrip);
-											}
-										}, 0);
+										// 取消对 table 的动态样式与事件监听，避免触发布局抖动
 
 										grip.addEventListener("mousedown", (event) => {
 											event.preventDefault();
 											event.stopImmediatePropagation();
-
+											suppressScrollToSelection = true;
 											this.editor.view.dispatch(
 												selectColumn(index)(this.editor.state.tr),
 											);
 											// 点击后立即给予视觉高亮
 											grip.style.backgroundColor = "#3b82f6";
+											setTimeout(() => {
+												suppressScrollToSelection = false;
+											}, 0);
 											// 点按钮：在该列前插入一列
 										});
 
 										return grip;
 									}),
 								);
-							});
+							}
 						}
 
 						// 为每一行在首列前添加纵向 grip，用于整行选择
-						const tableNode = findTable(selection);
 						if (tableNode) {
 							const map = TableMap.get(tableNode.node);
+							console.log(map, "map2");
 							for (let row = 0; row < map.height; row += 1) {
 								const rowCells = getCellsInRow(row)(selection);
 								if (!rowCells || rowCells.length === 0) continue;
@@ -306,46 +279,24 @@ export const TableHeader = TiptapTableHeader.extend({
 
 										const grip = document.createElement("a");
 										// 左侧插入行的小圆点
-										const rowDot = document.createElement("div");
-										rowDot.textContent = "+";
-										rowDot.style.cssText = `
-												position: absolute;
-												left: -26px;
-												top: 50%;
-												width: 18px;
-												height: 18px;
-												margin-top: -9px;
-												border-radius: 9999px;
-												background-color: #3b82f6;
-												color: #fff;
-												font-size: 14px;
-												line-height: 18px;
-												text-align: center;
-												opacity: 0;
-												transition: opacity 0.15s ease;
-												pointer-events: auto;
-												cursor: pointer;
-												z-index: 1001;
-											`;
+
 										// 纵向 grip：固定在单元格左侧 (-12px)，占满当前单元格高度
 										grip.style.cssText = `
 											position: absolute;
 											left: -12px;
 											top: 0;
-											width: 12px;
-											height: 102%;
+                      width: 12px;
+                      height: 102%;
 											background-color: #f5f5f5;
 											border-bottom: 1px solid oklch(0.922 0 0);
 											opacity: 0;
 											transition: opacity 0.2s ease;
 											pointer-events: auto;
 											cursor: pointer;
-											z-index: 1000;
 											text-decoration: none;
 										`;
 
 										grip.className = className;
-										grip.appendChild(rowDot);
 
 										const shouldShow =
 											rowSelected ||
@@ -359,54 +310,19 @@ export const TableHeader = TiptapTableHeader.extend({
 											}
 										}
 
-										setTimeout(() => {
-											// 确保宿主单元格允许外溢显示，否则负向偏移会被裁剪
-											const td = grip.closest<HTMLTableCellElement>("td, th");
-											if (td) {
-												if (getComputedStyle(td).overflow !== "visible") {
-													td.style.overflow = "visible";
-												}
-												if (getComputedStyle(td).position === "static") {
-													td.style.position = "relative";
-												}
-											}
-											const tableElement = grip.closest("table");
-											if (tableElement) {
-												const showGrip = () => {
-													grip.style.opacity = "1";
-													if (rowSelected)
-														grip.style.backgroundColor = "#3b82f6";
-													rowDot.style.opacity = "1";
-												};
-												const hideGrip = () => {
-													const isSelected =
-														rowSelected ||
-														(selection.$anchor && findTable(selection)) ||
-														(selection.$head && findTable(selection));
-													if (!isSelected) {
-														grip.style.opacity = "0";
-														rowDot.style.opacity = "0";
-														grip.style.backgroundColor = "#f5f5f5";
-													}
-												};
-												tableElement.addEventListener("mouseenter", showGrip);
-												tableElement.addEventListener("mouseleave", hideGrip);
-											}
-										}, 0);
+										// 取消对 td/table 的动态样式与事件监听，避免改变尺寸与位置
 
 										grip.addEventListener("mousedown", (event) => {
 											event.preventDefault();
 											event.stopImmediatePropagation();
-
+											suppressScrollToSelection = true;
 											this.editor.view.dispatch(
 												selectRow(row)(this.editor.state.tr),
 											);
 											grip.style.backgroundColor = "#3b82f6";
-											rowDot.addEventListener("mousedown", (e) => {
-												e.preventDefault();
-												e.stopImmediatePropagation();
-												this.editor.commands.addRowBefore();
-											});
+											setTimeout(() => {
+												suppressScrollToSelection = false;
+											}, 0);
 										});
 
 										return grip;
