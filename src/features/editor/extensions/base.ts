@@ -8,6 +8,7 @@ import {
 import { Placeholder } from "@tiptap/extensions";
 import StarterKit from "@tiptap/starter-kit";
 import suggestion from "@/features/editor/components/Menus/Common/Emoji/suggestion";
+import ImageBlock from "./command/ImageBlock";
 import SlashCommand from "./command/slash";
 
 export const baseExtensions = [
@@ -24,6 +25,7 @@ export const baseExtensions = [
 			},
 		},
 	}),
+	ImageBlock,
 	Emoji.configure({
 		emojis: gitHubEmojis,
 		enableEmoticons: true,

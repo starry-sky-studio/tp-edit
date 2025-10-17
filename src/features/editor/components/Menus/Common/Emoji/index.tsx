@@ -16,9 +16,7 @@ const EmojiCommand = ({ editor }: { editor: Editor | null }) => {
 		<DropdownMenu modal={false}>
 			<DropdownMenuTrigger asChild>
 				<Button variant="ghost" size="icon" className="border-none border-0">
-					<div className="flex items-center justify-center  transition-all">
-						<Smile />
-					</div>
+					<Smile />
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className="border-none shadow-none">
