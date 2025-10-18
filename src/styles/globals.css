@@ -2,6 +2,7 @@
 @import './_variables.scss';
 @import './_keyframe-animations.scss';
 @import './index.css';
+@import './code-block.scss';
 @import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
