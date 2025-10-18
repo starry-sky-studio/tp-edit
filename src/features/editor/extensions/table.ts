@@ -1,6 +1,6 @@
 import { Table } from "@tiptap/extension-table";
-import { TableCell } from "@tiptap/extension-table-cell";
 import { NodeSelection } from "prosemirror-state";
+import { TableCell } from "./table/Cell";
 import { TableHeader } from "./table/TableHeader";
 import { TableRow } from "./table/TableRow";
 
@@ -59,7 +59,6 @@ export const tableExtensions = [
 		},
 	}),
 	// 行/列首插入点（基于单元格的点）
-
 	TableCell.configure({
 		HTMLAttributes: {
 			class: "border border-gray-300 p-2",

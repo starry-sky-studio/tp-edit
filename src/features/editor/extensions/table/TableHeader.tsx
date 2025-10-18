@@ -213,6 +213,47 @@ export const TableHeader = TiptapTableHeader.extend({
 
 										grip.className = className;
 
+										//grip 元素里面添加个伪类元素
+										// 添加伪类元素：列选择指示器
+										const pseudoElement = document.createElement("div");
+										pseudoElement.style.cssText = `
+											position: absolute;
+											top: -50%;
+											left: 0%;
+											transform: translate(-50%, -50%);
+											width: 6px;
+											height: 6px;
+											background-color: pink;
+											border-radius: 50%;
+											opacity: 1;
+											transition: all 0.2s ease;
+											overflow: visible;
+										`;
+										pseudoElement.className = "grip-indicator";
+
+										//如果是最后一个元素 则 单独再添加一个伪类元素 最后一个元素的伪类元素 需要单独设置样式
+										if (index === map.width - 1) {
+											// 再添加一个指示器
+											const lastIndicator = document.createElement("div");
+											lastIndicator.style.cssText = `
+												position: absolute;
+										    top: -50%;
+												right: 0%;
+												transform: translate(50%, -50%);
+												width: 6px;
+												height: 6px;
+												background-color: pink;
+												border-radius: 50%;
+												opacity: 1;
+												transition: all 0.2s ease;
+											`;
+											lastIndicator.className = "grip-last-indicator";
+											grip.appendChild(lastIndicator);
+										}
+
+										// 将伪类元素添加到 grip 中
+										grip.appendChild(pseudoElement);
+
 										// 检查是否在表格内或选中状态：编辑或选择时常显，离开时按悬停控制
 										const shouldShow =
 											colSelected ||
@@ -228,7 +269,39 @@ export const TableHeader = TiptapTableHeader.extend({
 										}
 
 										// 悬停显示效果
-										// 取消对 table 的动态样式与事件监听，避免触发布局抖动
+										grip.addEventListener("mouseenter", () => {
+											pseudoElement.style.opacity = "1";
+											pseudoElement.style.transform =
+												"translate(-50%, -50%) scale(1.2)";
+											// 如果是最后一列，同时更新最后一个指示器
+											if (index === map.width - 1) {
+												const lastIndicator = grip.querySelector(
+													".grip-last-indicator",
+												) as HTMLElement;
+												if (lastIndicator) {
+													lastIndicator.style.opacity = "1";
+													lastIndicator.style.transform =
+														"translate(50%, -50%) scale(1.3)";
+												}
+											}
+										});
+
+										grip.addEventListener("mouseleave", () => {
+											pseudoElement.style.opacity = "1";
+											pseudoElement.style.transform =
+												"translate(-50%, -50%) scale(1)";
+											// 如果是最后一列，同时更新最后一个指示器
+											if (index === map.width - 1) {
+												const lastIndicator = grip.querySelector(
+													".grip-last-indicator",
+												) as HTMLElement;
+												if (lastIndicator) {
+													lastIndicator.style.opacity = "1";
+													lastIndicator.style.transform =
+														"translate(50%, -50%) scale(1)";
+												}
+											}
+										});
 
 										grip.addEventListener("mousedown", (event) => {
 											event.preventDefault();
@@ -239,90 +312,26 @@ export const TableHeader = TiptapTableHeader.extend({
 											);
 											// 点击后立即给予视觉高亮
 											grip.style.backgroundColor = "#3b82f6";
+											// 更新伪类元素状态
+											pseudoElement.style.backgroundColor = "#fff";
+											pseudoElement.style.transform =
+												"translate(-50%, -50%) scale(1.5)";
+											// 如果是最后一列，同时更新最后一个指示器
+											if (index === map.width - 1) {
+												const lastIndicator = grip.querySelector(
+													".grip-last-indicator",
+												) as HTMLElement;
+												if (lastIndicator) {
+													lastIndicator.style.backgroundColor = "#fff";
+													lastIndicator.style.transform =
+														"translate(50%, -50%) scale(1.8)";
+													lastIndicator.style.borderColor = "#3b82f6";
+												}
+											}
 											setTimeout(() => {
 												suppressScrollToSelection = false;
 											}, 0);
 											// 点按钮：在该列前插入一列
-										});
-
-										return grip;
-									}),
-								);
-							}
-						}
-
-						// 为每一行在首列前添加纵向 grip，用于整行选择
-						if (tableNode) {
-							const map = TableMap.get(tableNode.node);
-							console.log(map, "map2");
-							for (let row = 0; row < map.height; row += 1) {
-								const rowCells = getCellsInRow(row)(selection);
-								if (!rowCells || rowCells.length === 0) continue;
-								const firstCellPos = rowCells[0].pos;
-
-								decorations.push(
-									Decoration.widget(firstCellPos + 1, () => {
-										const rowSelected = isRowSelected(row)(selection);
-										let className = "grip-row";
-
-										if (rowSelected) {
-											className += " selected";
-										}
-
-										if (row === 0) {
-											className += " first";
-										}
-
-										if (row === map.height - 1) {
-											className += " last";
-										}
-
-										const grip = document.createElement("a");
-										// 左侧插入行的小圆点
-
-										// 纵向 grip：固定在单元格左侧 (-12px)，占满当前单元格高度
-										grip.style.cssText = `
-											position: absolute;
-											left: -12px;
-											top: 0;
-                      width: 12px;
-                      height: 102%;
-											background-color: #f5f5f5;
-											border-bottom: 1px solid oklch(0.922 0 0);
-											opacity: 0;
-											transition: opacity 0.2s ease;
-											pointer-events: auto;
-											cursor: pointer;
-											text-decoration: none;
-										`;
-
-										grip.className = className;
-
-										const shouldShow =
-											rowSelected ||
-											(selection.$anchor && findTable(selection)) ||
-											(selection.$head && findTable(selection));
-
-										if (shouldShow) {
-											grip.style.opacity = "1";
-											if (rowSelected) {
-												grip.style.backgroundColor = "#3b82f6";
-											}
-										}
-
-										// 取消对 td/table 的动态样式与事件监听，避免改变尺寸与位置
-
-										grip.addEventListener("mousedown", (event) => {
-											event.preventDefault();
-											event.stopImmediatePropagation();
-											suppressScrollToSelection = true;
-											this.editor.view.dispatch(
-												selectRow(row)(this.editor.state.tr),
-											);
-											grip.style.backgroundColor = "#3b82f6";
-											setTimeout(() => {
-												suppressScrollToSelection = false;
-											}, 0);
 										});
 
 										return grip;
