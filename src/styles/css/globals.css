@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import './_variables.scss';
 @import './_keyframe-animations.scss';
+@import './index.css';
 @import 'tw-animate-css';
 @import './table.css';
 
@@ -82,106 +83,6 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-}
-
-.tiptap {
-  :first-child {
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-
-  :where([data-type='emoji']) {
-    img {
-      height: 1em;
-      width: 1em;
-    }
-  }
-
-  .custom-blockquote {
-    margin: 1em 0;
-    padding-left: 1em;
-    border-left: 3px solid var(--border);
-    font-style: italic;
-    position: relative;
-    quotes: none;
-
-    &::before,
-    &::after {
-      content: none !important;
-      display: none !important;
-    }
-  }
-
-  .custom-code {
-    background-color: var(--purple-light);
-    border-radius: 0.4rem;
-    color: var(--primary);
-    font-size: 0.85rem;
-    padding: 0.25em 0.3em;
-
-    &::before,
-    &::after {
-      content: none;
-      display: none;
-    }
-  }
-
-  /* 表格样式 */
-  table {
-    /* border-collapse: collapse;
-    table-layout: fixed; */
-    /* 让表格宽度按列宽自然展开（列宽固定为 200px → 表格宽度 = 200px * 列数）*/
-    /* width: max-content; */
-    /* margin: 1rem 0;
-    overflow: hidden;
-    width: 100%; */
-  }
-
-  th,
-  td {
-    /* border: 1px solid var(--border);
-    box-sizing: border-box;
-    min-width: 200px;
-    padding: 0.5rem;
-    position: relative;
-    vertical-align: top; */
-    /*
-    > * {
-      margin-bottom: 0;
-      margin-top: 0;
-    } */
-  }
-
-  /* 外层容器用于横向滚动（给包裹 table 的 div 加这个类）*/
-  /* .table-scroll {
-    overflow-x: auto;
-    overflow-y: hidden;
-  } */
-
-  /* th {
-    background-color: var(--muted);
-    font-weight: 600;
-    text-align: left;
-  } */
-
-  /* .column-resize-handle {
-    background-color: #adf;
-    bottom: -2px;
-    position: absolute;
-    right: -2px;
-    pointer-events: none;
-    top: 0;
-    width: 4px;
-  } */
-
-  /* .tableWrapper {
-    padding: 1rem 0;
-    overflow-x: auto;
-  }
-
-  &.resize-cursor {
-    cursor: ew-resize;
-  } */
 }
 
 .dark {
