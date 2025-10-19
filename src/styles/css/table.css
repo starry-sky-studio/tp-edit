@@ -40,7 +40,7 @@
   }
 
   .ProseMirror table .column-resize-handle {
-    @apply pointer-events-none absolute top-0 -right-1 -bottom-[2px] flex w-1 bg-[#adf];
+    @apply pointer-events-none absolute -bottom-[2px] -right-1 top-0 flex w-1 bg-[#adf];
   }
 
   .resize-cursor {

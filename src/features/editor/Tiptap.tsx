@@ -2,10 +2,10 @@
 
 import { EditorContent, useEditor } from "@tiptap/react";
 import { useEffect, useState } from "react";
+import Footer from "@/components/Footer";
 import { useImageControls } from "@/hooks/use-image-controls";
 import { useImageSelection } from "@/hooks/use-image-selection";
 import { Loading } from "@/styles/svg";
-import Footer from "./components/Footer";
 import BubbleMenuComp from "./components/Menus/BubbleMenu/index";
 import FixedMenuComp from "./components/Menus/FixedMenu/index";
 import { baseExtensions } from "./extensions";

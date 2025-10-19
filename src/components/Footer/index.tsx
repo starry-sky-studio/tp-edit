@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MingcuteGithubLine } from "@/styles/svg";
+import { GithubIcon } from "@/styles/svg";
 
 const Footer = () => {
 	return (
@@ -10,7 +10,7 @@ const Footer = () => {
 				rel="noopener noreferrer"
 				aria-label="GitHub 仓库"
 			>
-				<MingcuteGithubLine />
+				<GithubIcon />
 			</Link>
 		</div>
 	);
