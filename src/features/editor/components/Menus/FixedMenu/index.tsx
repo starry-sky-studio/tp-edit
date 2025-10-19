@@ -1,10 +1,17 @@
 import type { Editor } from "@tiptap/react";
+
+import {
+	AddTable,
+	Emoji,
+	Heading,
+	ImgUpload,
+	TextAlign,
+	TextColor,
+	TextStyles,
+} from "../Common";
 import TableCommand from "../Common/AddTable";
 import EmojiCommand from "../Common/Emoji";
-import Heading from "../Common/Heading";
-import TextAlign from "../Common/TextAlign";
 import ColorComp from "../Common/TextColor";
-import TextStyles from "../Common/TextStyles";
 
 const FixedMenuComp = ({ editor }: { editor: Editor | null }) => {
 	if (!editor || !editor.isEditable) return null;
@@ -17,6 +24,10 @@ const FixedMenuComp = ({ editor }: { editor: Editor | null }) => {
 			<ColorComp editor={editor} />
 			<EmojiCommand editor={editor} />
 			<TableCommand editor={editor} />
+			<TextColor editor={editor} />
+			<Emoji editor={editor} />
+			<ImgUpload editor={editor} />
+			<AddTable editor={editor} />
 		</div>
 	);
 };
