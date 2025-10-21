@@ -5,6 +5,7 @@ import { Plugin } from "@tiptap/pm/state";
 import type { Rect } from "@tiptap/pm/tables";
 import { CellSelection, TableMap } from "@tiptap/pm/tables";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
+import { createTooltipElement } from "./AddItem";
 
 // 表格工具函数（简化版）
 const findTable = (selection: Selection) =>
@@ -215,21 +216,17 @@ export const TableHeader = TiptapTableHeader.extend({
 
 										//grip 元素里面添加个伪类元素
 										// 添加伪类元素：列选择指示器
-										const pseudoElement = document.createElement("div");
-										pseudoElement.style.cssText = `
-											position: absolute;
-											top: -50%;
-											left: 0%;
-											transform: translate(-50%, -50%);
-											width: 6px;
-											height: 6px;
-											background-color: pink;
-											border-radius: 50%;
-											opacity: 1;
-											transition: all 0.2s ease;
-											overflow: visible;
-										`;
-										pseudoElement.className = "grip-indicator";
+										// 使用 createTooltipElement 创建带 Tooltip 的元素
+										const { element: pseudoElement, cleanup } =
+											createTooltipElement({
+												text: "添加列",
+												className: "grip-pseudo",
+												style: {
+													backgroundColor: "pink",
+												},
+											});
+
+										grip.appendChild(pseudoElement);
 
 										//如果是最后一个元素 则 单独再添加一个伪类元素 最后一个元素的伪类元素 需要单独设置样式
 										if (index === map.width - 1) {
@@ -250,9 +247,6 @@ export const TableHeader = TiptapTableHeader.extend({
 											lastIndicator.className = "grip-last-indicator";
 											grip.appendChild(lastIndicator);
 										}
-
-										// 将伪类元素添加到 grip 中
-										grip.appendChild(pseudoElement);
 
 										// 检查是否在表格内或选中状态：编辑或选择时常显，离开时按悬停控制
 										const shouldShow =
