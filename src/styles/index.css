@@ -1,0 +1,52 @@
+.tiptap {
+  /* :first-child {
+    margin-top: 0;
+  } */
+
+  :where([data-type='emoji']) {
+    img {
+      height: 1em;
+      width: 1em;
+    }
+  }
+
+  .custom-blockquote {
+    margin: 1em 0;
+    padding-left: 1em;
+    border-left: 3px solid var(--border);
+    font-style: italic;
+    position: relative;
+    quotes: none;
+
+    &::before,
+    &::after {
+      content: none;
+      display: none;
+    }
+  }
+
+  .custom-code {
+    background-color: var(--purple-light);
+    border-radius: 0.4rem;
+    color: var(--primary);
+    font-size: 0.85rem;
+    padding: 0.25em 0.3em;
+
+    &::before,
+    &::after {
+      content: none;
+      display: none;
+    }
+  }
+
+  img {
+    display: block;
+    height: auto;
+    margin: 0rem 0;
+    max-width: 100%;
+
+    &.ProseMirror-selectednode {
+      outline: 3px solid var(--purple);
+    }
+  }
+}
