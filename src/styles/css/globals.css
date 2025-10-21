@@ -4,6 +4,7 @@
 @import './index.css';
 @import 'tw-animate-css';
 @import './table.css';
+@import './drag-handle.css';
 
 @custom-variant dark (&:is(.dark *));
 @plugin "@tailwindcss/typography";
