@@ -1,5 +1,3 @@
-import clsx from "clsx";
-
 interface CreateTooltipElementProps {
 	text?: string;
 	className?: string;
@@ -27,7 +25,7 @@ export const createTooltipElement = ({
 	//   transition: all 0.2s ease;
 	// `;
 
-	// 创建可交互的元素
+	// 创建可交互的元素 圆点
 	const tooltipElement = document.createElement("div");
 	tooltipElement.className = className;
 	tooltipElement.style.cssText = `
@@ -51,7 +49,10 @@ export const createTooltipElement = ({
 	tooltip.className = "custom-tooltip";
 	tooltip.textContent = text;
 	tooltip.style.cssText = `
-		position: fixed;
+		position: absolute;
+		top: -50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
 		background: rgba(0, 0, 0, 0.8);
 		color: white;
 		padding: 4px 8px;
@@ -64,33 +65,35 @@ export const createTooltipElement = ({
 		transition: opacity 0.2s ease;
 	`;
 
-	tooltip.addEventListener("mouseleave", () => {
-		tooltip.style.transform = "translate(-50%, -50%) scale(1)";
-	});
-
-	tooltip.addEventListener("mouseenter", () => {
-		tooltip.style.transform = "translate(-50%, -50%) scale(3)";
-	});
-
 	// 添加鼠标事件
-	tooltipElement.addEventListener("mouseenter", () => {
+	tooltipElement.addEventListener("mouseover", (e) => {
+		e.stopPropagation();
+		// 放大 tooltipElement
+		tooltipElement.style.transform = "translate(-50%, -50%) scale(5)";
+		// 计算 tooltipElement 的位置
+		const rect = tooltipElement.getBoundingClientRect();
+		// 将 tooltip 定位到 tooltipElement 的正上方中间
+		tooltip.style.position = "fixed";
+		tooltip.style.top = `${rect.top - 10}px`;
+		tooltip.style.left = `${rect.left + rect.width / 2}px`;
+		tooltip.style.transform = "translate(-50%, -100%)";
 		tooltip.style.opacity = "1";
 	});
 
-	tooltipElement.addEventListener("mouseleave", () => {
+	tooltipElement.addEventListener("mouseout", (e) => {
+		e.stopPropagation();
+		// 恢复 tooltipElement 原始大小
+		tooltipElement.style.transform = "translate(-50%, -50%) scale(1)";
 		tooltip.style.opacity = "0";
 	});
 
-	tooltipElement.addEventListener("mousemove", (e) => {
-		const width = tooltip.offsetWidth;
-		tooltip.style.left = e.pageX - width / 2 + "px";
-		tooltip.style.top = e.pageY - 36 + "px";
+	tooltipElement.addEventListener("mousedown", (e) => {
+		e.stopPropagation();
+		console.log("click");
+		onClick?.();
 	});
 
 	// 添加点击事件
-	if (onClick) {
-		tooltipElement.addEventListener("click", onClick);
-	}
 
 	// 将 tooltip 添加到 body，确保它能正确显示
 	document.body.appendChild(tooltip);

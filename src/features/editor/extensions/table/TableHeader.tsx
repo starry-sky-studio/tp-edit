@@ -217,14 +217,13 @@ export const TableHeader = TiptapTableHeader.extend({
 										//grip 元素里面添加个伪类元素
 										// 添加伪类元素：列选择指示器
 										// 使用 createTooltipElement 创建带 Tooltip 的元素
-										const { element: pseudoElement, cleanup } =
-											createTooltipElement({
-												text: "添加列",
-												className: "grip-pseudo",
-												style: {
-													backgroundColor: "pink",
-												},
-											});
+										const { element: pseudoElement } = createTooltipElement({
+											text: "添加列",
+											className: "grip-pseudo",
+											style: {
+												backgroundColor: "pink",
+											},
+										});
 
 										grip.appendChild(pseudoElement);
 
@@ -263,7 +262,12 @@ export const TableHeader = TiptapTableHeader.extend({
 										}
 
 										// 悬停显示效果
-										grip.addEventListener("mouseenter", () => {
+										grip.addEventListener("mouseover", (e) => {
+											e.preventDefault();
+											e.stopImmediatePropagation();
+											console.log(e.target, e.currentTarget);
+											console.log("mouseenter11111111111");
+											console.log(e.target === grip);
 											pseudoElement.style.opacity = "1";
 											pseudoElement.style.transform =
 												"translate(-50%, -50%) scale(1.2)";
@@ -280,7 +284,27 @@ export const TableHeader = TiptapTableHeader.extend({
 											}
 										});
 
-										grip.addEventListener("mouseleave", () => {
+										// pseudoElement.addEventListener("mouseover", (event) => {
+										// 	event.stopPropagation();
+										// 	console.log("mouseenter pseudoElement mouseenter");
+										// 	// 处理 pseudoElement 的点击逻辑
+										// });
+										// pseudoElement.addEventListener("mouseout", (event) => {
+										// 	event.stopPropagation();
+										// 	console.log("mouseleave pseudoElement mouseleave");
+										// 	// 处理 pseudoElement 的点击逻辑
+										// });
+
+										// pseudoElement.addEventListener("mousedown", (event) => {
+										// 	event.stopPropagation();
+										// 	console.log("点击的是 pseudoElement");
+										// 	// 处理 pseudoElement 的点击逻辑
+										// });
+
+										grip.addEventListener("mouseout", (e) => {
+											console.log(e.target, e.currentTarget);
+
+											console.log("mouseleave22222222222");
 											pseudoElement.style.opacity = "1";
 											pseudoElement.style.transform =
 												"translate(-50%, -50%) scale(1)";
@@ -297,7 +321,10 @@ export const TableHeader = TiptapTableHeader.extend({
 											}
 										});
 
+										// 在 grip 元素上监听，现在只会收到 grip 本身的点击
 										grip.addEventListener("mousedown", (event) => {
+											console.log(event.target, event.currentTarget);
+											console.log("mousedown");
 											event.preventDefault();
 											event.stopImmediatePropagation();
 											suppressScrollToSelection = true;
