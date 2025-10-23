@@ -20,19 +20,10 @@ const CalloutView = (props: ReactNodeViewProps) => {
 		updateAttributes({ icon: emoji.native });
 	};
 
-	const handleContentClick = (e: React.MouseEvent) => {
-		e.stopPropagation();
-
-		const pos = getPos();
-		if (pos !== undefined) {
-			editor.commands.setTextSelection(pos + 1);
-		}
-	};
-
 	return (
 		<NodeViewWrapper>
 			<div className="flex p-1 rounded-md" style={{ backgroundColor }}>
-				<div className="flex items-center">
+				<div className="flex items-center" contentEditable={false}>
 					<DropdownMenu modal={false}>
 						<DropdownMenuTrigger asChild>
 							<Button
@@ -48,7 +39,7 @@ const CalloutView = (props: ReactNodeViewProps) => {
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</div>
-				<div className="flex-1 min-w-0" onClick={handleContentClick}>
+				<div className="flex-1 min-w-0">
 					<NodeViewContent />
 				</div>
 			</div>
