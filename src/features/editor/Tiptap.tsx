@@ -43,6 +43,25 @@ const Tiptap = () => {
 		setMounted(true);
 	}, []);
 
+	// useEffect(() => {
+	// 	const handleSelectionChange = () => {
+	// 		const tables = document.querySelectorAll(".ProseMirror table");
+	// 		tables.forEach((table) => {
+	// 			// 检查是否在表格内
+	// 			const isActive = table.contains(document.activeElement);
+	// 			if (isActive) {
+	// 				table.classList.add("active");
+	// 			} else {
+	// 				table.classList.remove("active");
+	// 			}
+	// 		});
+	// 	};
+
+	// 	document.addEventListener("selectionchange", handleSelectionChange);
+	// 	return () =>
+	// 		document.removeEventListener("selectionchange", handleSelectionChange);
+	// }, []);
+
 	if (!mounted || !editor)
 		return (
 			<div className="h-screen flex w-screen animate-pulse items-center justify-center bg-white p-4">

@@ -11,7 +11,7 @@ import GlobalDragHandle from "tiptap-extension-global-drag-handle";
 import suggestion from "@/features/editor/components/Menus/Common/Emoji/suggestion";
 import ImageBlock from "./command/ImageBlock";
 import SlashCommand from "./command/slash";
-import { tableExtensions } from "./table";
+import { tableExtensions } from "./tables";
 
 export const baseExtensions = [
 	StarterKit.configure({
