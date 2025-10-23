@@ -12,12 +12,21 @@ import {
 import EmojiPicker from "../EmojiPicker";
 
 const CalloutView = (props: ReactNodeViewProps) => {
-	const { node, updateAttributes } = props;
+	const { node, updateAttributes, editor, getPos } = props;
 
 	const { icon, backgroundColor } = node.attrs;
 
 	const handleEmojiSelect = (emoji: any) => {
 		updateAttributes({ icon: emoji.native });
+	};
+
+	const handleContentClick = (e: React.MouseEvent) => {
+		e.stopPropagation();
+
+		const pos = getPos();
+		if (pos !== undefined) {
+			editor.commands.setTextSelection(pos + 1);
+		}
 	};
 
 	return (
@@ -39,7 +48,9 @@ const CalloutView = (props: ReactNodeViewProps) => {
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</div>
-				<NodeViewContent></NodeViewContent>
+				<div className="flex-1 min-w-0" onClick={handleContentClick}>
+					<NodeViewContent />
+				</div>
 			</div>
 		</NodeViewWrapper>
 	);
