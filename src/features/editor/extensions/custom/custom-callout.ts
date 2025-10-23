@@ -1,4 +1,4 @@
-import { mergeAttributes, Node } from "@tiptap/core";
+import { mergeAttributes, Node, nodeInputRule } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 
 interface CalloutOptions {
@@ -13,6 +13,8 @@ declare module "@tiptap/core" {
 		};
 	}
 }
+
+const inputRegex = /^:::([a-z]+)?[\s\n]$/;
 
 export const Callout = Node.create<CalloutOptions>({
 	name: "callout",
@@ -77,5 +79,14 @@ export const Callout = Node.create<CalloutOptions>({
 
 	addNodeView() {
 		return ReactNodeViewRenderer(this.options.view);
+	},
+
+	addInputRules() {
+		return [
+			nodeInputRule({
+				find: inputRegex,
+				type: this.type,
+			}),
+		];
 	},
 });
