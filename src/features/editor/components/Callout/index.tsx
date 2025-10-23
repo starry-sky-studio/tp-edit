@@ -12,7 +12,7 @@ import {
 import EmojiPicker from "../EmojiPicker";
 
 const CalloutView = (props: ReactNodeViewProps) => {
-	const { node, updateAttributes, editor, getPos } = props;
+	const { node, updateAttributes } = props;
 
 	const { icon, backgroundColor } = node.attrs;
 
@@ -20,25 +20,19 @@ const CalloutView = (props: ReactNodeViewProps) => {
 		updateAttributes({ icon: emoji.native });
 	};
 
-	const handleContentClick = (e: React.MouseEvent) => {
-		e.stopPropagation();
-
-		const pos = getPos();
-		if (pos !== undefined) {
-			editor.commands.setTextSelection(pos + 1);
-		}
-	};
-
 	return (
 		<NodeViewWrapper>
-			<div className="flex p-1 rounded-md" style={{ backgroundColor }}>
-				<div className="flex items-center">
+			<div
+				className="flex p-3 rounded-md border border-rose-200 my-1"
+				style={{ backgroundColor }}
+			>
+				<div className="flex items-start mr-3 text-lg">
 					<DropdownMenu modal={false}>
 						<DropdownMenuTrigger asChild>
 							<Button
 								variant="ghostTransparent"
 								size="icon"
-								className="border-none border-0 text-xl"
+								className="border-none border-0 text-xl hover:bg-transparent"
 							>
 								{icon}
 							</Button>
@@ -48,8 +42,8 @@ const CalloutView = (props: ReactNodeViewProps) => {
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</div>
-				<div className="flex-1 min-w-0" onClick={handleContentClick}>
-					<NodeViewContent />
+				<div className="flex-1 min-w-0 cursor-text">
+					<NodeViewContent className="prose prose-sm max-w-none" />
 				</div>
 			</div>
 		</NodeViewWrapper>

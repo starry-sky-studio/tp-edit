@@ -1,4 +1,4 @@
-import { mergeAttributes, Node, nodeInputRule } from "@tiptap/core";
+import { InputRule, mergeAttributes, Node } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 
 interface CalloutOptions {
@@ -33,9 +33,15 @@ export const Callout = Node.create<CalloutOptions>({
 	addCommands() {
 		return {
 			toggleCallout:
-				() =>
+				(attrs = {}) =>
 				({ commands }: { commands: any }) => {
-					return commands.toggleWrap(this.name);
+					const defaultAttrs = {
+						icon: "💡",
+						backgroundColor: "#FFF5EB",
+						...attrs,
+					};
+
+					return commands.toggleWrap(this.name, defaultAttrs);
 				},
 		};
 	},
@@ -68,11 +74,7 @@ export const Callout = Node.create<CalloutOptions>({
 	renderHTML({ HTMLAttributes }) {
 		return [
 			"div",
-			mergeAttributes(
-				{ "data-type": this.name },
-				this.options.HTMLAttributes,
-				HTMLAttributes,
-			),
+			mergeAttributes({ "data-type": this.name }, HTMLAttributes),
 			0,
 		];
 	},
@@ -81,11 +83,49 @@ export const Callout = Node.create<CalloutOptions>({
 		return ReactNodeViewRenderer(this.options.view);
 	},
 
+	/**
+	 * 添加输入规则
+	 * 支持通过输入 ::: 语法快速创建 Callout
+	 */
 	addInputRules() {
 		return [
-			nodeInputRule({
+			new InputRule({
 				find: inputRegex,
-				type: this.type,
+				handler: ({ range, match, commands }) => {
+					const start = range.from;
+					const end = range.to;
+
+					// 创建 Callout 节点
+					const type = match[1] || "info";
+					const typeConfig: Record<
+						string,
+						{ icon: string; backgroundColor: string }
+					> = {
+						info: { icon: "💡", backgroundColor: "#FFF5EB" },
+						warning: { icon: "⚠️", backgroundColor: "#FEF3C7" },
+						error: { icon: "❌", backgroundColor: "#FEE2E2" },
+						success: { icon: "✅", backgroundColor: "#D1FAE5" },
+						tip: { icon: "💡", backgroundColor: "#E0F2FE" },
+					};
+
+					const attrs = typeConfig[type] || typeConfig.info;
+
+					// 删除输入的文本并插入 Callout 节点
+					commands.deleteRange({ from: start, to: end });
+					commands.insertContentAt(start, {
+						type: this.name,
+						attrs,
+						content: [
+							{
+								type: "paragraph",
+								content: [],
+							},
+						],
+					});
+
+					// 关键：将光标设置到 Callout 内容区域的开始位置
+					commands.setTextSelection(start + 1);
+				},
 			}),
 		];
 	},
