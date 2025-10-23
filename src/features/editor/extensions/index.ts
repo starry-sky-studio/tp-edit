@@ -1,2 +1,2 @@
 export { baseExtensions } from "./base";
-export { tableExtensions } from "./table";
+export { tableExtensions } from "./tables";

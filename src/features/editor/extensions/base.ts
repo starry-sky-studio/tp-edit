@@ -21,7 +21,7 @@ const lowlight = createLowlight(common);
 import CalloutView from "../components/Callout";
 import { Callout } from "./custom/custom-callout";
 
-import { tableExtensions } from "./table";
+import { tableExtensions } from "./tables";
 
 export const baseExtensions = [
 	StarterKit.configure({

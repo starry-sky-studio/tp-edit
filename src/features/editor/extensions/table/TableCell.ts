@@ -116,7 +116,7 @@ export const TableCell = Node.create<TableCellOptions>({
 
 	/**
 	 * 添加 ProseMirror 插件
-	 * 为表格单元格添加行选择器功能
+	 * 为表格单元格添加行选择器功能和表格悬停检测
 	 */
 	addProseMirrorPlugins() {
 		return [
@@ -125,6 +125,7 @@ export const TableCell = Node.create<TableCellOptions>({
 					/**
 					 * 装饰器函数
 					 * 在第一列的每个单元格左侧添加行选择器
+					 * 检测表格悬停状态并显示自定义 tableHeader
 					 *
 					 * @param state ProseMirror 状态
 					 * @returns 装饰器集合
@@ -139,6 +140,72 @@ export const TableCell = Node.create<TableCellOptions>({
 
 						const { doc, selection } = state;
 						const decorations: Decoration[] = [];
+
+						// 检查是否在表格内
+						const tableNode = selection.$anchor.node(-1);
+						if (tableNode && tableNode.type.name === "table") {
+							// 在表格上方添加自定义 tableHeader
+							const tablePos = selection.$anchor.start(-1);
+							decorations.push(
+								Decoration.widget(tablePos, () => {
+									const header = document.createElement("div");
+									header.className = "custom-table-header";
+									header.style.cssText = `
+										position: absolute;
+										top: -50px;
+										left: 0;
+										right: 0;
+										height: 40px;
+										background-color: #f5f5f5;
+										border: 1px solid #ddd;
+										display: flex;
+										align-items: center;
+										justify-content: space-between;
+										padding: 0 10px;
+										z-index: 1000;
+										opacity: 0;
+										transition: opacity 0.2s ease;
+									`;
+
+									// 添加表格操作按钮
+									const addRowBtn = document.createElement("button");
+									addRowBtn.textContent = "添加行";
+									addRowBtn.style.cssText = `
+										padding: 5px 10px;
+										background-color: #007bff;
+										color: white;
+										border: none;
+										border-radius: 4px;
+										cursor: pointer;
+									`;
+
+									const addColBtn = document.createElement("button");
+									addColBtn.textContent = "添加列";
+									addColBtn.style.cssText = `
+										padding: 5px 10px;
+										background-color: #28a745;
+										color: white;
+										border: none;
+										border-radius: 4px;
+										cursor: pointer;
+									`;
+
+									header.appendChild(addRowBtn);
+									header.appendChild(addColBtn);
+
+									// 添加鼠标悬停效果
+									header.addEventListener("mouseenter", () => {
+										header.style.opacity = "1";
+									});
+
+									header.addEventListener("mouseleave", () => {
+										header.style.opacity = "0";
+									});
+
+									return header;
+								}),
+							);
+						}
 
 						// 获取第一列的所有单元格
 						const cells = getCellsInColumn(0)(selection);

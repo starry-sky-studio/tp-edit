@@ -2,7 +2,8 @@ import { NodeSelection } from "@tiptap/pm/state";
 import type { Editor } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react/menus";
 import { useCallback, useEffect, useState } from "react";
-import TextStyles from "../Common/TextStyles";
+import { TextAlign, TextStyles } from "../Common";
+import TableMenus from "../TableMenus";
 
 interface Props {
 	editor: Editor | null;
@@ -57,7 +58,8 @@ const BubbleMenuComp = ({ editor }: Props) => {
 			editor={editor}
 			className="flex items-center gap-0.5 rounded-lg border bg-background p-1 shadow-lg"
 		>
-			{!selectedNode?.isBlock && <TextStyles editor={editor} />}
+			<TableMenus editor={editor} />
+			{/* {!selectedNode?.isBlock && <TextStyles editor={editor} />} */}
 		</BubbleMenu>
 	);
 };

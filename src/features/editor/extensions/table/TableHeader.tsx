@@ -1,7 +1,7 @@
 import { findParentNode } from "@tiptap/core";
 import { TableHeader as TiptapTableHeader } from "@tiptap/extension-table/header";
 import type { Selection, Transaction } from "@tiptap/pm/state";
-import { Plugin } from "@tiptap/pm/state";
+import { NodeSelection, Plugin } from "@tiptap/pm/state";
 import type { Rect } from "@tiptap/pm/tables";
 import { CellSelection, TableMap } from "@tiptap/pm/tables";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
@@ -49,48 +49,6 @@ const isColumnSelected = (columnIndex: number) => (selection: Selection) => {
 	return false;
 };
 
-// 行选择：判断某一行是否被整体选中
-const isRowSelected = (rowIndex: number) => (selection: Selection) => {
-	if (isCellSelection(selection)) {
-		const map = TableMap.get(selection.$anchorCell.node(-1));
-
-		return isRectSelected({
-			left: 0,
-			right: map.width,
-			top: rowIndex,
-			bottom: rowIndex + 1,
-		})(selection);
-	}
-
-	return false;
-};
-
-const getCellsInRow = (rowIndex: number) => (selection: Selection) => {
-	const table = findTable(selection);
-
-	if (table) {
-		const map = TableMap.get(table.node);
-
-		if (rowIndex >= 0 && rowIndex <= map.height - 1) {
-			const cells = map.cellsInRect({
-				left: 0,
-				right: map.width,
-				top: rowIndex,
-				bottom: rowIndex + 1,
-			});
-
-			return cells.map((nodePos) => {
-				const node = table.node.nodeAt(nodePos);
-				const pos = nodePos + table.start;
-
-				return { pos, start: pos + 1, node };
-			});
-		}
-	}
-
-	return null;
-};
-
 const selectColumn = (columnIndex: number) => (tr: Transaction) => {
 	const table = findTable(tr.selection);
 	if (table) {
@@ -115,31 +73,6 @@ const selectColumn = (columnIndex: number) => (tr: Transaction) => {
 	return tr;
 };
 
-// 选择整行
-const selectRow = (rowIndex: number) => (tr: Transaction) => {
-	const table = findTable(tr.selection);
-	if (table) {
-		const map = TableMap.get(table.node);
-		const cells = map.cellsInRect({
-			left: 0,
-			right: map.width,
-			top: rowIndex,
-			bottom: rowIndex + 1,
-		});
-
-		if (cells.length > 0) {
-			const head = table.start + cells[0];
-			const anchor = table.start + cells[cells.length - 1];
-			const $anchor = tr.doc.resolve(anchor);
-			const $head = tr.doc.resolve(head);
-
-			return tr.setSelection(new CellSelection($anchor, $head));
-		}
-	}
-
-	return tr;
-};
-
 // TableHeader 扩展：
 // - 仅用于渲染列头部的操作 grip（选择整列），不要求文档中存在 tableHeader 节点
 // - 基于 decorations 在第一行每个单元格上方插入绝对定位的交互区
@@ -147,6 +80,17 @@ export const TableHeader = TiptapTableHeader.extend({
 	addProseMirrorPlugins() {
 		// 标记：由列/行 grip 触发的选择，抑制滚动到选区
 		let suppressScrollToSelection = false;
+		// 自定义头部操作按钮的显示状态
+		// let showCustomHeader = false;
+
+		// 监听自定义事件，显示/隐藏自定义头部操作按钮
+		// document.addEventListener("tableHover", (event: any) => {
+		// 	const { table, show } = event.detail;
+		// 	showCustomHeader = show;
+		// 	// 强制重新渲染装饰器
+		// 	this.editor.view.dispatch(this.editor.state.tr);
+		// });
+
 		return [
 			new Plugin({
 				props: {
@@ -157,6 +101,7 @@ export const TableHeader = TiptapTableHeader.extend({
 						}
 						return false;
 					},
+					// 当鼠标划过 table的时候 这个装饰器 也要显示出来
 					decorations: (state) => {
 						const { isEditable } = this.editor;
 
@@ -167,6 +112,22 @@ export const TableHeader = TiptapTableHeader.extend({
 						const { doc, selection } = state;
 						const decorations: Decoration[] = [];
 						const tableNode = findTable(selection);
+
+						// 检测表格状态
+						const isTableSelected =
+							selection instanceof NodeSelection &&
+							selection.node?.type.name === "table";
+						const isInTable = tableNode !== null;
+
+						// 为表格添加活跃状态的 CSS 类
+						if (tableNode && (isTableSelected || isInTable)) {
+							const tablePos = tableNode.start;
+							decorations.push(
+								Decoration.node(tablePos, tablePos + tableNode.node.nodeSize, {
+									class: isTableSelected ? "selected" : "active",
+								}),
+							);
+						}
 
 						// 列头 grips：基于 TableMap 列数稳定渲染，避免因单元格合并导致索引错位
 						if (tableNode) {
@@ -205,24 +166,24 @@ export const TableHeader = TiptapTableHeader.extend({
 											height: 12px;
 											background-color: #f5f5f5;
 											border-right: 1px solid oklch(0.922 0 0);
-											opacity: 0;
-											transition: opacity 0.2s ease;
 											pointer-events: auto;
 											cursor: pointer;
 											text-decoration: none;
 										`;
 
-										grip.className = className;
+										grip.className = `${className} grid`;
 
 										//grip 元素里面添加个伪类元素
 										// 添加伪类元素：列选择指示器
 										// 使用 createTooltipElement 创建带 Tooltip 的元素
 										const { element: pseudoElement } = createTooltipElement({
 											text: "添加列",
+											index,
 											className: "grip-pseudo",
 											style: {
 												backgroundColor: "pink",
 											},
+											editor: this.editor,
 										});
 
 										grip.appendChild(pseudoElement);
@@ -248,18 +209,20 @@ export const TableHeader = TiptapTableHeader.extend({
 										}
 
 										// 检查是否在表格内或选中状态：编辑或选择时常显，离开时按悬停控制
+										// 当鼠标划过 table的时候 这个装饰器 也要显示出来
 										const shouldShow =
 											colSelected ||
 											(selection.$anchor && findTable(selection)) ||
 											(selection.$head && findTable(selection));
+										// 鼠标划过表格时通过 CSS :hover 控制显示
 
 										if (shouldShow) {
-											grip.style.opacity = "1";
 											// 选中整列时高亮为蓝色
 											if (colSelected) {
 												grip.style.backgroundColor = "#3b82f6";
 											}
 										}
+										// 鼠标悬停时的显示/隐藏由 CSS :hover 控制
 
 										// 悬停显示效果
 										grip.addEventListener("mouseover", (e) => {
@@ -283,23 +246,6 @@ export const TableHeader = TiptapTableHeader.extend({
 												}
 											}
 										});
-
-										// pseudoElement.addEventListener("mouseover", (event) => {
-										// 	event.stopPropagation();
-										// 	console.log("mouseenter pseudoElement mouseenter");
-										// 	// 处理 pseudoElement 的点击逻辑
-										// });
-										// pseudoElement.addEventListener("mouseout", (event) => {
-										// 	event.stopPropagation();
-										// 	console.log("mouseleave pseudoElement mouseleave");
-										// 	// 处理 pseudoElement 的点击逻辑
-										// });
-
-										// pseudoElement.addEventListener("mousedown", (event) => {
-										// 	event.stopPropagation();
-										// 	console.log("点击的是 pseudoElement");
-										// 	// 处理 pseudoElement 的点击逻辑
-										// });
 
 										grip.addEventListener("mouseout", (e) => {
 											console.log(e.target, e.currentTarget);
