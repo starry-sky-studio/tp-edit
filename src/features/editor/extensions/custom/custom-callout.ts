@@ -89,32 +89,16 @@ export const Callout = Node.create<CalloutOptions>({
 	 */
 	addInputRules() {
 		return [
+			// relative tiptap issue: https://github.com/ueberdosis/tiptap/issues/2974
 			new InputRule({
 				find: inputRegex,
-				handler: ({ range, match, commands }) => {
+				handler: ({ range, commands }) => {
 					const start = range.from;
 					const end = range.to;
 
-					// 创建 Callout 节点
-					const type = match[1] || "info";
-					const typeConfig: Record<
-						string,
-						{ icon: string; backgroundColor: string }
-					> = {
-						info: { icon: "💡", backgroundColor: "#FFF5EB" },
-						warning: { icon: "⚠️", backgroundColor: "#FEF3C7" },
-						error: { icon: "❌", backgroundColor: "#FEE2E2" },
-						success: { icon: "✅", backgroundColor: "#D1FAE5" },
-						tip: { icon: "💡", backgroundColor: "#E0F2FE" },
-					};
-
-					const attrs = typeConfig[type] || typeConfig.info;
-
-					// 删除输入的文本并插入 Callout 节点
 					commands.deleteRange({ from: start, to: end });
 					commands.insertContentAt(start, {
 						type: this.name,
-						attrs,
 						content: [
 							{
 								type: "paragraph",
@@ -123,7 +107,6 @@ export const Callout = Node.create<CalloutOptions>({
 						],
 					});
 
-					// 关键：将光标设置到 Callout 内容区域的开始位置
 					commands.setTextSelection(start + 1);
 				},
 			}),
