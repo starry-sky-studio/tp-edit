@@ -108,7 +108,7 @@ export const createTooltipElement = ({
 
 //添加 一行 table row 根据 index 如果有index 则在index 后面添加一行
 // 没有index 根据鼠标位置 在后面添加一行
-const addTableRow = (editor: Editor, index?: number) => {
+export const addTableRow = (editor: Editor, index?: number) => {
 	if (index !== undefined) {
 		// 根据 index 定位到指定行，然后在该行后添加新行
 		// 需要先选中指定行的单元格，然后添加行
@@ -143,15 +143,50 @@ const addTableColumn = (editor: Editor, index?: number) => {
 		// 找到表格
 		const table = selection.$anchor.node(-1);
 
-		console.log(selection, table, "addTableColumn");
+		console.log(index, selection, table, "addTableColumn");
 
 		if (table && table.type.name === "table") {
-			// 选中指定列的第一个单元格
+			// 获取表格的位置映射表
 			const tableMap = table.attrs.map;
-			const colStart = tableMap[index];
-			const cellPos = selection.$anchor.start(-1) + colStart;
+			console.log(tableMap, "tableMap");
 
-			// 选中该列
+			console.log(tableMap.map, "tableMap.map");
+			// 检查 tableMap 是否存在
+			if (!tableMap || !tableMap.map) {
+				console.log("TableMap not found:", table.attrs);
+				return;
+			}
+
+			/**
+			 * 在 index 列索引的后面添加一列
+			 *
+			 * 表格结构示例：
+			 * 列:  0   1   2   3
+			 * 行:  ┌───┬───┬───┬───┐ 0
+			 *      │ 0 │ 1 │ 2 │ 3 │
+			 *      ├───┼───┼───┼───┤ 1
+			 *      │ 4 │ 5 │ 6 │ 7 │
+			 *      ├───┼───┼───┼───┤ 2
+			 *      │ 8 │ 9 │10 │11 │
+			 *      └───┴───┴───┴───┘
+			 *
+			 * 当 index = 1 时，要在第1列后面添加新列
+			 * 需要选中第1列的所有单元格，然后调用 addColumnAfter()
+			 *
+			 * tableMap TableMap {
+			 *   width: 4,    // 4列
+			 *   height: 3,   // 3行
+			 *   map: [1, 5, 9, 13, 19, 23, 27, 31, 37, 41, 45, 49]
+			 * }
+			 */
+
+			// 选中第 index 列的所有单元格
+			// 第 index 列的第一个单元格位置
+			const firstCellPos = tableMap.map[index];
+			const cellPos = selection.$anchor.start(-1) + firstCellPos;
+			console.log(cellPos, "cellPos");
+
+			// 选中第 index 列，然后在该列后面添加新列
 			editor.chain().focus().setTextSelection(cellPos).addColumnAfter().run();
 		}
 		return;
