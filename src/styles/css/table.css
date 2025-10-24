@@ -12,65 +12,6 @@
     @apply box-border w-max table-fixed border-collapse rounded border border-black/10;
 
     /* 鼠标悬停和活跃状态时显示所有 .grid 子元素 */
-    &:hover,
-    &:focus,
-    &:focus-within,
-    &.selected,
-    &.editing {
-      .grid {
-        opacity: 1 !important;
-        visibility: visible !important;
-        transform: scale(1) !important;
-        transition: all 0.2s ease !important;
-      }
-
-      /* 显示列头 grips */
-      .grip-column {
-        opacity: 1 !important;
-        visibility: visible !important;
-      }
-
-      /* 显示行头 grips */
-      .grip-row {
-        opacity: 1 !important;
-        visibility: visible !important;
-      }
-
-      /* 显示自定义头部操作按钮 */
-      .custom-table-header {
-        opacity: 1 !important;
-        visibility: visible !important;
-        transform: translateY(0) !important;
-      }
-
-      /* 悬停时放大伪元素，活跃状态时正常显示 */
-      .grid .pseudoElement {
-        transform: translate(-50%, -50%) scale(1.2) !important;
-        opacity: 1 !important;
-      }
-
-      /* 最后一列的指示器 */
-      .grid .grip-last-indicator {
-        transform: translate(50%, -50%) scale(1.3) !important;
-        opacity: 1 !important;
-      }
-    }
-
-    /* 默认隐藏 .grid 元素 */
-    /* .grid {
-      opacity: 0;
-      visibility: hidden;
-      transform: scale(0.8);
-      transition: all 0.2s ease;
-    } */
-
-    /* 默认隐藏 grips */
-    /* .grip-column,
-    .grip-row {
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.2s ease;
-    } */
 
     /* 默认隐藏自定义头部 */
     /* .custom-table-header {
