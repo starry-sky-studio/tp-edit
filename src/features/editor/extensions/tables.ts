@@ -1,8 +1,6 @@
 // import { Table, TableKit } from "@tiptap/extension-table";
 
-import { Table, TableCell } from "@tiptap/extension-table";
-import { NodeSelection, Plugin } from "@tiptap/pm/state";
-// import { TableCell } from "./table/Cell";
+import { TableCell } from "./table/TableCell";
 import { TableHeader } from "./table/TableHeader";
 import { TableRow } from "./table/TableRow";
 import { SelectableTable } from "./table/table";
@@ -26,9 +24,6 @@ export const tableExtensions = [
 		// 📐 单元格最小宽度
 		cellMinWidth: 50,
 
-		//初始表格宽度
-		// initialWidth: 100,
-
 		// 🔒 最后一列是否可调整
 		lastColumnResizable: true,
 		HTMLAttributes: {
@@ -40,13 +35,13 @@ export const tableExtensions = [
 			class: "border border-gray-300",
 		},
 	}),
-	// // 仅启用 TableHeader 扩展以提供列头部的装饰与交互（不强制插入表头行）
+	// 仅启用 TableHeader 扩展以提供列头部的装饰与交互
 	TableHeader.configure({
 		HTMLAttributes: {
 			class: "border border-gray-300 bg-gray-50 font-semibold p-2 text-left",
 		},
 	}),
-	// // 行/列首插入点（基于单元格的点）
+	// 行/列首插入点（基于单元格的点）
 	TableCell.configure({
 		HTMLAttributes: {
 			class: "border border-gray-300 p-2",
