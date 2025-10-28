@@ -6,6 +6,7 @@ import type { Rect } from "@tiptap/pm/tables";
 import { CellSelection, TableMap } from "@tiptap/pm/tables";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import { createTooltipElement } from "./AddItem";
+import { createGrip } from "./TableOperate";
 
 // 表格工具函数（简化版）
 const findTable = (selection: Selection) =>
@@ -138,172 +139,63 @@ export const TableHeader = TiptapTableHeader.extend({
 								const cellPosInDoc =
 									tableNode.start + map.map[firstRow * map.width + index];
 								const pos = cellPosInDoc;
-								decorations.push(
-									Decoration.widget(pos + 1, () => {
-										const colSelected = isColumnSelected(index)(selection);
-										let className = "grip-column";
+								// 1) grip 装饰器：负责整列选择
+								const gripDeco = Decoration.widget(pos + 1, () => {
+									const colSelected = isColumnSelected(index)(selection);
+									let className = "grip-column";
+									if (colSelected) className += " selected";
+									if (index === 0) className += " first";
+									if (index === map.width - 1) className += " last";
 
-										if (colSelected) {
-											className += " selected";
-										}
-
-										if (index === 0) {
-											className += " first";
-										}
-
-										if (index === map.width - 1) {
-											className += " last";
-										}
-
-										const grip = document.createElement("a");
-
-										// 参考 DocFlow 样式：固定在表格顶边 (-12px) 的列头 grip
-										grip.style.cssText = `
-											position: absolute;
-											top: -12px;
-											left: 0;
-											right: -1px;
-											height: 12px;
-											background-color: #f5f5f5;
-											border-right: 1px solid oklch(0.922 0 0);
-											pointer-events: auto;
-											cursor: pointer;
-											text-decoration: none;
-										`;
-
-										grip.className = `${className} grid`;
-
-										//grip 元素里面添加个伪类元素
-										// 添加伪类元素：列选择指示器
-										// 使用 createTooltipElement 创建带 Tooltip 的元素
-										const { element: pseudoElement } = createTooltipElement({
-											text: "添加列",
-											index,
-											className: "grip-pseudo",
-											style: {
-												backgroundColor: "pink",
-											},
-											editor: this.editor,
-										});
-
-										grip.appendChild(pseudoElement);
-
-										//如果是最后一个元素 则 单独再添加一个伪类元素 最后一个元素的伪类元素 需要单独设置样式
-										if (index === map.width - 1) {
-											// 再添加一个指示器
-											const lastIndicator = document.createElement("div");
-											lastIndicator.style.cssText = `
-												position: absolute;
-										    top: -50%;
-												right: 0%;
-												transform: translate(50%, -50%);
-												width: 6px;
-												height: 6px;
-												background-color: pink;
-												border-radius: 50%;
-												opacity: 1;
-												transition: all 0.2s ease;
-											`;
-											lastIndicator.className = "grip-last-indicator";
-											grip.appendChild(lastIndicator);
-										}
-
-										// 检查是否在表格内或选中状态：编辑或选择时常显，离开时按悬停控制
-										// 当鼠标划过 table的时候 这个装饰器 也要显示出来
-										const shouldShow =
-											colSelected ||
-											(selection.$anchor && findTable(selection)) ||
-											(selection.$head && findTable(selection));
-										// 鼠标划过表格时通过 CSS :hover 控制显示
-
-										if (shouldShow) {
-											// 选中整列时高亮为蓝色
-											if (colSelected) {
-												grip.style.backgroundColor = "#3b82f6";
-											}
-										}
-										// 鼠标悬停时的显示/隐藏由 CSS :hover 控制
-
-										// 悬停显示效果
-										grip.addEventListener("mouseover", (e) => {
-											e.preventDefault();
-											e.stopImmediatePropagation();
-											console.log(e.target, e.currentTarget);
-											console.log("mouseenter11111111111");
-											console.log(e.target === grip);
-											pseudoElement.style.opacity = "1";
-											pseudoElement.style.transform =
-												"translate(-50%, -50%) scale(1.2)";
-											// 如果是最后一列，同时更新最后一个指示器
-											if (index === map.width - 1) {
-												const lastIndicator = grip.querySelector(
-													".grip-last-indicator",
-												) as HTMLElement;
-												if (lastIndicator) {
-													lastIndicator.style.opacity = "1";
-													lastIndicator.style.transform =
-														"translate(50%, -50%) scale(1.3)";
-												}
-											}
-										});
-
-										grip.addEventListener("mouseout", (e) => {
-											console.log(e.target, e.currentTarget);
-
-											console.log("mouseleave22222222222");
-											pseudoElement.style.opacity = "1";
-											pseudoElement.style.transform =
-												"translate(-50%, -50%) scale(1)";
-											// 如果是最后一列，同时更新最后一个指示器
-											if (index === map.width - 1) {
-												const lastIndicator = grip.querySelector(
-													".grip-last-indicator",
-												) as HTMLElement;
-												if (lastIndicator) {
-													lastIndicator.style.opacity = "1";
-													lastIndicator.style.transform =
-														"translate(50%, -50%) scale(1)";
-												}
-											}
-										});
-
-										// 在 grip 元素上监听，现在只会收到 grip 本身的点击
-										grip.addEventListener("mousedown", (event) => {
-											console.log(event.target, event.currentTarget);
-											console.log("mousedown");
-											event.preventDefault();
-											event.stopImmediatePropagation();
+									return createGrip({
+										className,
+										selected: colSelected,
+										onMouseDown: () => {
 											suppressScrollToSelection = true;
 											this.editor.view.dispatch(
 												selectColumn(index)(this.editor.state.tr),
 											);
-											// 点击后立即给予视觉高亮
-											grip.style.backgroundColor = "#3b82f6";
-											// 更新伪类元素状态
-											pseudoElement.style.backgroundColor = "#fff";
-											pseudoElement.style.transform =
-												"translate(-50%, -50%) scale(1.5)";
-											// 如果是最后一列，同时更新最后一个指示器
-											if (index === map.width - 1) {
-												const lastIndicator = grip.querySelector(
-													".grip-last-indicator",
-												) as HTMLElement;
-												if (lastIndicator) {
-													lastIndicator.style.backgroundColor = "#fff";
-													lastIndicator.style.transform =
-														"translate(50%, -50%) scale(1.8)";
-													lastIndicator.style.borderColor = "#3b82f6";
-												}
-											}
 											setTimeout(() => {
 												suppressScrollToSelection = false;
 											}, 0);
-											// 点按钮：在该列前插入一列
-										});
+										},
+									});
+								});
+								decorations.push(gripDeco);
 
-										return grip;
-									}),
-								);
+								// 2) pseudo 装饰器：负责“添加列”按钮（相互独立，不嵌入 grip）
+								const addBtnDeco = Decoration.widget(pos + 1, () => {
+									const { element } = createTooltipElement({
+										text: "添加列",
+										index,
+										className: "grip-pseudo",
+										style: {},
+										editor: this.editor,
+									});
+									// 默认可见度由 CSS/事件控制
+									return element;
+								});
+								decorations.push(addBtnDeco);
+
+								//如果是最后一个元素 则再添加一个添加列的按钮
+								if (index === map.width - 1) {
+									const addBtnDeco = Decoration.widget(pos + 1, () => {
+										const { element } = createTooltipElement({
+											text: "添加列",
+											index: index + 1,
+											className: "grip-pseudo",
+											style: {
+												top: "-20px",
+												right: "-3%",
+												left: "auto",
+											},
+											editor: this.editor,
+										});
+										// 默认可见度由 CSS/事件控制
+										return element;
+									});
+									decorations.push(addBtnDeco);
+								}
 							}
 						}
 
