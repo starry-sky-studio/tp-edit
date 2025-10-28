@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useImageControls } from "@/hooks/use-image-controls";
 import { useImageSelection } from "@/hooks/use-image-selection";
 import { Loading } from "@/styles/svg";
+import CalloutMenu from "./components/Callout/callout-menu";
 import Footer from "./components/Footer";
 import BubbleMenuComp from "./components/Menus/BubbleMenu/index";
 import FixedMenuComp from "./components/Menus/FixedMenu/index";
@@ -57,6 +58,7 @@ const Tiptap = () => {
 		<div className="relative h-screen w-[1200px] bg-white">
 			<FixedMenuComp editor={editor} />
 			<BubbleMenuComp editor={editor} />
+			<CalloutMenu editor={editor} />
 			<div className="relative">
 				<EditorContent
 					className="w-full [&_.ProseMirror]:w-full [&_.ProseMirror]:max-w-none"

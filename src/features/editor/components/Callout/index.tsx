@@ -14,7 +14,7 @@ import EmojiPicker from "../EmojiPicker";
 const CalloutView = (props: ReactNodeViewProps) => {
 	const { node, updateAttributes } = props;
 
-	const { icon, backgroundColor } = node.attrs;
+	const { icon, backgroundColor, textColor, borderColor } = node.attrs;
 
 	const handleEmojiSelect = (emoji: any) => {
 		updateAttributes({ icon: emoji.native });
@@ -23,8 +23,10 @@ const CalloutView = (props: ReactNodeViewProps) => {
 	return (
 		<NodeViewWrapper>
 			<div
-				className="flex p-3 rounded-md border border-rose-200 my-1"
-				style={{ backgroundColor }}
+				className="callout-node flex p-3 rounded-md border my-1"
+				style={{
+					backgroundColor,
+				}}
 			>
 				<div className="flex items-start mr-3 text-lg" contentEditable={false}>
 					<DropdownMenu modal={false}>
