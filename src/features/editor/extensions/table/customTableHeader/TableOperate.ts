@@ -1,5 +1,8 @@
 export type GripStyleOverrides = Partial<CSSStyleDeclaration>;
 
+import { addTableColumn, addTableRow } from "../index";
+//主要添加table 行列头部的自己元素操作 点击可以选择改行或者改列
+
 export interface CreateGripOptions {
 	className: string;
 	selected: boolean;
@@ -7,12 +10,12 @@ export interface CreateGripOptions {
 	styleOverrides?: GripStyleOverrides;
 }
 
-export interface CreateAddRowButtonOptions {
+export interface CreateAddButtonOptions {
 	text?: string;
 	className?: string;
 	style?: Record<string, string>;
 	onClick?: () => void;
-	rowIndex?: number;
+	index?: number;
 	editor?: any;
 }
 
@@ -20,7 +23,9 @@ export interface CreateAddRowButtonOptions {
  * 创建列选择 grip（仅负责选择交互，不包含其他子元素）
  * 由调用方负责把它作为 Decoration.widget 的返回 DOM 使用
  */
-export const createGrip = (options: CreateGripOptions): HTMLAnchorElement => {
+export const createColumnsGrip = (
+	options: CreateGripOptions,
+): HTMLAnchorElement => {
 	const { className, selected, onMouseDown, styleOverrides } = options;
 
 	const grip = document.createElement("a");
@@ -55,7 +60,7 @@ export const createGrip = (options: CreateGripOptions): HTMLAnchorElement => {
 };
 
 /**
- * 创建行选择 grip（包含绿色装饰条）
+ * 创建行选择 grip
  * 由调用方负责把它作为 Decoration.widget 的返回 DOM 使用
  */
 export const createRowGrip = (
@@ -98,14 +103,14 @@ export const createRowGrip = (
  * 返回包含 element 和 cleanup 函数的对象
  */
 export const createAddRowButton = (
-	options: CreateAddRowButtonOptions,
+	options: CreateAddButtonOptions,
 ): { element: HTMLDivElement; cleanup: () => void } => {
 	const {
 		text = "添加行",
 		className = "grip-pseudo rounded-full size-4 absolute bg-green-100",
 		style = {},
 		onClick,
-		rowIndex,
+		index,
 		editor,
 	} = options;
 
@@ -183,9 +188,8 @@ export const createAddRowButton = (
 	const onMouseDown = (e: MouseEvent) => {
 		e.stopPropagation();
 		onClick?.();
-		if (rowIndex !== undefined && editor) {
-			// 这里可以添加添加行的逻辑
-			console.log(`添加行到索引: ${rowIndex}`);
+		if (index !== undefined && editor) {
+			addTableRow(editor, index);
 		}
 	};
 	buttonElement.addEventListener("mousedown", onMouseDown as any);
@@ -200,6 +204,121 @@ export const createAddRowButton = (
 			buttonElement.removeEventListener("mouseover", onMouseOver as any);
 			buttonElement.removeEventListener("mouseout", onMouseOut as any);
 			buttonElement.removeEventListener("mousedown", onMouseDown as any);
+			if (tooltip.parentNode) {
+				tooltip.parentNode.removeChild(tooltip);
+			}
+		},
+	};
+};
+
+/**
+ * 创建添加列按钮（带悬停提示）
+ * 返回包含 element 和 cleanup 函数的对象
+ */
+export const createAddColumnButton = ({
+	text = "添加列",
+	className = "grip-pseudo rounded-full size-4 absolute bg-green-100",
+	style = {},
+	onClick,
+	index,
+	editor,
+}: CreateAddButtonOptions) => {
+	// 创建可交互的元素 圆点
+
+	const tooltipElement = document.createElement("div");
+	// 防抖/清理相关引用，避免内存泄露
+	let mounted = true;
+	let rafId: number | null = null;
+	tooltipElement.className = className;
+
+	// 将 React.CSSProperties 的 camelCase 转为 CSS kebab-case
+	const overrideCss = Object.entries(style)
+		.map(
+			([key, value]) =>
+				`${key.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase())}: ${value}`,
+		)
+		.join("; ");
+
+	tooltipElement.style.cssText = `
+			position: absolute;
+			top: -20px;
+			left: 0%;
+			transform: translate(-50%, -50%);
+			width: 6px;
+			height: 6px;
+			background-color: pink;
+			border-radius: 50%;
+			transition: all 0.2s ease;
+			cursor: pointer;
+			${overrideCss}
+`;
+
+	// 创建 Tooltip 提示框
+
+	const tooltip = document.createElement("div");
+	tooltip.className = "custom-tooltip";
+	tooltip.textContent = text;
+	tooltip.style.cssText = `
+		position: absolute;
+		top: -50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background: rgba(0, 0, 0, 0.8);
+		color: white;
+		padding: 4px 8px;
+		border-radius: 4px;
+		font-size: 12px;
+		white-space: nowrap;
+		z-index: 1000;
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.2s ease;
+`;
+
+	// 添加鼠标事件
+
+	const onMouseOver = (e: MouseEvent) => {
+		e.stopPropagation();
+		tooltipElement.style.transform = "translate(-50%, -50%) scale(5)";
+		if (rafId) cancelAnimationFrame(rafId);
+		rafId = requestAnimationFrame(() => {
+			if (!mounted) return;
+			const rect = tooltipElement.getBoundingClientRect();
+			tooltip.style.position = "fixed";
+			tooltip.style.top = `${Math.round(rect.top - 10)}px`;
+			tooltip.style.left = `${Math.round(rect.left + rect.width / 2)}px`;
+			tooltip.style.transform = "translate(-50%, -100%)";
+			tooltip.style.opacity = "1";
+		});
+	};
+	tooltipElement.addEventListener("mouseover", onMouseOver as any);
+
+	const onMouseOut = (e: MouseEvent) => {
+		e.stopPropagation();
+		tooltipElement.style.transform = "translate(-50%, -50%) scale(1)";
+		tooltip.style.opacity = "0";
+	};
+	tooltipElement.addEventListener("mouseout", onMouseOut as any);
+
+	const onMouseDown = (e: MouseEvent) => {
+		e.stopPropagation();
+		onClick?.();
+		if (index !== undefined && editor) {
+			addTableColumn(editor, index);
+		}
+	};
+	tooltipElement.addEventListener("mousedown", onMouseDown as any);
+
+	document.body.appendChild(tooltip);
+
+	return {
+		element: tooltipElement,
+		cleanup: () => {
+			mounted = false;
+			if (rafId) cancelAnimationFrame(rafId);
+			tooltipElement.removeEventListener("mouseover", onMouseOver as any);
+			tooltipElement.removeEventListener("mouseout", onMouseOut as any);
+			tooltipElement.removeEventListener("mousedown", onMouseDown as any);
 			if (tooltip.parentNode) {
 				tooltip.parentNode.removeChild(tooltip);
 			}

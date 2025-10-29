@@ -5,8 +5,7 @@ import { NodeSelection, Plugin } from "@tiptap/pm/state";
 import type { Rect } from "@tiptap/pm/tables";
 import { CellSelection, TableMap } from "@tiptap/pm/tables";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
-import { createTooltipElement } from "./AddItem";
-import { createGrip } from "./TableOperate";
+import { createAddColumnButton, createColumnsGrip } from "../index";
 
 // 表格工具函数（简化版）
 const findTable = (selection: Selection) =>
@@ -147,7 +146,7 @@ export const TableHeader = TiptapTableHeader.extend({
 									if (index === 0) className += " first";
 									if (index === map.width - 1) className += " last";
 
-									return createGrip({
+									return createColumnsGrip({
 										className,
 										selected: colSelected,
 										onMouseDown: () => {
@@ -165,7 +164,7 @@ export const TableHeader = TiptapTableHeader.extend({
 
 								// 2) pseudo 装饰器：负责“添加列”按钮（相互独立，不嵌入 grip）
 								const addBtnDeco = Decoration.widget(pos + 1, () => {
-									const { element } = createTooltipElement({
+									const { element } = createAddColumnButton({
 										text: "添加列",
 										index,
 										className: "grip-pseudo",
@@ -180,12 +179,11 @@ export const TableHeader = TiptapTableHeader.extend({
 								//如果是最后一个元素 则再添加一个添加列的按钮
 								if (index === map.width - 1) {
 									const addBtnDeco = Decoration.widget(pos + 1, () => {
-										const { element } = createTooltipElement({
+										const { element } = createAddColumnButton({
 											text: "添加列",
 											index: index + 1,
 											className: "grip-pseudo",
 											style: {
-												top: "-20px",
 												right: "-3%",
 												left: "auto",
 											},

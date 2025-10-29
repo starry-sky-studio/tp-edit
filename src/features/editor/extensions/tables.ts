@@ -1,9 +1,6 @@
 // import { Table, TableKit } from "@tiptap/extension-table";
 
-import { TableCell } from "./table/TableCell";
-import { TableHeader } from "./table/TableHeader";
-import { TableRow } from "./table/TableRow";
-import { SelectableTable } from "./table/table";
+import { SelectableTable, TableCell, TableHeader, TableRow } from "./table";
 
 // 表格相关扩展：
 // - 不使用真实表头节点（tableHeader），表格行仅允许 tableCell
