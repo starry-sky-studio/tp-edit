@@ -2,7 +2,7 @@ import { mergeAttributes, Node } from "@tiptap/core";
 import { TableCell as TiptapTableCell } from "@tiptap/extension-table"; // 引入官方的 TableCell 扩展
 import { Plugin } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
-import { createAddRowButton, createGrip, createRowGrip } from "./TableOperate"; // 导入新的行操作组件创建函数
+import { createAddRowButton, createColumnsGrip } from "./index"; // 导入新的行操作组件创建函数
 
 // 假设这些工具函数在 'utils' 文件中
 import { getCellsInColumn, isRowSelected, selectRow } from "./utils"; // 导入实际的工具函数
@@ -117,10 +117,10 @@ export const TableCell = TiptapTableCell.extend<TableCellOptions>({
 								// 1) 行选择器装饰器 - 使用 createRowGrip 替代手动 DOM 创建
 								decorations.push(
 									Decoration.widget(pos + 1, () => {
-										return createGrip({
+										return createColumnsGrip({
 											className,
 											selected: rowSelected,
-											onMouseDown: (event) => {
+											onMouseDown: (event: MouseEvent) => {
 												event.preventDefault();
 												event.stopImmediatePropagation();
 												// 选择整行
@@ -128,10 +128,7 @@ export const TableCell = TiptapTableCell.extend<TableCellOptions>({
 													selectRow(index)(this.editor.state.tr),
 												);
 											},
-											// 				top: -12px;
-											// left: 0;
-											// right: -1px;
-											// height: 12px;
+
 											styleOverrides: {
 												left: "-12px",
 												top: "0",
@@ -146,31 +143,63 @@ export const TableCell = TiptapTableCell.extend<TableCellOptions>({
 								);
 
 								// 2) 添加行按钮装饰器（相互独立，不嵌入 grip）
-								// 假设我们想要在每行下方添加一个“添加行”按钮。
-								// 我们可以将它定位在单元格内容的结束位置。
-								// 这里的 pos + 2 可能需要根据实际表格结构调整，以确保它在正确的位置。
-								// 暂时使用 pos + 2 作为示例。
-								const addRowDeco = Decoration.widget(pos + 2, () => {
-									const { element } = createAddRowButton({
-										text: "添加行",
-										rowIndex: index,
-										className: "grip-pseudo",
-										style: {
-											backgroundColor: "pink",
-											top: "0%",
-											left: "-10%",
-										},
-										editor: this.editor,
-									});
-									return element;
-								});
+								// 使用侧边定位避免影响光标位置
+								const addRowDeco = Decoration.widget(
+									pos + 1,
+									() => {
+										const { element } = createAddRowButton({
+											text: "添加行",
+											index: index,
+											className: "grip-pseudo",
+											style: {
+												backgroundColor: "pink",
+												top: "0%",
+												left: "-10%",
+												position: "absolute",
+												pointerEvents: "auto",
+											},
+											editor: this.editor,
+										});
+										// 确保不影响文档流
+										element.style.position = "absolute";
+										element.style.zIndex = "10";
+										return element;
+									},
+									{ side: -1 },
+								); // 使用 side: -1 避免光标偏移
 								decorations.push(addRowDeco);
 
 								//如果是最后一行 再添加格 添加行的
+								if (index === cells.length - 1) {
+									const addRowDeco = Decoration.widget(
+										pos + 1,
+										() => {
+											const { element } = createAddRowButton({
+												text: "添加行",
+												index: index + 1,
+												className: "grip-pseudo",
+												style: {
+													backgroundColor: "pink",
+													top: "auto",
+													bottom: "-5px",
+													left: "-10%",
+													position: "absolute",
+													pointerEvents: "auto",
+												},
+												editor: this.editor,
+											});
+											// 确保不影响文档流
+											element.style.position = "absolute";
+											element.style.zIndex = "10";
+											return element;
+										},
+										{ side: -1 },
+									); // 使用 side: -1 避免光标偏移
+									decorations.push(addRowDeco);
+								}
 							});
 						}
 
-						// 创建并返回装饰器集合
 						return DecorationSet.create(doc, decorations);
 					},
 				},
