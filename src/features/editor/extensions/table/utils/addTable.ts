@@ -73,7 +73,6 @@ export const addTableColumn = (editor: Editor, columnIndex?: number) => {
 		// 目标：在最后一列 (index: columnCount - 1) 之后插入。
 		if (columnIndex === columnCount) {
 			// 1. 计算最后一列在第一行中的单元格的起始位置 (<td> 节点位置)。
-			// tableStartPos + 1 是 <tr> 的起始位置。
 			// tableStartPos + 2 是第一个 <td> 的起始位置。
 			let cellStartPos = tableStartPos + 2;
 
@@ -83,27 +82,27 @@ export const addTableColumn = (editor: Editor, columnIndex?: number) => {
 				cellStartPos += cell.nodeSize;
 			}
 
-			// posInLastCell 是最后一列的内容起始安全位置: <td> (cellStartPos) + 1 (内容)
-			const posInLastCell = cellStartPos + 1;
+			// posForCommand 是最后一列的内容起始安全位置: <td> (cellStartPos) + 1 (内容)
+			// 这是执行 addColumnAfter 命令所需要的定位点
+			const posForCommand = cellStartPos + 1;
 			const lastCellNode = firstRow.child(columnCount - 1);
 
-			// 新列的第一个单元格的内容起始位置 (修正 +2 -> +1):
+			// posInNewCell 是新插入列的第一个单元格的内容起始位置（默认 <p> 内部）:
 			// NewCellStart (插入的 <td> 节点起始) = cellStartPos + lastCellNode.nodeSize
-			// NewCellContentStart = NewCellStart + 1
-			const posInNewCell = cellStartPos + lastCellNode.nodeSize + 1; // 修正光标位置
+			// NewCellContentStart inside <p> = NewCellStart + 2
+			const posInNewCell = cellStartPos + lastCellNode.nodeSize + 2;
 
-			// 选区定位到倒数第二列的内部，然后执行 addColumnAfter
+			// 选区定位到最后一列的内部，然后执行 addColumnAfter
 			editor
 				.chain()
 				.focus()
-				.setTextSelection(posInLastCell)
+				.setTextSelection(posForCommand)
 				.addColumnAfter()
 				.run();
 
 			// 光标定位到新插入的列的内容起始位置
 			setTimeout(() => {
 				if (editor.isDestroyed) return;
-				// 使用 commands 直接设置选区和聚焦，跳过 chain，提高命令执行的即时性
 				editor.commands.setTextSelection(posInNewCell);
 				editor.commands.focus();
 			}, 0);
@@ -111,8 +110,8 @@ export const addTableColumn = (editor: Editor, columnIndex?: number) => {
 		}
 
 		// 3. 计算目标单元格的内部位置 (用于 addColumnBefore)
-		// tableStartPos + 2: 第一个 <td> 的起始位置
-		let cellStartPos = tableStartPos + 2;
+		// cellStartPos 是目标列 (columnIndex) 的 <td> 节点起始位置
+		let cellStartPos = tableStartPos + 2; // 从第一个 <td> 开始计算
 
 		// 遍历到目标列 **之前** 的所有单元格，累加它们的 nodeSize
 		for (let i = 0; i < columnIndex; i++) {
@@ -120,17 +119,27 @@ export const addTableColumn = (editor: Editor, columnIndex?: number) => {
 			cellStartPos += cell.nodeSize;
 		}
 
-		// posInCell (目标列的内容起始安全位置: <td> + 1)
-		const posInCell = cellStartPos + 1;
+		// posForCommand 是目标列的内容起始位置: <td> + 1
+		// 这是执行 addColumnBefore 命令所需要的定位点
+		const posForCommand = cellStartPos + 1;
+
+		// posInNewCell 是新插入列的光标定位位置（默认 <p> 内部）: <td> + 2
+		// 因为新列插入在前面，它占据了原来的 cellStartPos 位置
+		const posInNewCell = cellStartPos + 2;
 
 		// 4. 执行文档修改命令
-		// 选区定位到目标列内部，然后执行 addColumnBefore
-		editor.chain().focus().setTextSelection(posInCell).addColumnBefore().run();
+		// 选区定位到目标列内部 (posForCommand)，然后执行 addColumnBefore
+		editor
+			.chain()
+			.focus()
+			.setTextSelection(posForCommand)
+			.addColumnBefore()
+			.run();
 
-		// 新列的内容起始位置就是目标列原来的位置 (因为新列插入在前面)
+		// 光标定位到新插入列的默认 <p> 内容起始位置
 		setTimeout(() => {
 			if (editor.isDestroyed) return;
-			editor.commands.setTextSelection(posInCell);
+			editor.commands.setTextSelection(posInNewCell);
 			editor.commands.focus();
 		}, 0);
 	} catch (error) {
@@ -194,11 +203,12 @@ export const addTableRow = (editor: Editor, rowIndex?: number) => {
 			targetRowStartPos += row.nodeSize;
 		}
 
-		// 3. 定位到目标行的第一个单元格的内容起始位置 (Pos + 2: <tr> + <td> + Content)
+		// 3. posForCommand: 目标行的第一个单元格的内容起始位置 (Pos + 2: <tr> + <td> + Content Start)
+		// 这是执行 addRow... 命令所需要的定位点
 		// targetRowStartPos 是 <tr> 节点的位置。
-		// targetRowStartPos + 1 是 <td> 节点的位置。
-		// targetRowStartPos + 2 是 <td> 内容的起始位置。
-		const posInFirstCell = targetRowStartPos + 2;
+		// targetRowStartPos + 1 是第一个 <td> 节点的位置。
+		// posForCommand (targetRowStartPos + 2) 是 <td> 内容的起始位置。
+		const posForCommand = targetRowStartPos + 2;
 
 		let posInNewRowFirstCell: number;
 
@@ -208,31 +218,31 @@ export const addTableRow = (editor: Editor, rowIndex?: number) => {
 			editor
 				.chain()
 				.focus()
-				.setTextSelection(posInFirstCell)
+				.setTextSelection(posForCommand)
 				.addRowAfter()
 				.run();
 
 			// 新行插入在目标行之后，其第一个单元格的内容起始位置:
 			// NewRowStart = targetRowStartPos + targetRowNode.nodeSize
-			// posInNewRowFirstCell = NewRowStart + 2
+			// posInNewRowFirstCell = NewRowStart + 2 (默认 <p> 内部)
 			posInNewRowFirstCell = targetRowStartPos + targetRowNode.nodeSize + 2;
 		} else {
 			// 在 rowIndex 之前插入 (使用 addRowBefore)
 			editor
 				.chain()
 				.focus()
-				.setTextSelection(posInFirstCell)
+				.setTextSelection(posForCommand)
 				.addRowBefore()
 				.run();
 
-			// 新行插入在目标行之前，其第一个单元格的内容起始位置就是目标行原来的位置: targetRowStartPos + 2
+			// 新行插入在目标行之前，其第一个单元格的内容起始位置就是目标行原来的位置: targetRowStartPos + 2 (默认 <p> 内部)
 			posInNewRowFirstCell = targetRowStartPos + 2;
 		}
 
 		// 5. 光标定位到新插入的行
 		setTimeout(() => {
 			if (editor.isDestroyed) return;
-			editor.commands.setTextSelection(posInNewRowFirstCell);
+			editor.commands.setTextSelection(posInNewRowFirstCell + 1);
 			editor.commands.focus();
 		}, 0);
 	} catch (error) {

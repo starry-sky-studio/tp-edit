@@ -78,18 +78,7 @@ const selectColumn = (columnIndex: number) => (tr: Transaction) => {
 // - 基于 decorations 在第一行每个单元格上方插入绝对定位的交互区
 export const TableHeader = TiptapTableHeader.extend({
 	addProseMirrorPlugins() {
-		// 标记：由列/行 grip 触发的选择，抑制滚动到选区
 		let suppressScrollToSelection = false;
-		// 自定义头部操作按钮的显示状态
-		// let showCustomHeader = false;
-
-		// 监听自定义事件，显示/隐藏自定义头部操作按钮
-		// document.addEventListener("tableHover", (event: any) => {
-		// 	const { table, show } = event.detail;
-		// 	showCustomHeader = show;
-		// 	// 强制重新渲染装饰器
-		// 	this.editor.view.dispatch(this.editor.state.tr);
-		// });
 
 		return [
 			new Plugin({
