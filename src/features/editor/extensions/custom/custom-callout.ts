@@ -1,4 +1,5 @@
-import { InputRule, mergeAttributes, Node } from "@tiptap/core";
+import { findParentNode, InputRule, mergeAttributes, Node } from "@tiptap/core";
+import { TextSelection } from "@tiptap/pm/state";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 
 interface CalloutOptions {
@@ -81,6 +82,50 @@ export const Callout = Node.create<CalloutOptions>({
 
 	addNodeView() {
 		return ReactNodeViewRenderer(this.options.view);
+	},
+
+	addKeyboardShortcuts() {
+		return {
+			Backspace: ({ editor }) => {
+				const { state, view } = editor;
+				const { selection } = state;
+
+				if (!selection.empty) return false; // (1)如果选中内容，不处理
+
+				const { $from } = selection;
+				if ($from.parentOffset !== 0) return false; // (2)如果光标不是在节点开头，不处理
+
+				const previousPosition = $from.before($from.depth) - 1;
+				if (previousPosition < 1) return false; // (3)如果没有上一个节点，不处理
+
+				const previousPos = state.doc.resolve(previousPosition);
+				if (!previousPos?.parent) return false; // (4)解析失败，不处理
+
+				const previousNode = previousPos.parent;
+				const parentNode = findParentNode(() => true)(selection);
+				if (!parentNode) return false;
+
+				const { node, pos, depth } = parentNode;
+				if (depth !== 1) return false; // (5)如果是嵌套的节点，不处理
+
+				// (6)如果前一个节点是 callout，且当前节点不是 callout
+				if (node.type !== this.type && previousNode.type === this.type) {
+					const { content, nodeSize } = node;
+					const { tr } = state;
+
+					tr.delete(pos, pos + nodeSize);
+					tr.setSelection(
+						TextSelection.near(tr.doc.resolve(previousPosition - 1)),
+					);
+					tr.insert(previousPosition - 1, content);
+					view.dispatch(tr);
+
+					return true;
+				}
+
+				return false;
+			},
+		};
 	},
 
 	/**
