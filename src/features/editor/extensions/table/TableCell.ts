@@ -154,7 +154,7 @@ export const TableCell = TiptapTableCell.extend<TableCellOptions>({
 											className: "grip-pseudo",
 											style: {
 												top: "0%",
-												left: "-10%",
+												left: "-18px",
 												position: "absolute",
 												pointerEvents: "auto",
 											},
@@ -181,7 +181,7 @@ export const TableCell = TiptapTableCell.extend<TableCellOptions>({
 												style: {
 													top: "auto",
 													bottom: "-5px",
-													left: "-10%",
+													left: "-18px",
 													position: "absolute",
 													pointerEvents: "auto",
 												},
