@@ -36,11 +36,12 @@ export const createColumnsGrip = (
     left: 0;
     right: -1px;
     height: 12px;
-    background-color: ${selected ? "#3b82f6" : "#f5f5f5"};
+    background-color: ${selected ? "var(--color-primary)" : "#f5f5f5"};
     border-right: 1px solid oklch(0.922 0 0);
     pointer-events: auto;
     cursor: pointer;
     text-decoration: none;
+		transition: background-color 0.2s ease;
   `;
 
 	if (styleOverrides) {
@@ -49,6 +50,14 @@ export const createColumnsGrip = (
 			grip.style[k] = v as any;
 		});
 	}
+	//鼠标划过 颜色变成 --color-primary
+	grip.addEventListener("mouseover", () => {
+		grip.style.backgroundColor = "var(--color-primary)";
+	});
+
+	grip.addEventListener("mouseout", () => {
+		grip.style.backgroundColor = selected ? "var(--color-primary)" : "#f5f5f5";
+	});
 
 	grip.addEventListener("mousedown", (event) => {
 		event.preventDefault();
@@ -76,10 +85,11 @@ export const createRowGrip = (
 		top: 0;
 		width: 12px;
 		height: 100%;
-		background-color: ${selected ? "#3b82f6" : "#f5f5f5"};
+		background-color: ${selected ? "var(--color-primary)" : "#f5f5f5"};
 		border-bottom: 1px solid oklch(0.922 0 0);
 		cursor: pointer;
 		text-decoration: none;
+		transition: background-color 0.2s ease;
 	`;
 
 	if (styleOverrides) {
@@ -88,6 +98,14 @@ export const createRowGrip = (
 			grip.style[k] = v as any;
 		});
 	}
+
+	grip.addEventListener("mouseover", () => {
+		grip.style.backgroundColor = "var(--color-primary)";
+	});
+
+	grip.addEventListener("mouseout", () => {
+		grip.style.backgroundColor = selected ? "var(--color-primary)" : "#f5f5f5";
+	});
 
 	grip.addEventListener("mousedown", (event) => {
 		event.preventDefault();
@@ -135,7 +153,7 @@ export const createAddRowButton = (
 		transform: translate(-50%, -50%);
 		width: 6px;
 		height: 6px;
-		background-color: pink;
+	  background-color: #dddddd;
 		border-radius: 50%;
 		transition: all 0.2s ease;
 		cursor: pointer;
@@ -164,7 +182,8 @@ export const createAddRowButton = (
 
 	const onMouseOver = (e: MouseEvent) => {
 		e.stopPropagation();
-		buttonElement.style.transform = "translate(-50%, -50%) scale(5)";
+		buttonElement.style.transform = "translate(-50%, -50%) scale(3)";
+		buttonElement.style.backgroundColor = "var(--color-primary)";
 		if (rafId) cancelAnimationFrame(rafId);
 		rafId = requestAnimationFrame(() => {
 			if (!mounted) return;
@@ -181,6 +200,7 @@ export const createAddRowButton = (
 	const onMouseOut = (e: MouseEvent) => {
 		e.stopPropagation();
 		buttonElement.style.transform = "translate(-50%, -50%) scale(1)";
+		buttonElement.style.backgroundColor = "#dddddd";
 		tooltip.style.opacity = "0";
 	};
 	buttonElement.addEventListener("mouseout", onMouseOut as any);
@@ -246,7 +266,7 @@ export const createAddColumnButton = ({
 			transform: translate(-50%, -50%);
 			width: 6px;
 			height: 6px;
-			background-color: pink;
+			background-color: #dddddd;
 			border-radius: 50%;
 			transition: all 0.2s ease;
 			cursor: pointer;
@@ -279,7 +299,8 @@ export const createAddColumnButton = ({
 
 	const onMouseOver = (e: MouseEvent) => {
 		e.stopPropagation();
-		tooltipElement.style.transform = "translate(-50%, -50%) scale(5)";
+		tooltipElement.style.transform = "translate(-50%, -50%) scale(3)";
+		tooltipElement.style.backgroundColor = "var(--color-primary)";
 		if (rafId) cancelAnimationFrame(rafId);
 		rafId = requestAnimationFrame(() => {
 			if (!mounted) return;
@@ -296,6 +317,7 @@ export const createAddColumnButton = ({
 	const onMouseOut = (e: MouseEvent) => {
 		e.stopPropagation();
 		tooltipElement.style.transform = "translate(-50%, -50%) scale(1)";
+		tooltipElement.style.backgroundColor = "#dddddd";
 		tooltip.style.opacity = "0";
 	};
 	tooltipElement.addEventListener("mouseout", onMouseOut as any);

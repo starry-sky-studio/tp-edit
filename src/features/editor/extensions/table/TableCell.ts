@@ -2,10 +2,13 @@ import { mergeAttributes } from "@tiptap/core";
 import { TableCell as TiptapTableCell } from "@tiptap/extension-table"; // 引入官方的 TableCell 扩展
 import { Plugin } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
-import { createAddRowButton, createColumnsGrip } from "./index"; // 导入新的行操作组件创建函数
-
-// 假设这些工具函数在 'utils' 文件中
-import { getCellsInColumn, isRowSelected, selectRow } from "./utils"; // 导入实际的工具函数
+import {
+	createAddRowButton,
+	createColumnsGrip,
+	getCellsInColumn,
+	isRowSelected,
+	selectRow,
+} from "./index"; // 导入实际的工具函数
 
 /**
  * 表格单元格选项接口
@@ -21,8 +24,6 @@ export interface TableCellOptions {
  * 例如 addProseMirrorPlugins 来添加行选择器。
  */
 export const TableCell = TiptapTableCell.extend<TableCellOptions>({
-	// 仅覆盖必要的选项和属性，继承其他所有配置（如 name, content, tableRole, parseHTML）
-
 	/**
 	 * 覆盖 addOptions 来设置自定义选项，同时调用父级默认选项
 	 */
@@ -152,7 +153,6 @@ export const TableCell = TiptapTableCell.extend<TableCellOptions>({
 											index: index,
 											className: "grip-pseudo",
 											style: {
-												backgroundColor: "pink",
 												top: "0%",
 												left: "-10%",
 												position: "absolute",
@@ -179,7 +179,6 @@ export const TableCell = TiptapTableCell.extend<TableCellOptions>({
 												index: index + 1,
 												className: "grip-pseudo",
 												style: {
-													backgroundColor: "pink",
 													top: "auto",
 													bottom: "-5px",
 													left: "-10%",

@@ -4,3 +4,4 @@ export * from "./TableCell";
 export * from "./TableRow";
 export * from "./table";
 export * from "./utils/addTable";
+export * from "./utils/utilsTable";
