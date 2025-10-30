@@ -169,7 +169,6 @@ const TableMenus = ({ editor }: { editor: Editor | null }) => {
 
 	return (
 		<div className="flex relative h-10 items-center w-full justify-start gap-0.5  px-2">
-			<Heading editor={editor} />
 			<Tooltip>
 				<TooltipTrigger>
 					<div
@@ -185,6 +184,7 @@ const TableMenus = ({ editor }: { editor: Editor | null }) => {
 					</p>
 				</TooltipContent>
 			</Tooltip>
+			<Heading editor={editor} />
 			<TextAlign editor={editor} />
 			<TextStyles editor={editor} />
 			<ColorComp editor={editor} />
