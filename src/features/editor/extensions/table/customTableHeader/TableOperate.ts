@@ -148,7 +148,7 @@ export const createAddRowButton = (
 
 	buttonElement.style.cssText = `
 		position: absolute;
-		top: -50%;
+		top: -12px;
 		left: 0%;
 		transform: translate(-50%, -50%);
 		width: 6px;
@@ -165,7 +165,7 @@ export const createAddRowButton = (
 	tooltip.textContent = text;
 	tooltip.style.cssText = `
 		position: absolute;
-		top: -50%;
+		top: -12px;
 		left: 50%;
 		transform: translate(-50%, -50%);
 		background: rgba(0, 0, 0, 0.8);
