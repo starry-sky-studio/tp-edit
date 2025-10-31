@@ -2,13 +2,8 @@ import { mergeAttributes } from "@tiptap/core";
 import { TableCell as TiptapTableCell } from "@tiptap/extension-table"; // 引入官方的 TableCell 扩展
 import { Plugin } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
-import {
-	createAddRowButton,
-	createColumnsGrip,
-	getCellsInColumn,
-	isRowSelected,
-	selectRow,
-} from "./index"; // 导入实际的工具函数
+import { getCellsInColumn, isRowSelected, selectRow } from "@/utils";
+import { createAddRowButton, createColumnsGrip } from "./index"; // 导入实际的工具函数
 
 /**
  * 表格单元格选项接口

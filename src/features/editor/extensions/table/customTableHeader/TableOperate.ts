@@ -1,6 +1,6 @@
 export type GripStyleOverrides = Partial<CSSStyleDeclaration>;
 
-import { addTableColumn, addTableRow } from "../index";
+import { addTableColumn, addTableRow } from "@/utils";
 //主要添加table 行列头部的自己元素操作 点击可以选择改行或者改列
 
 export interface CreateGripOptions {
