@@ -1,6 +1,6 @@
 import { mergeAttributes } from "@tiptap/core";
 import { TableCell as TiptapTableCell } from "@tiptap/extension-table"; // 引入官方的 TableCell 扩展
-import { Plugin } from "@tiptap/pm/state";
+import { Plugin, PluginKey, TextSelection } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import { getCellsInColumn, isRowSelected, selectRow } from "@/utils";
 import { createAddRowButton, createColumnsGrip } from "./index"; // 导入实际的工具函数
@@ -60,12 +60,76 @@ export const TableCell = TiptapTableCell.extend<TableCellOptions>({
 	 * 为表格单元格添加行选择器功能和表格悬停检测
 	 */
 	addProseMirrorPlugins() {
+		// 轻量 Hover 状态：记录鼠标悬停所在表格的文档位置（用于在 hover 时也显示行装饰器）
+		const hoverPluginKey = new PluginKey<{ hoveredTablePos: number | null }>(
+			"tableCellHover",
+		);
+
 		return [
 			// 必须保留父级插件，通常是 prosemirror-tables 相关的插件
 			...(this.parent?.() || []),
 
 			new Plugin({
+				key: hoverPluginKey,
+				state: {
+					init: (): { hoveredTablePos: number | null } => ({
+						hoveredTablePos: null,
+					}),
+					apply(
+						tr,
+						value: { hoveredTablePos: number | null },
+					): { hoveredTablePos: number | null } {
+						const meta = tr.getMeta(hoverPluginKey as any) as
+							| { hoveredTablePos: number | null }
+							| undefined;
+						if (meta && "hoveredTablePos" in meta) {
+							return { hoveredTablePos: meta.hoveredTablePos };
+						}
+						return value;
+					},
+				},
 				props: {
+					handleDOMEvents: {
+						mousemove: (view, event) => {
+							const e = event as MouseEvent;
+							const target = e.target as HTMLElement | null;
+							const tableEl = target?.closest?.("table") as HTMLElement | null;
+							const current =
+								hoverPluginKey.getState(view.state)?.hoveredTablePos ?? null;
+							if (!tableEl) {
+								if (current !== null) {
+									const tr = view.state.tr.setMeta(hoverPluginKey, {
+										hoveredTablePos: null,
+									});
+									view.dispatch(tr);
+								}
+								return false;
+							}
+							const posInfo = view.posAtCoords({
+								left: e.clientX,
+								top: e.clientY,
+							});
+							if (!posInfo) return false;
+							if (posInfo.pos !== current) {
+								const tr = view.state.tr.setMeta(hoverPluginKey, {
+									hoveredTablePos: posInfo.pos,
+								});
+								view.dispatch(tr);
+							}
+							return false;
+						},
+						mouseleave: (view) => {
+							const current =
+								hoverPluginKey.getState(view.state)?.hoveredTablePos ?? null;
+							if (current !== null) {
+								const tr = view.state.tr.setMeta(hoverPluginKey, {
+									hoveredTablePos: null,
+								});
+								view.dispatch(tr);
+							}
+							return false;
+						},
+					},
 					/**
 					 * 装饰器函数：在第一列的每个单元格左侧添加行选择器
 					 *
@@ -81,6 +145,16 @@ export const TableCell = TiptapTableCell.extend<TableCellOptions>({
 						}
 
 						const { doc, selection } = state;
+						const hoveredTablePos =
+							hoverPluginKey.getState(state)?.hoveredTablePos ?? null;
+						let effectiveSelection = selection;
+						// 若当前选区不在表格中且存在 hover 表格位置，则基于 hover 位置构造临时选区
+						if (!getCellsInColumn(0)(selection) && hoveredTablePos !== null) {
+							try {
+								const $pos = doc.resolve(hoveredTablePos);
+								effectiveSelection = TextSelection.near($pos);
+							} catch {}
+						}
 						const decorations: Decoration[] = [];
 
 						// --------------------------------------------------------------------------------
@@ -90,7 +164,7 @@ export const TableCell = TiptapTableCell.extend<TableCellOptions>({
 						// --------------------------------------------------------------------------------
 
 						// 获取第一列的所有单元格
-						const cells = getCellsInColumn(0)(selection);
+						const cells = getCellsInColumn(0)(effectiveSelection);
 
 						if (cells && Array.isArray(cells)) {
 							// 为第一列的每个单元格创建行选择器和添加行按钮
