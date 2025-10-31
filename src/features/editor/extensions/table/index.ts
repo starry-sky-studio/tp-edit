@@ -1,5 +1,5 @@
-export * from "./customTableHeader/TableHeader";
-export * from "./customTableHeader/TableOperate";
 export * from "./TableCell";
+export * from "./TableHeader";
+export * from "./TableOperate";
 export * from "./TableRow";
 export * from "./table";
