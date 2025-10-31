@@ -9,6 +9,7 @@ import {
 	TextColor,
 	TextStyles,
 } from "../Common";
+
 import TableCommand from "../Common/AddTable";
 import EmojiCommand from "../Common/Emoji";
 import ColorComp from "../Common/TextColor";
