@@ -46,11 +46,7 @@ export const TableHeader = TiptapTableHeader.extend({
 						const { isEditable } = this.editor;
 
 						// 如果编辑器不可编辑，则不显示任何 UI 控件。
-						if (
-							!isEditable ||
-							!this.editor.isActive("table") ||
-							state.selection.empty // 仅当光标在表格内，且有活动选择时才显示
-						) {
+						if (!isEditable) {
 							return DecorationSet.empty;
 						}
 
@@ -103,38 +99,32 @@ export const TableHeader = TiptapTableHeader.extend({
 								decorations.push(gripDeco);
 
 								// 2) pseudo 装饰器：负责“添加列”按钮（在当前列之前插入）
-								const { element: addBtnElement, cleanup: addBtnCleanup } =
-									createAddColumnButton({
+								const addBtnDeco = Decoration.widget(pos + 1, () => {
+									const { element } = createAddColumnButton({
 										index, // 传递当前列索引，默认在当前列之前插入
 										className: "grip-pseudo",
 										style: {},
 										editor: this.editor,
 									});
-								// NOTE: ProseMirror 会在装饰器被移除时自动移除 element，但不会自动调用 cleanup。
-								decorations.push(
-									Decoration.widget(pos + 1, () => addBtnElement, {
-										// ProseMirror 允许为 widget 装饰器添加 key 来帮助跟踪，但不提供 cleanup 回调。
-										// 我们依赖 addBtnElement 上的事件监听器在 mouseout/mousedown 时清理 Tooltip。
-									}),
-								);
+									return element;
+								});
+								decorations.push(addBtnDeco);
 
 								// 3) 针对最后一列：再添加一个“添加列”按钮（在表格末尾插入）
 								if (index === map.width - 1) {
-									const {
-										element: lastAddBtnElement,
-										cleanup: lastAddBtnCleanup,
-									} = createAddColumnButton({
-										index: index + 1, // 传递列数+1，表示在最后一列之后插入
-										className: "grip-pseudo",
-										style: {
-											right: "-3%", // 调整位置使其显示在表格最右侧
-											left: "auto",
-										},
-										editor: this.editor,
+									const addBtnDeco = Decoration.widget(pos + 1, () => {
+										const { element } = createAddColumnButton({
+											index: index + 1, // 传递列数+1，表示在最后一列之后插入
+											className: "grip-pseudo",
+											style: {
+												right: "-3%", // 调整位置使其显示在表格最右侧
+												left: "auto",
+											},
+											editor: this.editor,
+										});
+										return element;
 									});
-									decorations.push(
-										Decoration.widget(pos + 1, () => lastAddBtnElement, {}),
-									);
+									decorations.push(addBtnDeco);
 								}
 							}
 						}
