@@ -7,40 +7,10 @@
   }
 
   .ProseMirror table {
-    margin-top: 24px !important;
-    margin-left: 24px !important;
+    margin-left: 26px !important;
     @apply box-border w-max table-fixed border-collapse rounded border border-black/10;
-
-    /* 鼠标悬停和活跃状态时显示所有 .grid 子元素 */
-
-    /* 默认隐藏自定义头部 */
-    /* .custom-table-header {
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(-10px);
-      transition: all 0.2s ease;
-    } */
-
-    /* 默认隐藏伪元素 */
-    /* .grid .pseudoElement {
-      opacity: 0;
-      transform: translate(-50%, -50%) scale(1);
-      transition: all 0.2s ease;
-    }
-
-    .grid .grip-last-indicator {
-      opacity: 0;
-      transform: translate(50%, -50%) scale(1);
-      transition: all 0.2s ease;
-    } */
   }
 
-  /* 统一行高，纵向合并 (rowspan) 时高度为各行之和 */
-  /* .ProseMirror table tr {
-    @apply h-10;
-  */
-
-  /* 固定列宽到 col，合并单元格时宽度为列宽之和 */
   .ProseMirror table col {
     @apply w-[200px];
   }

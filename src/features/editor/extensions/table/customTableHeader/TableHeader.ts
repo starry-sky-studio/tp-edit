@@ -2,13 +2,8 @@ import { TableHeader as TiptapTableHeader } from "@tiptap/extension-table/header
 import { Plugin } from "@tiptap/pm/state";
 import { TableMap } from "@tiptap/pm/tables";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
-import {
-	createAddColumnButton,
-	createColumnsGrip,
-	findTable,
-	isColumnSelected,
-	selectColumn,
-} from "../index";
+import { findTable, isColumnSelected, selectColumn } from "@/utils";
+import { createAddColumnButton, createColumnsGrip } from "../index";
 
 /**
  * TableHeader 扩展
