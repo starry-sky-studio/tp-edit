@@ -11,6 +11,8 @@ import GlobalDragHandle from "tiptap-extension-global-drag-handle";
 import suggestion from "@/features/editor/components/Menus/Common/Emoji/suggestion";
 import ImageBlock from "./command/ImageBlock";
 import SlashCommand from "./command/slash";
+import CalloutView from "../components/Callout";
+import { Callout } from "./custom/custom-callout";
 
 export const baseExtensions = [
 	StarterKit.configure({
@@ -44,5 +46,8 @@ export const baseExtensions = [
 			"before:content-[attr(data-placeholder)] before:text-gray-400 before:float-left before:h-0",
 	}),
 	SlashCommand,
+	Callout.configure({
+		view: CalloutView,
+	}),
 	GlobalDragHandle,
 ];
