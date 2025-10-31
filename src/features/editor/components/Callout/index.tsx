@@ -14,7 +14,7 @@ import EmojiPicker from "../EmojiPicker";
 const CalloutView = (props: ReactNodeViewProps) => {
 	const { node, updateAttributes } = props;
 
-	const { icon, backgroundColor, textColor, borderColor } = node.attrs;
+	const { icon, backgroundColor } = node.attrs;
 
 	const handleEmojiSelect = (emoji: any) => {
 		updateAttributes({ icon: emoji.native });
