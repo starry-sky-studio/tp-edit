@@ -151,8 +151,8 @@ export const createAddRowButton = (
 		top: -12px;
 		left: 0%;
 		transform: translate(-50%, -50%);
-		width: 6px;
-		height: 6px;
+		width: 5px;
+		height: 5px;
 	  background-color: #dddddd;
 		border-radius: 50%;
 		transition: all 0.2s ease;
@@ -274,8 +274,8 @@ export const createAddColumnButton = ({
 			top: -20px;
 			left: 0%;
 			transform: translate(-50%, -50%);
-			width: 6px;
-			height: 6px;
+			width: 5px;
+			height: 5px;
 			background-color: #dddddd;
 			border-radius: 50%;
 			transition: all 0.2s ease;

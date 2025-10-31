@@ -1,5 +1,5 @@
 import { TableHeader as TiptapTableHeader } from "@tiptap/extension-table/header";
-import { Plugin } from "@tiptap/pm/state";
+import { Plugin, PluginKey, TextSelection } from "@tiptap/pm/state";
 import { TableMap } from "@tiptap/pm/tables";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import { findTable, isColumnSelected, selectColumn } from "@/utils";
@@ -22,8 +22,33 @@ export const TableHeader = TiptapTableHeader.extend({
 		// 这对于防止点击 Grip 按钮时页面乱跳非常重要。
 		let suppressScrollToSelection = false;
 
+		// 轻量 Hover 状态：记录鼠标悬停所在表格的文档位置（用于在 hover 时也显示头部装饰器）
+		const hoverPluginKey = new PluginKey<{ hoveredTablePos: number | null }>(
+			"tableHeaderHover",
+		);
+
 		return [
 			new Plugin({
+				key: hoverPluginKey,
+				state: {
+					init: (): { hoveredTablePos: number | null } => ({
+						hoveredTablePos: null,
+					}),
+					apply(
+						tr,
+						value: { hoveredTablePos: number | null },
+						_oldState,
+						_newState,
+					): { hoveredTablePos: number | null } {
+						const meta = tr.getMeta(hoverPluginKey as any) as
+							| { hoveredTablePos: number | null }
+							| undefined;
+						if (meta && "hoveredTablePos" in meta) {
+							return { hoveredTablePos: meta.hoveredTablePos };
+						}
+						return value;
+					},
+				},
 				props: {
 					/**
 					 * handleScrollToSelection
@@ -35,6 +60,49 @@ export const TableHeader = TiptapTableHeader.extend({
 							return true; // 拦截滚动
 						}
 						return false; // 允许默认滚动
+					},
+
+					// 监听容器级鼠标事件，追踪 hover 的表格位置
+					handleDOMEvents: {
+						mousemove: (view, event) => {
+							const e = event as MouseEvent;
+							const target = e.target as HTMLElement | null;
+							const tableEl = target?.closest?.("table") as HTMLElement | null;
+							const current =
+								hoverPluginKey.getState(view.state)?.hoveredTablePos ?? null;
+							if (!tableEl) {
+								if (current !== null) {
+									const tr = view.state.tr.setMeta(hoverPluginKey, {
+										hoveredTablePos: null,
+									});
+									view.dispatch(tr);
+								}
+								return false;
+							}
+							const posInfo = view.posAtCoords({
+								left: e.clientX,
+								top: e.clientY,
+							});
+							if (!posInfo) return false;
+							if (posInfo.pos !== current) {
+								const tr = view.state.tr.setMeta(hoverPluginKey, {
+									hoveredTablePos: posInfo.pos,
+								});
+								view.dispatch(tr);
+							}
+							return false;
+						},
+						mouseleave: (view) => {
+							const current =
+								hoverPluginKey.getState(view.state)?.hoveredTablePos ?? null;
+							if (current !== null) {
+								const tr = view.state.tr.setMeta(hoverPluginKey, {
+									hoveredTablePos: null,
+								});
+								view.dispatch(tr);
+							}
+							return false;
+						},
 					},
 
 					/**
@@ -51,9 +119,19 @@ export const TableHeader = TiptapTableHeader.extend({
 						}
 
 						const { doc, selection } = state;
+						const hoveredTablePos =
+							hoverPluginKey.getState(state)?.hoveredTablePos ?? null;
 						const decorations: Decoration[] = [];
 						// 查找当前光标或选区所在的表格节点。
-						const tableNode = findTable(selection);
+						let tableNode = findTable(selection);
+						// 若无选中表格，但有 hover 的表格位置，则基于 hover 位置解析表格
+						if (!tableNode && hoveredTablePos !== null) {
+							try {
+								const $pos = doc.resolve(hoveredTablePos);
+								const selAtHover = TextSelection.near($pos);
+								tableNode = findTable(selAtHover);
+							} catch {}
+						}
 
 						// 只有当存在表格时，才渲染列操作控件
 						if (tableNode) {
