@@ -1,5 +1,4 @@
 import type { Editor } from "@tiptap/react";
-
 import {
 	AddTable,
 	Emoji,
@@ -10,10 +9,6 @@ import {
 	TextStyles,
 } from "../Common";
 
-import TableCommand from "../Common/AddTable";
-import EmojiCommand from "../Common/Emoji";
-import ColorComp from "../Common/TextColor";
-
 const FixedMenuComp = ({ editor }: { editor: Editor | null }) => {
 	if (!editor || !editor.isEditable) return null;
 
@@ -22,9 +17,6 @@ const FixedMenuComp = ({ editor }: { editor: Editor | null }) => {
 			<Heading editor={editor} />
 			<TextStyles editor={editor} />
 			<TextAlign editor={editor} />
-			<ColorComp editor={editor} />
-			<EmojiCommand editor={editor} />
-			<TableCommand editor={editor} />
 			<TextColor editor={editor} />
 			<Emoji editor={editor} />
 			<ImgUpload editor={editor} />

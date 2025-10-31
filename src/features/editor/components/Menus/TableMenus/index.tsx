@@ -8,10 +8,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { MergeCellsIcon, SplitCellsIcon } from "@/styles/svg";
-import Heading from "../Common/Heading";
-import TextAlign from "../Common/TextAlign";
-import ColorComp from "../Common/TextColor";
-import TextStyles from "../Common/TextStyles";
+import { Heading, TextAlign, TextColor, TextStyles } from "../Common";
 
 const TableMenus = ({ editor }: { editor: Editor | null }) => {
 	// 基于编辑器当前状态动态判断可操作性
@@ -187,7 +184,7 @@ const TableMenus = ({ editor }: { editor: Editor | null }) => {
 			<Heading editor={editor} />
 			<TextAlign editor={editor} />
 			<TextStyles editor={editor} />
-			<ColorComp editor={editor} />
+			<TextColor editor={editor} />
 			<Tooltip>
 				<TooltipTrigger>
 					<div

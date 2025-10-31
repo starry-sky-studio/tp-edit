@@ -89,47 +89,84 @@ export const TableCell = TiptapTableCell.extend<TableCellOptions>({
 					},
 				},
 				props: {
-					handleDOMEvents: {
-						mousemove: (view, event) => {
-							const e = event as MouseEvent;
-							const target = e.target as HTMLElement | null;
-							const tableEl = target?.closest?.("table") as HTMLElement | null;
-							const current =
-								hoverPluginKey.getState(view.state)?.hoveredTablePos ?? null;
-							if (!tableEl) {
+					handleDOMEvents: (() => {
+						let hideTimer: number | null = null;
+						let mode: "idle" | "table" | "decorator" | "hidePending" = "idle";
+
+						const clearHideTimer = () => {
+							if (hideTimer !== null) {
+								window.clearTimeout(hideTimer);
+								hideTimer = null;
+							}
+						};
+
+						const scheduleHide = (view: any) => {
+							clearHideTimer();
+							mode = "hidePending";
+							hideTimer = window.setTimeout(() => {
+								const current =
+									hoverPluginKey.getState(view.state)?.hoveredTablePos ?? null;
 								if (current !== null) {
 									const tr = view.state.tr.setMeta(hoverPluginKey, {
 										hoveredTablePos: null,
 									});
 									view.dispatch(tr);
 								}
+								mode = "idle";
+								hideTimer = null;
+							}, 200);
+						};
+
+						const isDecorator = (el: Element | null) => {
+							if (!el) return false;
+							return (
+								(el as HTMLElement).closest(".grip-row") !== null ||
+								(el as HTMLElement).closest(".grip-pseudo") !== null
+							);
+						};
+
+						return {
+							mousemove: (view, event) => {
+								const e = event as MouseEvent;
+								const target = e.target as HTMLElement | null;
+								const tableEl = target?.closest?.(
+									"table",
+								) as HTMLElement | null;
+								const overDecorator = isDecorator(target);
+								const current =
+									hoverPluginKey.getState(view.state)?.hoveredTablePos ?? null;
+
+								if (tableEl) {
+									clearHideTimer();
+									mode = "table";
+									const posInfo = view.posAtCoords({
+										left: e.clientX,
+										top: e.clientY,
+									});
+									if (posInfo && posInfo.pos !== current) {
+										const tr = view.state.tr.setMeta(hoverPluginKey, {
+											hoveredTablePos: posInfo.pos,
+										});
+										view.dispatch(tr);
+									}
+									return false;
+								}
+
+								if (overDecorator) {
+									clearHideTimer();
+									mode = "decorator";
+									return false;
+								}
+
+								scheduleHide(view);
 								return false;
-							}
-							const posInfo = view.posAtCoords({
-								left: e.clientX,
-								top: e.clientY,
-							});
-							if (!posInfo) return false;
-							if (posInfo.pos !== current) {
-								const tr = view.state.tr.setMeta(hoverPluginKey, {
-									hoveredTablePos: posInfo.pos,
-								});
-								view.dispatch(tr);
-							}
-							return false;
-						},
-						mouseleave: (view) => {
-							const current =
-								hoverPluginKey.getState(view.state)?.hoveredTablePos ?? null;
-							if (current !== null) {
-								const tr = view.state.tr.setMeta(hoverPluginKey, {
-									hoveredTablePos: null,
-								});
-								view.dispatch(tr);
-							}
-							return false;
-						},
-					},
+							},
+							mouseleave: (view) => {
+								scheduleHide(view);
+								return false;
+							},
+						};
+					})(),
 					/**
 					 * 装饰器函数：在第一列的每个单元格左侧添加行选择器
 					 *

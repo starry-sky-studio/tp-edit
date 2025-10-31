@@ -1,5 +1,3 @@
-// import { Table, TableKit } from "@tiptap/extension-table";
-
 import { SelectableTable, TableCell, TableHeader, TableRow } from "./table";
 
 // 表格相关扩展：
