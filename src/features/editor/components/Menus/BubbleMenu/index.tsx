@@ -49,7 +49,8 @@ const BubbleMenuComp = ({ editor }: Props) => {
 		};
 	}, [editor, updateSelection]);
 
-	if (!editor || !editor.isEditable) return null;
+	if (!editor || !editor.isEditable || editor.isActive("codeBlock"))
+		return null;
 
 	return (
 		<BubbleMenu

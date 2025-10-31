@@ -1,0 +1,93 @@
+.ProseMirror {
+    .codeBlock {
+
+        /* Code styling (Tailwind palette inspired) */
+        .hljs-comment,
+        .hljs-quote {
+            /* slate-500 */
+            color: #64748b;
+
+            .dark & {
+                /* slate-400 */
+                color: #94a3b8;
+            }
+        }
+
+        .hljs-variable,
+        .hljs-template-variable,
+        .hljs-attribute,
+        .hljs-tag,
+        .hljs-name,
+        .hljs-regexp,
+        .hljs-link,
+        .hljs-name,
+        .hljs-selector-id,
+        .hljs-selector-class {
+            /* rose-600 */
+            color: #e11d48;
+
+            .dark & {
+                /* rose-400 */
+                color: #fb7185;
+            }
+        }
+
+        .hljs-number,
+        .hljs-meta,
+        .hljs-built_in,
+        .hljs-builtin-name,
+        .hljs-literal,
+        .hljs-type,
+        .hljs-params {
+            /* sky-600 */
+            color: #0284c7;
+
+            .dark & {
+                /* cyan-400 */
+                color: #22d3ee;
+            }
+        }
+
+        .hljs-string,
+        .hljs-symbol,
+        .hljs-bullet {
+            /* emerald-600 */
+            color: #059669;
+
+            .dark & {
+                /* emerald-400 */
+                color: #34d399;
+            }
+        }
+
+        .hljs-title,
+        .hljs-section {
+            /* amber-600 */
+            color: #d97706;
+
+            .dark & {
+                /* amber-400 */
+                color: #f59e0b;
+            }
+        }
+
+        .hljs-keyword,
+        .hljs-selector-tag {
+            /* violet-600 */
+            color: #7c3aed;
+
+            .dark & {
+                /* violet-400 */
+                color: #a78bfa;
+            }
+        }
+
+        .hljs-emphasis {
+            font-style: italic;
+        }
+
+        .hljs-strong {
+            font-weight: 700;
+        }
+    }
+}

@@ -1,4 +1,5 @@
 import type { Editor } from "@tiptap/react";
+import CodeBlock from "../Common/CodeBlock";
 import EmojiCommand from "../Common/Emoji";
 import Heading from "../Common/Heading";
 import ImgUpload from "../Common/ImgUpload";
@@ -17,6 +18,7 @@ const FixedMenuComp = ({ editor }: { editor: Editor | null }) => {
 			<ColorComp editor={editor} />
 			<EmojiCommand editor={editor} />
 			<ImgUpload editor={editor} />
+			<CodeBlock editor={editor} />
 		</div>
 	);
 };
