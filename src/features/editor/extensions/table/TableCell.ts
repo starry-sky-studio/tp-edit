@@ -144,7 +144,6 @@ export const TableCell = TiptapTableCell.extend<TableCellOptions>({
 									pos + 1,
 									() => {
 										const { element } = createAddRowButton({
-											text: "添加行",
 											index: index,
 											className: "grip-pseudo",
 											style: {
@@ -170,7 +169,6 @@ export const TableCell = TiptapTableCell.extend<TableCellOptions>({
 										pos + 1,
 										() => {
 											const { element } = createAddRowButton({
-												text: "添加行",
 												index: index + 1,
 												className: "grip-pseudo",
 												style: {
