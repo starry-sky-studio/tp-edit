@@ -2,11 +2,11 @@
 
 import { EditorContent, useEditor } from "@tiptap/react";
 import { useEffect, useState } from "react";
+import Footer from "@/components/Footer";
 import { useImageControls } from "@/hooks/use-image-controls";
 import { useImageSelection } from "@/hooks/use-image-selection";
 import { Loading } from "@/styles/svg";
 import CalloutMenu from "./components/Callout/callout-menu";
-import Footer from "./components/Footer";
 import BubbleMenuComp from "./components/Menus/BubbleMenu/index";
 import FixedMenuComp from "./components/Menus/FixedMenu/index";
 import { baseExtensions } from "./extensions";
@@ -16,7 +16,7 @@ const Tiptap = () => {
 
 	const editor = useEditor({
 		extensions: baseExtensions,
-		content: `<p>Hello World! 🌎️</p> 
+		content: `<p>Hello World! 🌎️</p>
 		<pre><code class="language-javascript">for (var i=1; i <= 20; i++)
 {
   if (i % 15 == 0)
@@ -31,7 +31,7 @@ const Tiptap = () => {
 		editorProps: {
 			attributes: {
 				class:
-					"prose w-full h-[calc(100vh-65px)] overflow-auto prose-headings:font-bold prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none p-4 min-h-[300px] bg-white border border-gray-300 focus:outline-none scrollbar-hide",
+					"prose w-full min-h-[calc(100vh-84px)] prose-headings:font-bold prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none bg-white focus:outline-none p-3 text-sm sm:p-4 sm:text-base md:p-6 md:text-base lg:p-8 lg:text-lg xl:p-10 xl:text-xl 2xl:p-12 2xl:text-2xl",
 			},
 		},
 		autofocus: true,
@@ -66,17 +66,21 @@ const Tiptap = () => {
 		);
 
 	return (
-		<div className="relative h-screen w-[1200px] bg-white">
-			<FixedMenuComp editor={editor} />
-			<BubbleMenuComp editor={editor} />
-			<CalloutMenu editor={editor} />
-			<div className="relative">
+		<div className="w-full h-full shadow-sm relative max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-7xl 2xl:max-w-8xl">
+			<div className="sticky top-0 bg-white border-b border-gray-200  px-2 py-1">
+				<FixedMenuComp editor={editor} />
+				<BubbleMenuComp editor={editor} />
+				<CalloutMenu editor={editor} />
+			</div>
+			<div className="relative flex-1 ">
 				<EditorContent
 					className="w-full [&_.ProseMirror]:w-full [&_.ProseMirror]:max-w-none"
 					editor={editor}
 				/>
 			</div>
-			<Footer />
+			<div className="sticky bottom-0 z-50 bg-white border-t border-gray-200  px-2 py-1">
+				<Footer />
+			</div>
 		</div>
 	);
 };

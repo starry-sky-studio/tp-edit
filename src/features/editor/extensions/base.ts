@@ -13,11 +13,15 @@ import suggestion from "@/features/editor/components/Menus/Common/Emoji/suggesti
 import CodeBlockView from "../components/code-block/code-block-view";
 import ImageBlock from "./command/ImageBlock";
 import SlashCommand from "./command/slash";
+
 import { CustomCodeBlock } from "./custom/custom-code-block";
 
 const lowlight = createLowlight(common);
+
 import CalloutView from "../components/Callout";
 import { Callout } from "./custom/custom-callout";
+
+import { tableExtensions } from "./tables";
 
 export const baseExtensions = [
 	StarterKit.configure({
@@ -63,4 +67,5 @@ export const baseExtensions = [
 		view: CalloutView,
 	}),
 	GlobalDragHandle,
+	...tableExtensions,
 ];
