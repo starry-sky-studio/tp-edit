@@ -1,10 +1,4 @@
-import {
-	autoUpdate,
-	computePosition,
-	flip,
-	offset,
-	shift,
-} from "@floating-ui/dom";
+import { autoUpdate, computePosition, flip, shift } from "@floating-ui/dom";
 import type { Editor } from "@tiptap/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import ColorPicker from "../ColorPicker";
@@ -20,6 +14,9 @@ const CalloutMenu = (props: CalloutMenuProps) => {
 	const [hoveredCalloutElement, setHoveredCalloutElement] =
 		useState<HTMLElement | null>(null);
 	const [currentCalloutNode, setCurrentCalloutNode] = useState<any>(null);
+	const [currentCalloutPos, setCurrentCalloutPos] = useState<number | null>(
+		null,
+	);
 	const menuRef = useRef<HTMLDivElement>(null);
 	const cleanupRef = useRef<(() => void) | null>(null);
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -37,31 +34,41 @@ const CalloutMenu = (props: CalloutMenuProps) => {
 			menuRef.current,
 			{
 				placement: "top",
-				middleware: [offset(10), flip(), shift({ padding: 8 })],
+				middleware: [flip(), shift({ padding: 8 })],
 			},
 		);
 
 		setPosition({ x, y });
 	}, [hoveredCalloutElement]);
 
-	const handleBackgroundColorChange = useCallback(
+	const updateCalloutBackground = useCallback(
 		(color: string) => {
-			if (!currentCalloutNode) return;
+			if (currentCalloutPos == null) return;
 
-			editor.commands.updateAttributes("callout", {
+			const { state, view } = editor;
+			const nodeAtPos = state.doc.nodeAt(currentCalloutPos);
+			const calloutType = state.schema.nodes.callout;
+			if (!nodeAtPos || nodeAtPos.type !== calloutType) return;
+
+			const tr = state.tr.setNodeMarkup(currentCalloutPos, calloutType, {
+				...nodeAtPos.attrs,
 				backgroundColor: color,
 			});
+			view.dispatch(tr);
 		},
-		[editor, currentCalloutNode],
+		[editor, currentCalloutPos],
+	);
+
+	const handleBackgroundColorChange = useCallback(
+		(color: string) => {
+			updateCalloutBackground(color);
+		},
+		[updateCalloutBackground],
 	);
 
 	const handleResetColors = useCallback(() => {
-		if (!currentCalloutNode) return;
-
-		editor.commands.updateAttributes("callout", {
-			backgroundColor: "#fff7ed",
-		});
-	}, [editor, currentCalloutNode]);
+		updateCalloutBackground("#fff7ed");
+	}, [updateCalloutBackground]);
 
 	const handleMouseOver = useCallback(
 		(event: MouseEvent) => {
@@ -74,11 +81,13 @@ const CalloutMenu = (props: CalloutMenuProps) => {
 				timeoutRef.current = null;
 				setIsVisible(true);
 
-				// 获取当前 callout 节点
+				// 获取当前 callout 节点与其在文档中的位置
 				const pos = editor.view.posAtDOM(calloutElement, 0);
 				const resolvedPos = editor.view.state.doc.resolve(pos);
 				const calloutNode = resolvedPos.parent;
+				const nodePos = resolvedPos.before();
 				setCurrentCalloutNode(calloutNode);
+				setCurrentCalloutPos(nodePos);
 			}
 		},
 		[editor],
@@ -99,6 +108,7 @@ const CalloutMenu = (props: CalloutMenuProps) => {
 				setIsVisible(false);
 				setHoveredCalloutElement(null);
 				setCurrentCalloutNode(null);
+				setCurrentCalloutPos(null);
 			}, 150);
 		}
 	}, []);
@@ -117,6 +127,7 @@ const CalloutMenu = (props: CalloutMenuProps) => {
 				setIsVisible(false);
 				setHoveredCalloutElement(null);
 				setCurrentCalloutNode(null);
+				setCurrentCalloutPos(null);
 			}
 		};
 
@@ -150,41 +161,32 @@ const CalloutMenu = (props: CalloutMenuProps) => {
 		};
 	}, [isVisible, hoveredCalloutElement, updatePosition]);
 
-	const handleMouseEnter = useCallback(() => {
-		setIsVisible(true);
-		clearTimeout(timeoutRef.current as NodeJS.Timeout);
-		timeoutRef.current = null;
-	}, []);
-
-	const handleMouseLeave = useCallback(() => {
-		setIsVisible(false);
-		setHoveredCalloutElement(null);
-		setCurrentCalloutNode(null);
-	}, []);
-
 	if (!isVisible) return null;
 
 	return (
 		<div
 			ref={menuRef}
-			className="fixed z-50 flex items-center gap-0.5 rounded-lg border bg-background p-1 shadow-lg"
+			className="fixed z-50 flex items-center rounded-lg bg-transparent p-2"
 			style={{
 				left: `${position.x}px`,
 				top: `${position.y}px`,
 			}}
-			onMouseEnter={handleMouseEnter}
-			onMouseLeave={handleMouseLeave}
 		>
-			<ColorPicker
-				onBackgroundColorChange={handleBackgroundColorChange}
-				onReset={handleResetColors}
-				defaultBackgroundColor={
-					currentCalloutNode?.attrs?.backgroundColor || "#fff7ed"
-				}
-				showBackgroundColor={true}
-				showTextColor={false}
-				showBorderColor={false}
-			/>
+			{
+				// TODO：后续调整一下背景色
+			}
+			<div className="flex items-center rounded-lg bg-background p-1">
+				<ColorPicker
+					onBackgroundColorChange={handleBackgroundColorChange}
+					onReset={handleResetColors}
+					defaultBackgroundColor={
+						currentCalloutNode?.attrs?.backgroundColor || "#fff7ed"
+					}
+					showBackgroundColor={true}
+					showTextColor={false}
+					showBorderColor={false}
+				/>
+			</div>
 		</div>
 	);
 };
