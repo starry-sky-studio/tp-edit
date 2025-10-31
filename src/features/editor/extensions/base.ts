@@ -8,6 +8,7 @@ import {
 import { Placeholder } from "@tiptap/extensions";
 import StarterKit from "@tiptap/starter-kit";
 import { common, createLowlight } from "lowlight";
+import GlobalDragHandle from "tiptap-extension-global-drag-handle";
 import suggestion from "@/features/editor/components/Menus/Common/Emoji/suggestion";
 import CodeBlockView from "../components/code-block/code-block-view";
 import ImageBlock from "./command/ImageBlock";
@@ -15,6 +16,8 @@ import SlashCommand from "./command/slash";
 import { CustomCodeBlock } from "./custom/custom-code-block";
 
 const lowlight = createLowlight(common);
+import CalloutView from "../components/Callout";
+import { Callout } from "./custom/custom-callout";
 
 export const baseExtensions = [
 	StarterKit.configure({
@@ -56,4 +59,8 @@ export const baseExtensions = [
 			spellCheck: "false",
 		},
 	}),
+	Callout.configure({
+		view: CalloutView,
+	}),
+	GlobalDragHandle,
 ];

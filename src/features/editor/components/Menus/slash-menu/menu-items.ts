@@ -8,6 +8,7 @@ import {
 	ListOrdered,
 	Quote,
 	Text,
+	Info,
 } from "lucide-react";
 
 export interface CommandItem {
@@ -100,6 +101,14 @@ const items: CommandItem[] = [
 		icon: Quote,
 		command: ({ editor, range }) => {
 			editor.chain().focus().deleteRange(range).toggleBlockquote().run();
+		},
+	},
+	{
+		title: "Callout",
+		description: "Add a Callout",
+		icon: Info,
+		command: ({ editor, range }) => {
+			editor.chain().focus().deleteRange(range).toggleCallout().run();
 		},
 	},
 ];
