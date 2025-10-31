@@ -41,7 +41,7 @@ const CalloutMenu = (props: CalloutMenuProps) => {
 		setPosition({ x, y });
 	}, [hoveredCalloutElement]);
 
-	const handleBackgroundColorChange = useCallback(
+	const updateCalloutBackground = useCallback(
 		(color: string) => {
 			if (currentCalloutPos == null) return;
 
@@ -59,20 +59,16 @@ const CalloutMenu = (props: CalloutMenuProps) => {
 		[editor, currentCalloutPos],
 	);
 
+	const handleBackgroundColorChange = useCallback(
+		(color: string) => {
+			updateCalloutBackground(color);
+		},
+		[updateCalloutBackground],
+	);
+
 	const handleResetColors = useCallback(() => {
-		if (currentCalloutPos == null) return;
-
-		const { state, view } = editor;
-		const nodeAtPos = state.doc.nodeAt(currentCalloutPos);
-		const calloutType = state.schema.nodes.callout;
-		if (!nodeAtPos || nodeAtPos.type !== calloutType) return;
-
-		const tr = state.tr.setNodeMarkup(currentCalloutPos, calloutType, {
-			...nodeAtPos.attrs,
-			backgroundColor: "#fff7ed",
-		});
-		view.dispatch(tr);
-	}, [editor, currentCalloutPos]);
+		updateCalloutBackground("#fff7ed");
+	}, [updateCalloutBackground]);
 
 	const handleMouseOver = useCallback(
 		(event: MouseEvent) => {
