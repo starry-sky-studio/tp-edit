@@ -214,6 +214,15 @@ export const createAddRowButton = (
 	};
 	buttonElement.addEventListener("mousedown", onMouseDown as any);
 
+	// 如果按钮在点击后被重绘/移除，保证提示也隐藏（与添加列逻辑一致）
+	const observer = new MutationObserver(() => {
+		if (!mounted) return;
+		if (!buttonElement.isConnected && tooltip.style.opacity !== "0") {
+			tooltip.style.opacity = "0";
+		}
+	});
+	observer.observe(document.body, { childList: true, subtree: true });
+
 	document.body.appendChild(tooltip);
 
 	return {
@@ -224,6 +233,7 @@ export const createAddRowButton = (
 			buttonElement.removeEventListener("mouseover", onMouseOver as any);
 			buttonElement.removeEventListener("mouseout", onMouseOut as any);
 			buttonElement.removeEventListener("mousedown", onMouseDown as any);
+			observer.disconnect();
 			if (tooltip.parentNode) {
 				tooltip.parentNode.removeChild(tooltip);
 			}
@@ -297,8 +307,11 @@ export const createAddColumnButton = ({
 
 	// 添加鼠标事件
 
+	let isHovering = false;
+
 	const onMouseOver = (e: MouseEvent) => {
 		e.stopPropagation();
+		isHovering = true;
 		tooltipElement.style.transform = "translate(-50%, -50%) scale(3)";
 		tooltipElement.style.backgroundColor = "var(--color-primary)";
 		if (rafId) cancelAnimationFrame(rafId);
@@ -316,6 +329,7 @@ export const createAddColumnButton = ({
 
 	const onMouseOut = (e: MouseEvent) => {
 		e.stopPropagation();
+		isHovering = false;
 		tooltipElement.style.transform = "translate(-50%, -50%) scale(1)";
 		tooltipElement.style.backgroundColor = "#dddddd";
 		tooltip.style.opacity = "0";
@@ -331,6 +345,15 @@ export const createAddColumnButton = ({
 	};
 	tooltipElement.addEventListener("mousedown", onMouseDown as any);
 
+	// 如果按钮在点击后被重绘/移除，保证提示也隐藏
+	const observer = new MutationObserver(() => {
+		if (!mounted) return;
+		if (!tooltipElement.isConnected && tooltip.style.opacity !== "0") {
+			tooltip.style.opacity = "0";
+		}
+	});
+	observer.observe(document.body, { childList: true, subtree: true });
+
 	document.body.appendChild(tooltip);
 
 	return {
@@ -341,6 +364,9 @@ export const createAddColumnButton = ({
 			tooltipElement.removeEventListener("mouseover", onMouseOver as any);
 			tooltipElement.removeEventListener("mouseout", onMouseOut as any);
 			tooltipElement.removeEventListener("mousedown", onMouseDown as any);
+			observer.disconnect();
+			// 确保移除前隐藏
+			tooltip.style.opacity = "0";
 			if (tooltip.parentNode) {
 				tooltip.parentNode.removeChild(tooltip);
 			}
