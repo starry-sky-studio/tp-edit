@@ -1,0 +1,51 @@
+@layer utilities {
+  .ProseMirror .tableWrapper {
+    @apply my-2;
+    overflow-x: auto;
+    overflow-y: visible !important;
+    position: relative !important;
+  }
+
+  .ProseMirror table {
+    margin-left: 26px !important;
+    @apply box-border w-max table-fixed border-collapse rounded border border-black/10;
+  }
+
+  .ProseMirror table col {
+    @apply w-[200px];
+  }
+
+  .ProseMirror table td,
+  .ProseMirror table th {
+    @apply !relative border border-black/10 p-2 text-left align-top;
+  }
+
+  /* 进入/聚焦单元格时，移除段落默认外边距，避免行高被撑大 */
+  .ProseMirror table td p,
+  .ProseMirror table th p {
+    @apply m-0;
+  }
+  .ProseMirror table td p:first-child,
+  .ProseMirror table th p:first-child,
+  .ProseMirror table td p:last-child,
+  .ProseMirror table th p:last-child {
+    @apply m-0;
+  }
+
+  .ProseMirror table .column-resize-handle {
+    @apply pointer-events-none absolute top-0 -right-1 -bottom-[2px] flex w-1 bg-[#adf];
+  }
+
+  .resize-cursor {
+    @apply cursor-ew-resize;
+  }
+
+  .ProseMirror table .selectedCell {
+    @apply relative;
+  }
+
+  .ProseMirror table .selectedCell:after {
+    content: '';
+    @apply pointer-events-none absolute inset-0 z-[2] bg-[#c9d7f5] opacity-20 shadow-[inset_0_0_0_1px_#c9d7f5];
+  }
+}
