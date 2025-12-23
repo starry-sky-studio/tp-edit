@@ -1,3 +1,5 @@
+export { default as AddTable } from "./AddTable";
+export { default as CodeBlock } from "./CodeBlock";
 export { default as Emoji } from "./Emoji";
 export { default as Heading } from "./Heading";
 export { default as ImgAlign } from "./ImgAlign";

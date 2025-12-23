@@ -55,7 +55,7 @@ const CodeBlockView = (props: ReactNodeViewProps) => {
 				</Button>
 			</div>
 			<pre spellCheck="false" className="not-prose py-2.5 px-4 rounded m1">
-				<NodeViewContent as="code" className={`language-${language}`} />
+				<NodeViewContent className={`language-${language}`} />
 			</pre>
 		</NodeViewWrapper>
 	);

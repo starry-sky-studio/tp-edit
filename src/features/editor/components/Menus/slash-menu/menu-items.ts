@@ -4,11 +4,11 @@ import {
 	Heading1,
 	Heading2,
 	Heading3,
+	Info,
 	List,
 	ListOrdered,
 	Quote,
 	Text,
-	Info,
 } from "lucide-react";
 
 export interface CommandItem {
