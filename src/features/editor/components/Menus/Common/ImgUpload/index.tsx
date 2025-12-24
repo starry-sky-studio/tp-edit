@@ -1,13 +1,8 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { Editor } from "@tiptap/react";
-import { useId, useRef } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuTrigger,
+	DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {
 	Form,
@@ -15,14 +10,19 @@ import {
 	FormField,
 	FormItem,
 	FormLabel,
-	FormMessage,
+	FormMessage
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ImgIcon } from "@/styles/svg/index";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { Editor } from "@tiptap/react";
+import { useId, useRef } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const formSchema = z.object({
-	url: z.url("请输入有效的URL"),
+	url: z.url("请输入有效的URL")
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -33,8 +33,8 @@ const ImgUpload = ({ editor }: { editor: Editor | null }) => {
 	const form = useForm<FormData>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			url: "",
-		},
+			url: ""
+		}
 	});
 
 	// 基础扩展名校验（避免 HEAD/CORS 受限场景）
@@ -48,7 +48,7 @@ const ImgUpload = ({ editor }: { editor: Editor | null }) => {
 		if (!isImageUrlByExtension(url)) {
 			form.setError("url", {
 				type: "validate",
-				message: "请输入图片直链（如 .png/.jpg/.webp 等）",
+				message: "请输入图片直链（如 .png/.jpg/.webp 等）"
 			});
 			return;
 		}
@@ -97,7 +97,7 @@ const ImgUpload = ({ editor }: { editor: Editor | null }) => {
 						size="icon"
 						className="border-none border-0 cursor-pointer"
 					>
-						<ImgIcon />
+						<ImgIcon className="size-4" />
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent className="w-100">

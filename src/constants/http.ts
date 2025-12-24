@@ -10,7 +10,7 @@ export const HTTP_STATUS_MESSAGES: Record<number, string> = {
 	403: "拒绝访问",
 	404: "请求地址不存在",
 	418: "我是一个茶壶",
-	500: "服务器内部错误",
+	500: "服务器内部错误"
 };
 
 /**
@@ -21,5 +21,5 @@ export const HTTP_METHODS = {
 	POST: "POST",
 	PUT: "PUT",
 	DELETE: "DELETE",
-	PATCH: "PATCH",
+	PATCH: "PATCH"
 } as const;

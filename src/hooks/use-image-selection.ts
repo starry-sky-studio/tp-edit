@@ -1,40 +1,43 @@
 import { NodeSelection } from "@tiptap/pm/state";
-import { useCallback, useEffect, useState } from "react";
+import { startTransition, useCallback, useEffect, useState } from "react";
 
 export const useImageSelection = (editor: any) => {
 	const [selectedImageNode, setSelectedImageNode] = useState<any>(null);
 	const [imageDom, setImageDom] = useState<HTMLElement | null>(null);
 	const [hoveredImageNode, setHoveredImageNode] = useState<any>(null);
 	const [hoveredImageDom, setHoveredImageDom] = useState<HTMLElement | null>(
-		null,
+		null
 	);
 
 	const updateSelection = useCallback(() => {
 		if (!editor) return;
 
-		const { state } = editor;
-		const sel = state.selection;
+		// 使用 startTransition 延迟状态更新，避免在渲染期间同步更新
+		startTransition(() => {
+			const { state } = editor;
+			const sel = state.selection;
 
-		if (sel instanceof NodeSelection) {
-			const node = sel.node;
-			if (node.type.name === "imageBlock") {
-				setSelectedImageNode(node);
+			if (sel instanceof NodeSelection) {
+				const node = sel.node;
+				if (node.type.name === "imageBlock") {
+					setSelectedImageNode(node);
 
-				// 获取图片DOM元素 - 需要找到实际的img元素
-				const dom = editor.view.nodeDOM(sel.from);
-				if (dom) {
-					// 如果是NodeViewWrapper，需要找到其中的img元素
-					const imgElement = dom.querySelector("img") || dom;
-					setImageDom(imgElement as HTMLElement);
+					// 获取图片DOM元素 - 需要找到实际的img元素
+					const dom = editor.view.nodeDOM(sel.from);
+					if (dom) {
+						// 如果是NodeViewWrapper，需要找到其中的img元素
+						const imgElement = dom.querySelector("img") || dom;
+						setImageDom(imgElement as HTMLElement);
+					}
+				} else {
+					setSelectedImageNode(null);
+					setImageDom(null);
 				}
 			} else {
 				setSelectedImageNode(null);
 				setImageDom(null);
 			}
-		} else {
-			setSelectedImageNode(null);
-			setImageDom(null);
-		}
+		});
 	}, [editor]);
 
 	// 处理鼠标悬停事件
@@ -57,13 +60,16 @@ export const useImageSelection = (editor: any) => {
 				if (pos !== null) {
 					const node = editor.view.state.doc.nodeAt(pos);
 					if (node && node.type.name === "imageBlock") {
-						setHoveredImageNode(node);
-						setHoveredImageDom(img as HTMLElement);
+						// 使用 startTransition 延迟状态更新
+						startTransition(() => {
+							setHoveredImageNode(node);
+							setHoveredImageDom(img as HTMLElement);
+						});
 					}
 				}
 			}
 		},
-		[editor, imageDom],
+		[editor, imageDom]
 	);
 
 	const handleMouseOut = useCallback((e: MouseEvent) => {
@@ -79,9 +85,11 @@ export const useImageSelection = (editor: any) => {
 		const img = imageContainer?.querySelector("img") || target.closest("img");
 
 		if (!img) {
-			// 完全离开了图片元素
-			setHoveredImageNode(null);
-			setHoveredImageDom(null);
+			// 完全离开了图片元素，使用 startTransition 延迟状态更新
+			startTransition(() => {
+				setHoveredImageNode(null);
+				setHoveredImageDom(null);
+			});
 		}
 	}, []);
 
@@ -111,6 +119,6 @@ export const useImageSelection = (editor: any) => {
 		selectedImageNode,
 		imageDom,
 		hoveredImageNode,
-		hoveredImageDom,
+		hoveredImageDom
 	};
 };
