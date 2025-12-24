@@ -3,7 +3,7 @@ import type {
 	LoginParamsType,
 	OAuthLoginParamsType,
 	RefreshTokenResponse,
-	SignupParamsType,
+	SignupParamsType
 } from "@/types/auth";
 import type { ErrorHandler } from "../request";
 import request from "../request";
@@ -21,7 +21,7 @@ export const authApi = {
 	signup: (params: SignupParamsType, errorHandler?: ErrorHandler) =>
 		request.post<AuthResponse>("/auth/signup", {
 			params,
-			errorHandler,
+			errorHandler
 		}),
 
 	/**
@@ -33,7 +33,7 @@ export const authApi = {
 	login: (params: LoginParamsType, errorHandler?: ErrorHandler) =>
 		request.post<AuthResponse>("/auth/login", {
 			params,
-			errorHandler,
+			errorHandler
 		}),
 
 	/**
@@ -46,7 +46,7 @@ export const authApi = {
 	refreshToken: (refreshToken: string, errorHandler?: ErrorHandler) =>
 		request.post<RefreshTokenResponse>("/auth/refresh", {
 			params: { refresh_token: refreshToken },
-			errorHandler,
+			errorHandler
 		}),
 
 	/**
@@ -59,11 +59,29 @@ export const authApi = {
 	oauthLogin: (
 		provider: "google" | "github",
 		params: OAuthLoginParamsType,
-		errorHandler?: ErrorHandler,
+		errorHandler?: ErrorHandler
 	) =>
 		request.post<AuthResponse>(`/auth/oauth/${provider}`, {
 			params,
-			errorHandler,
+			errorHandler
+		}),
+
+	/**
+	 * GitHub OAuth 回调：用 code 换取自己的 token
+	 */
+	githubCallback: (code: string, state?: string, errorHandler?: ErrorHandler) =>
+		request.post<AuthResponse>("/auth/github/callback", {
+			params: { code, state },
+			errorHandler
+		}),
+
+	/**
+	 * Google OAuth 回调：用 code 换取自己的 token
+	 */
+	googleCallback: (code: string, state?: string, errorHandler?: ErrorHandler) =>
+		request.post<AuthResponse>("/auth/google/callback", {
+			params: { code, state },
+			errorHandler
 		}),
 
 	/**
@@ -74,8 +92,8 @@ export const authApi = {
 	 */
 	logout: (errorHandler?: ErrorHandler) =>
 		request.post<{ success: boolean }>("/auth/logout", {
-			errorHandler,
-		}),
+			errorHandler
+		})
 };
 
 export default authApi;

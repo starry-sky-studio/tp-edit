@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { GithubIcon } from "@/styles/svg";
+import Link from "next/link";
 
 const Footer = () => {
 	return (

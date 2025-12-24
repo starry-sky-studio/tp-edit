@@ -1,7 +1,8 @@
 {
   // 启用保存即格式化
   "editor.formatOnSave": true,
-  // 避免与未配置的格式化扩展冲突，指定各语言的默认格式化器
+  // Biome 作为 JS/TS 的唯一格式化器（遵循 biome.json 中 trailingCommas: \"none\"）
+  "editor.defaultFormatter": "biomejs.biome",
   "[javascript]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
@@ -11,10 +12,7 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
-  "[json]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  // 其他文件走 Prettier（例如样式、Markdown 等）
+  // 其他文件类型使用 Prettier（例如样式、Markdown 等）
   "[css]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -24,39 +22,18 @@
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  // 保存时整理导入（需要显式开启，避免自动修改过多）
-  "editor.codeActionsOnSave": {
-    "source.organizeImports": "explicit"
-  }
-}
-// .vscode/settings.json
-{
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  // Tailwind 扩展配置
   "tailwindCSS.experimental.classRegex": [
     "class:\\s*?[\"'`]([^\"'`]*).*?,"
   ],
+  // 保存时只让 Biome 自动修复（包括格式和 lint）
   "editor.codeActionsOnSave": {
     "source.fixAll.biome": "always"
   },
-  "editor.defaultFormatter": "biomejs.biome",
-  "[markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
+  // 在本项目禁用 ESLint 和 Prettier（避免与 Biome 冲突）
   "eslint.enable": false,
-  "prettier.enable": false,
-  // 按文件类型配置
-  "[javascript]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[css]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[scss]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  "prettier.enable": false
 }

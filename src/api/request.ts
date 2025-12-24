@@ -5,6 +5,11 @@
  */
 
 import { HTTP_METHODS, HTTP_STATUS_MESSAGES } from "@/constants/http";
+import {
+	clearAuthTokens,
+	getAuthTokens,
+	setAuthTokens
+} from "@/utils/auth-storage";
 
 type Method = (typeof HTTP_METHODS)[keyof typeof HTTP_METHODS];
 
@@ -37,7 +42,7 @@ export class RequestError extends Error {
 		url: string,
 		status?: number,
 		statusText?: string,
-		data?: any,
+		data?: any
 	) {
 		super(message);
 		this.name = "RequestError";
@@ -96,7 +101,7 @@ class Request {
 			timeout?: number;
 			retries?: number;
 			retryDelay?: number;
-		},
+		}
 	) {
 		this.baseURL = baseURL;
 		this.defaultTimeout = options?.timeout || 10000;
@@ -112,20 +117,20 @@ class Request {
 		});
 	}
 
+	/**
+	 * 获取 token（从 Cookie 读取，统一由 AuthStorage 管理）
+	 */
 	private getToken(): string | null {
 		if (typeof window === "undefined") return null;
-		return localStorage.getItem("auth_token");
+		return getAuthTokens().token;
 	}
 
-	private saveToken(token: string): void {
-		if (typeof window === "undefined") return;
-		localStorage.setItem("auth_token", token);
-	}
-
+	/**
+	 * 清除认证数据（使用 AuthStorage 统一管理 Cookie）
+	 */
 	private clearAuthData(): void {
 		if (typeof window === "undefined") return;
-		localStorage.removeItem("auth_token");
-		localStorage.removeItem("refresh_token");
+		clearAuthTokens();
 	}
 
 	private handleAuthFailure(): void {
@@ -143,25 +148,23 @@ class Request {
 
 	private async refreshAccessToken(): Promise<string> {
 		const refreshToken =
-			typeof window !== "undefined"
-				? localStorage.getItem("refresh_token")
-				: null;
+			typeof window !== "undefined" ? getAuthTokens().refreshToken : null;
 
 		if (!refreshToken) {
 			throw new RequestError(
 				"未找到刷新令牌，请重新登录",
 				"",
 				401,
-				"Unauthorized",
+				"Unauthorized"
 			);
 		}
 
 		try {
-			const refreshUrl = this.baseURL + "/auth/refresh";
+			const refreshUrl = `${this.baseURL}/auth/refresh`;
 			const response = await fetch(refreshUrl, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ refresh_token: refreshToken }),
+				body: JSON.stringify({ refresh_token: refreshToken })
 			});
 
 			if (!response.ok) {
@@ -170,7 +173,7 @@ class Request {
 					"刷新令牌失败，请重新登录",
 					refreshUrl,
 					response.status,
-					response.statusText,
+					response.statusText
 				);
 			}
 
@@ -187,19 +190,29 @@ class Request {
 					refreshUrl,
 					401,
 					"Unauthorized",
-					result,
+					result
 				);
 			}
 
-			const tokenData = result.data;
-			if (tokenData.token) {
-				this.saveToken(tokenData.token);
-			}
-			if (tokenData.refresh_token && typeof window !== "undefined") {
-				localStorage.setItem("refresh_token", tokenData.refresh_token);
+			const tokenData = result.data ?? {};
+			const {
+				token: newToken,
+				refresh_token: newRefreshToken,
+				expires_in: expiresIn,
+				refresh_expires_in: refreshExpiresIn
+			} = tokenData;
+
+			if (newToken) {
+				setAuthTokens(newToken, newRefreshToken, expiresIn, refreshExpiresIn);
+				return newToken;
 			}
 
-			return tokenData.token;
+			throw new RequestError(
+				"刷新令牌失败，请重新登录",
+				refreshUrl,
+				401,
+				"Unauthorized"
+			);
 		} catch (error) {
 			this.handleAuthFailure();
 			throw error;
@@ -216,7 +229,7 @@ class Request {
 				"刷新令牌次数过多，请重新登录",
 				"",
 				401,
-				"Unauthorized",
+				"Unauthorized"
 			);
 		}
 
@@ -268,7 +281,7 @@ class Request {
 		mode,
 		token,
 		headers: customHeaders,
-		withCredentials,
+		withCredentials
 	}: RequestConfig) {
 		const headers: Record<string, string> = { ...customHeaders };
 		const authToken = token || this.getToken();
@@ -284,7 +297,7 @@ class Request {
 				const queryParams = new URLSearchParams(
 					Object.entries(params)
 						.filter(([, v]) => v !== undefined)
-						.map(([k, v]) => [k, String(v)]),
+						.map(([k, v]) => [k, String(v)])
 				).toString();
 				if (queryParams) url = `${url}?${queryParams}`;
 			}
@@ -306,14 +319,14 @@ class Request {
 				credentials: (withCredentials
 					? "include"
 					: "same-origin") as RequestCredentials,
-				body: requestPayload,
-			},
+				body: requestPayload
+			}
 		};
 	}
 
 	private async interceptorsResponse<T>(
 		res: Response,
-		url: string,
+		url: string
 	): Promise<T> {
 		const status = res.status;
 		const statusText = res.statusText;
@@ -357,7 +370,7 @@ class Request {
 					url,
 					status,
 					statusText,
-					data,
+					data
 				);
 			}
 			return data as T;
@@ -371,7 +384,7 @@ class Request {
 		requestFn: () => Promise<T>,
 		retries: number,
 		retryDelay: number,
-		isRetryAfterRefresh: boolean = false,
+		isRetryAfterRefresh: boolean = false
 	): Promise<T> {
 		try {
 			return await requestFn();
@@ -382,7 +395,9 @@ class Request {
 				!isRetryAfterRefresh &&
 				typeof window !== "undefined"
 			) {
-				if (!localStorage.getItem("refresh_token")) {
+				// 从 Cookie 读取 refreshToken
+				const refreshToken = getAuthTokens().refreshToken;
+				if (!refreshToken) {
 					throw error;
 				}
 
@@ -407,7 +422,7 @@ class Request {
 					requestFn,
 					retries - 1,
 					retryDelay,
-					isRetryAfterRefresh,
+					isRetryAfterRefresh
 				);
 			}
 
@@ -425,7 +440,7 @@ class Request {
 			forbidden?: () => void;
 			serverError?: () => void;
 			networkError?: () => void;
-		},
+		}
 	): string {
 		if (error instanceof RequestError) {
 			if (handlers && error.status) {
@@ -465,7 +480,7 @@ class Request {
 
 	private async handleRequest<T>(
 		requestFn: () => Promise<ApiResponse<T>>,
-		errorHandler?: ErrorHandler,
+		errorHandler?: ErrorHandler
 	): Promise<RequestResult<T>> {
 		try {
 			const data = await requestFn();
@@ -478,7 +493,7 @@ class Request {
 
 			const errorMessage = this.handleRequestError(error, undefined, {
 				...(handlers as any),
-				default: handlers?.default || handlers?.onError,
+				default: handlers?.default || handlers?.onError
 			});
 
 			if (typeof errorHandler === "function") {
@@ -512,7 +527,7 @@ class Request {
 			mode,
 			token,
 			headers: rest.headers,
-			withCredentials: rest.withCredentials,
+			withCredentials: rest.withCredentials
 		});
 
 		const makeRequest = async (): Promise<T> => {
@@ -532,7 +547,7 @@ class Request {
 		url: string,
 		params?: RequestParams,
 		mode?: RequestMode,
-		token?: string,
+		token?: string
 	): Promise<RequestResult<T>> {
 		return this.handleRequest<T>(
 			() =>
@@ -547,9 +562,9 @@ class Request {
 					retryDelay: params?.retryDelay,
 					signal: params?.signal,
 					headers: params?.headers,
-					withCredentials: params?.withCredentials,
+					withCredentials: params?.withCredentials
 				}),
-			params?.errorHandler,
+			params?.errorHandler
 		);
 	}
 
@@ -557,7 +572,7 @@ class Request {
 		url: string,
 		params?: RequestParams,
 		mode?: RequestMode,
-		token?: string,
+		token?: string
 	): Promise<RequestResult<T>> {
 		return this.request<T>(HTTP_METHODS.GET, url, params, mode, token);
 	}
@@ -566,7 +581,7 @@ class Request {
 		url: string,
 		params?: RequestParams,
 		mode?: RequestMode,
-		token?: string,
+		token?: string
 	): Promise<RequestResult<T>> {
 		return this.request<T>(HTTP_METHODS.POST, url, params, mode, token);
 	}
@@ -575,7 +590,7 @@ class Request {
 		url: string,
 		params?: RequestParams,
 		mode?: RequestMode,
-		token?: string,
+		token?: string
 	): Promise<RequestResult<T>> {
 		return this.request<T>(HTTP_METHODS.PUT, url, params, mode, token);
 	}
@@ -584,7 +599,7 @@ class Request {
 		url: string,
 		params?: RequestParams,
 		mode?: RequestMode,
-		token?: string,
+		token?: string
 	): Promise<RequestResult<T>> {
 		return this.request<T>(HTTP_METHODS.DELETE, url, params, mode, token);
 	}
@@ -593,7 +608,7 @@ class Request {
 		url: string,
 		params?: RequestParams,
 		mode?: RequestMode,
-		token?: string,
+		token?: string
 	): Promise<RequestResult<T>> {
 		return this.request<T>(HTTP_METHODS.PATCH, url, params, mode, token);
 	}
@@ -605,7 +620,7 @@ class Request {
 		const controller = new AbortController();
 		return {
 			signal: controller.signal,
-			cancel: (reason?: string) => controller.abort(reason),
+			cancel: (reason?: string) => controller.abort(reason)
 		};
 	}
 }
@@ -615,7 +630,7 @@ const apiBase = `${(process.env.NEXT_PUBLIC_API_URL || "").replace(/\/+$/, "")}/
 const request = new Request(apiBase, {
 	timeout: 15000,
 	retries: 1,
-	retryDelay: 1000,
+	retryDelay: 1000
 });
 
 export default request;

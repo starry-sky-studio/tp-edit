@@ -24,7 +24,7 @@ const formSchema = z.object({
 		.email("请输入正确的邮箱地址")
 		.min(3, "邮箱至少需要 3 个字符")
 		.max(64, "邮箱最多 64 个字符"),
-	password: z.string().min(6, "密码至少需要 6 位").max(64, "密码最多 64 位"),
+	password: z.string().min(6, "密码至少需要 6 位").max(64, "密码最多 64 位")
 });
 
 export default function LoginPage() {
@@ -35,8 +35,8 @@ export default function LoginPage() {
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			email: "",
-			password: "",
-		},
+			password: ""
+		}
 	});
 
 	const mutation = useMutation({
@@ -44,8 +44,8 @@ export default function LoginPage() {
 			const res = await authApi.login(
 				{
 					email: data.email,
-					password: data.password,
-				},
+					password: data.password
+				}
 				// 这里的错误统一交给 onError 处理，不在请求里单独 toast
 			);
 			console.log(res, res.data);
@@ -62,11 +62,11 @@ export default function LoginPage() {
 				AuthStorage.setAuthTokens(token, refresh_token);
 				router.push("/");
 				toast.success("登录成功", {
-					description: `欢迎回来，${variables.email}`,
+					description: `欢迎回来，${variables.email}`
 				});
 			} else {
 				toast.error("登录失败", {
-					description: "登录失败",
+					description: "登录失败"
 				});
 			}
 		},
@@ -74,9 +74,9 @@ export default function LoginPage() {
 			console.log(error, "error");
 			const errorMsg = error instanceof Error ? error.message : "发生未知错误";
 			toast.error("登录失败", {
-				description: errorMsg,
+				description: errorMsg
 			});
-		},
+		}
 	});
 
 	function onSubmit(data: z.infer<typeof formSchema>) {

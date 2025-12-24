@@ -3,5 +3,5 @@
   "tailwindStylesheet": "./src/styles/css/globals.css",
   "semi": false,
   "singleQuote": true,
-  "trailingComma": "all"
+  "trailingComma": "none"
 }
