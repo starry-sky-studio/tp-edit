@@ -95,7 +95,7 @@ const TextColor = ({ editor }: { editor: Editor | null }) => {
 	return (
 		<>
 			<Popover>
-				<PopoverTrigger>
+				<PopoverTrigger asChild>
 					<Button
 						variant="ghost"
 						size="icon"

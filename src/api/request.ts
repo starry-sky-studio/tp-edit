@@ -10,6 +10,7 @@ import {
 	getAuthTokens,
 	setAuthTokens
 } from "@/utils/auth-storage";
+import { fetchEventSource } from "@microsoft/fetch-event-source";
 
 type Method = (typeof HTTP_METHODS)[keyof typeof HTTP_METHODS];
 
@@ -622,6 +623,121 @@ class Request {
 			signal: controller.signal,
 			cancel: (reason?: string) => controller.abort(reason)
 		};
+	}
+
+	/**
+	 * SSE 流式请求（使用 @microsoft/fetch-event-source）
+	 *
+	 * ✅ 为什么使用现成的库？
+	 * 1. 更成熟：经过大量测试，边界情况处理更完善
+	 * 2. 维护成本低：由专业团队维护，减少 bug
+	 * 3. 功能更全：自动重连、错误处理、流解析等
+	 * 4. 减少自研代码：降低维护负担
+	 *
+	 * @param url 请求地址
+	 * @param params 请求参数
+	 * @param onMessage 收到消息时的回调
+	 * @param onError 错误回调
+	 * @returns AbortController，用于取消请求
+	 */
+	/**
+	 * SSE 流式请求（使用 @microsoft/fetch-event-source）
+	 *
+	 * ✅ 为什么使用现成的库？
+	 * 1. 更成熟：经过大量测试，边界情况处理更完善
+	 * 2. 维护成本低：由专业团队维护，减少 bug
+	 * 3. 功能更全：自动重连、错误处理、流解析等
+	 * 4. 减少自研代码：降低维护负担
+	 *
+	 * 📝 关于状态管理：
+	 * - SSE 是流式请求，不适合直接用 TanStack Query 的 mutation（mutation 是一次性的）
+	 * - 状态管理在 hook 层处理更合适（如 use-ai-generation.ts）
+	 * - 返回 AbortController 用于取消请求
+	 *
+	 * @param url 请求地址
+	 * @param params 请求参数
+	 * @param onMessage 收到消息时的回调
+	 * @param onError 错误回调
+	 * @returns AbortController，用于取消请求
+	 */
+	async sseStream(
+		url: string,
+		params?: RequestParams,
+		onMessage?: (chunk: string) => void,
+		onError?: (error: Error) => void
+	): Promise<AbortController> {
+		const controller = new AbortController();
+		const fullUrl = this.baseURL + url;
+
+		// 准备请求配置（复用现有的拦截器，自动处理 token）
+		const req = this.interceptorsRequest({
+			url: fullUrl,
+			method: HTTP_METHODS.POST,
+			params: params?.params,
+			headers: {
+				...params?.headers,
+				Accept: "text/event-stream",
+				"Cache-Control": "no-cache"
+			},
+			withCredentials: params?.withCredentials
+		});
+
+		// 使用 fetch-event-source 处理 SSE
+		// 注意：这个库会自动处理 SSE 格式解析
+		fetchEventSource(req.url, {
+			method: "POST",
+			headers: req.options.headers as Record<string, string>,
+			body: req.options.body,
+			credentials: req.options.credentials,
+			signal: controller.signal,
+			onmessage(ev: {
+				data: string;
+				event?: string;
+				id?: string;
+				retry?: number;
+			}) {
+				// 处理 SSE 消息
+				if (ev.data === "[DONE]") {
+					return;
+				}
+				if (onMessage) {
+					try {
+						onMessage(ev.data);
+					} catch (err) {
+						console.error("SSE onMessage 回调错误:", err);
+					}
+				}
+			},
+			onerror(err: unknown) {
+				// 错误处理
+				if (err instanceof DOMException && err.name === "AbortError") {
+					// 请求被取消，这是预期行为
+					return;
+				}
+				const error = err instanceof Error ? err : new Error(String(err));
+				onError?.(error);
+
+				// 调用统一的错误处理
+				if (params?.errorHandler) {
+					if (typeof params.errorHandler === "function") {
+						params.errorHandler(error);
+					} else if (params.errorHandler.onError) {
+						params.errorHandler.onError(error);
+					}
+				}
+
+				// 返回 undefined 让库自动重试（如果需要）
+				// 如果需要停止重试，可以返回一个非 undefined 的值
+			},
+			openWhenHidden: true // 即使页面隐藏也保持连接
+		}).catch((err: unknown) => {
+			// 最终错误处理
+			if (!(err instanceof DOMException && err.name === "AbortError")) {
+				onError?.(err instanceof Error ? err : new Error(String(err)));
+			}
+		});
+
+		return controller;
 	}
 }
 

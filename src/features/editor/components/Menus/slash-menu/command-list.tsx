@@ -3,7 +3,7 @@ import {
 	useEffect,
 	useImperativeHandle,
 	useRef,
-	useState,
+	useState
 } from "react";
 import type { CommandItem } from "./menu-items";
 
@@ -46,7 +46,7 @@ export const CommandList = forwardRef<CommandListRef, CommandListProps>(
 						return false;
 				}
 				return true;
-			},
+			}
 		}));
 
 		useEffect(() => {
@@ -70,7 +70,7 @@ export const CommandList = forwardRef<CommandListRef, CommandListProps>(
 		return (
 			<div
 				ref={commandListRef}
-				className="z-50 h-auto max-h-[330px] w-[300px] overflow-y-auto rounded-xl border border-gray-200 bg-white/95 p-2 shadow-2xl backdrop-blur-lg ring-1 ring-black/5 animate-[zoom_0.2s_ease-out]"
+				className="z-50 h-auto space-y-2 max-h-[330px] w-[280px] overflow-y-auto rounded-xl border border-gray-200 bg-white p-2 shadow-2xl backdrop-blur-lg ring-1 ring-black/5 animate-[zoom_0.2s_ease-out]"
 			>
 				{items.map((item, index) => {
 					const isSelected = index === selectedIndex;
@@ -80,20 +80,14 @@ export const CommandList = forwardRef<CommandListRef, CommandListProps>(
 						<button
 							key={index}
 							onClick={() => command(item)}
-							className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-all duration-200 ${
-								isSelected
-									? "bg-gray-100/80 text-gray-900 shadow-sm"
-									: "text-gray-600 hover:bg-gray-50/80 hover:text-gray-900"
+							className={`flex w-full items-center cursor-pointer gap-3 rounded-lg px-3 py-2.5 text-left transition-all duration-200 ${
+								isSelected ? "bg-gray-100" : "hover:bg-gray-200"
 							}`}
 						>
 							<div
-								className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-all duration-200 ${
-									isSelected
-										? "bg-white shadow-sm ring-1 ring-black/5"
-										: "bg-gray-50/50"
-								}`}
+								className={`flex w-10 h-10 shrink-0 items-center justify-center rounded-lg transition-all duration-200`}
 							>
-								<Icon className="h-5 w-5" />
+								<Icon className="size-5" />
 							</div>
 							<div className="flex-1 overflow-hidden">
 								<p className="truncate text-[15px] font-medium leading-none">
@@ -108,5 +102,5 @@ export const CommandList = forwardRef<CommandListRef, CommandListProps>(
 				})}
 			</div>
 		);
-	},
+	}
 );
