@@ -42,7 +42,7 @@ export const useAIGeneration = ({
 					},
 					(error) => {
 						onStateChange(AIState.ERROR);
-						onError(error.message || "AI 生成失败");
+						onError((error as any)?.message || "AI 生成失败");
 					}
 				);
 
