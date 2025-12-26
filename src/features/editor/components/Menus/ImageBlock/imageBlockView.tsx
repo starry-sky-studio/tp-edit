@@ -2,10 +2,10 @@ import type { Node } from "@tiptap/pm/model";
 import {
 	type Editor,
 	NodeViewWrapper,
-	type ReactNodeViewProps,
+	type ReactNodeViewProps
 } from "@tiptap/react";
 import clsx from "clsx";
-import { useCallback, useEffect, useState } from "react";
+import { startTransition, useCallback, useEffect, useState } from "react";
 
 interface ImageBlockViewProps extends ReactNodeViewProps {
 	editor: Editor;
@@ -24,12 +24,18 @@ export const ImageBlockView = (props: ImageBlockViewProps) => {
 			if (pos !== undefined) {
 				const { from, to } = editor.state.selection;
 				const isNodeSelected = from <= pos && to >= pos + node.nodeSize;
-				setIsSelected(isNodeSelected);
+				// 使用 startTransition 延迟状态更新，避免在渲染期间同步更新
+				startTransition(() => {
+					setIsSelected(isNodeSelected);
+				});
 			}
 		};
 
 		editor.on("selectionUpdate", updateSelection);
-		updateSelection();
+		// 初始调用也需要延迟
+		startTransition(() => {
+			updateSelection();
+		});
 
 		return () => {
 			editor.off("selectionUpdate", updateSelection);
@@ -51,12 +57,12 @@ export const ImageBlockView = (props: ImageBlockViewProps) => {
 		align === "left" && "ml-0 mr-auto flex justify-start",
 		align === "right" && "ml-auto mr-0 flex justify-end",
 		align === "center" && "mx-auto flex justify-center",
-		"items-center relative my-2",
+		"items-center relative my-2"
 	);
 
 	const imageClassName = clsx(
 		"block cursor-pointer relative transition-all duration-200",
-		isSelected && "ring-2 ring-blue-500 ring-offset-2",
+		isSelected && "ring-2 ring-blue-500 ring-offset-2"
 	);
 
 	const onClick = useCallback(() => {

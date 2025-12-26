@@ -1,12 +1,13 @@
-import type { Editor } from "@tiptap/react";
-import clsx from "clsx";
-import { useCallback, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
 	Popover,
 	PopoverContent,
-	PopoverTrigger,
+	PopoverTrigger
 } from "@/components/ui/popover";
 import { FontIcon } from "@/styles/svg";
+import type { Editor } from "@tiptap/react";
+import clsx from "clsx";
+import { useCallback, useEffect, useState } from "react";
 
 export const textColorList: string[] = [
 	"#000000",
@@ -16,7 +17,7 @@ export const textColorList: string[] = [
 	"#FDD835",
 	"#43A047",
 	"#1E88E5",
-	"#8E24AA",
+	"#8E24AA"
 ];
 
 export const textBgColorList: string[] = [
@@ -34,7 +35,7 @@ export const textBgColorList: string[] = [
 	"#FFEB3B",
 	"#66BB6A",
 	"#64B5F6",
-	"#BA68C8",
+	"#BA68C8"
 ];
 
 const TextColor = ({ editor }: { editor: Editor | null }) => {
@@ -59,7 +60,7 @@ const TextColor = ({ editor }: { editor: Editor | null }) => {
 			editor.chain().focus().setColor(color).run();
 			setCurrentColor(color);
 		},
-		[editor],
+		[editor]
 	);
 
 	const setTextBgColor = useCallback(
@@ -68,7 +69,7 @@ const TextColor = ({ editor }: { editor: Editor | null }) => {
 			editor.chain().focus().setBackgroundColor(bgColor).run();
 			setCurrentBgColor(bgColor);
 		},
-		[editor],
+		[editor]
 	);
 
 	useEffect(() => {
@@ -94,18 +95,17 @@ const TextColor = ({ editor }: { editor: Editor | null }) => {
 	return (
 		<>
 			<Popover>
-				<PopoverTrigger>
-					<div
-						className="flex items-center justify-center size-9 bg-white hover:bg-gray-100 cursor-pointer rounded-sm transition-all"
-						style={{
-							backgroundColor: currentBgColor,
-						}}
+				<PopoverTrigger asChild>
+					<Button
+						variant="ghost"
+						size="icon"
+						className="border-none border-0 cursor-pointer"
 					>
 						<FontIcon
 							className="size-4 transition-colors"
 							style={{ color: currentColor }}
 						/>
-					</div>
+					</Button>
 				</PopoverTrigger>
 				<PopoverContent>
 					<div className="mb-4">
@@ -126,7 +126,7 @@ const TextColor = ({ editor }: { editor: Editor | null }) => {
 									className={clsx(
 										"size-6 rounded-full cursor-pointer",
 										"hover:scale-110 transition-all duration-150",
-										currentColor === color && "scale-110 shadow-md",
+										currentColor === color && "scale-110 shadow-md"
 									)}
 									style={{ backgroundColor: color }}
 									onClick={() => setTextColor(color)}
@@ -155,7 +155,7 @@ const TextColor = ({ editor }: { editor: Editor | null }) => {
 										"hover:scale-110",
 										currentBgColor === bgColor && "scale-110 shadow-md",
 										bgColor === "transparent" &&
-											"border-gray-400 bg-white border",
+											"border-gray-400 bg-white border"
 									)}
 									style={{
 										backgroundColor:
@@ -167,7 +167,7 @@ const TextColor = ({ editor }: { editor: Editor | null }) => {
 										backgroundSize:
 											bgColor === "transparent" ? "8px 8px" : undefined,
 										backgroundPosition:
-											bgColor === "transparent" ? "0 0, 4px 4px" : undefined,
+											bgColor === "transparent" ? "0 0, 4px 4px" : undefined
 									}}
 									onClick={() => setTextBgColor(bgColor)}
 								/>

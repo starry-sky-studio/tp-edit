@@ -3,7 +3,7 @@ import {
 	computePosition,
 	flip,
 	offset,
-	shift,
+	shift
 } from "@floating-ui/dom";
 import { type Editor, ReactRenderer } from "@tiptap/react";
 import { CommandList } from "./command-list";
@@ -27,20 +27,20 @@ const renderItems = () => {
 
 	const updatePosition = async (
 		reference: { getBoundingClientRect: () => DOMRect },
-		floating: HTMLElement,
+		floating: HTMLElement
 	) => {
 		const { x, y } = await computePosition(reference as any, floating, {
 			placement: "bottom-start",
 			middleware: [
 				offset(6), // Add some space between the reference and floating element
 				flip(), // Flip the element if there's not enough space
-				shift(), // Shift the element if there's not enough space
-			],
+				shift() // Shift the element if there's not enough space
+			]
 		});
 
 		Object.assign(floating.style, {
 			left: `${x}px`,
-			top: `${y}px`,
+			top: `${y}px`
 		});
 	};
 
@@ -54,7 +54,7 @@ const renderItems = () => {
 			// Create a new instance of the command list component
 			component = new ReactRenderer(CommandList, {
 				props,
-				editor: props.editor,
+				editor: props.editor
 			});
 
 			if (!props.clientRect || !component.element) {
@@ -63,7 +63,7 @@ const renderItems = () => {
 
 			// Create a virtual element for the reference
 			const virtualReference = {
-				getBoundingClientRect: props.clientRect,
+				getBoundingClientRect: props.clientRect
 			};
 
 			floatingElement = component.element as HTMLElement;
@@ -71,7 +71,6 @@ const renderItems = () => {
 			floatingElement.style.top = "0";
 			floatingElement.style.left = "0";
 			document.body.appendChild(floatingElement);
-
 			// Setup floating-ui positioning
 			cleanup = autoUpdate(virtualReference as any, floatingElement, () => {
 				updatePosition(virtualReference, floatingElement as HTMLElement);
@@ -114,7 +113,7 @@ const renderItems = () => {
 			cleanup?.();
 			floatingElement?.remove();
 			component?.destroy();
-		},
+		}
 	};
 };
 

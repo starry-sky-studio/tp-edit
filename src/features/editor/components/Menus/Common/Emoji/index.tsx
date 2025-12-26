@@ -1,12 +1,12 @@
-import type { Editor } from "@tiptap/react";
-import { Smile } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuTrigger,
+	DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import EmojiPicker from "@/features/editor/components/EmojiPicker";
+import type { Editor } from "@tiptap/react";
+import { Smile } from "lucide-react";
 
 const EmojiCommand = ({ editor }: { editor: Editor | null }) => {
 	const handleEmojiSelect = (emoji: any) => {
@@ -17,7 +17,7 @@ const EmojiCommand = ({ editor }: { editor: Editor | null }) => {
 		<DropdownMenu modal={false}>
 			<DropdownMenuTrigger asChild>
 				<Button variant="ghost" size="icon" className="border-none border-0">
-					<Smile />
+					<Smile className="size-4" />
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className="border-none shadow-none">

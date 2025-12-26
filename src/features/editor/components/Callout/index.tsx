@@ -1,14 +1,14 @@
-import {
-	NodeViewContent,
-	NodeViewWrapper,
-	type ReactNodeViewProps,
-} from "@tiptap/react";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuTrigger,
+	DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import {
+	NodeViewContent,
+	NodeViewWrapper,
+	type ReactNodeViewProps
+} from "@tiptap/react";
 import EmojiPicker from "../EmojiPicker";
 
 const CalloutView = (props: ReactNodeViewProps) => {
@@ -25,14 +25,14 @@ const CalloutView = (props: ReactNodeViewProps) => {
 			<div
 				className="callout-node flex p-3 rounded-md border my-1"
 				style={{
-					backgroundColor,
+					backgroundColor
 				}}
 			>
 				<div className="flex items-start mr-3 text-lg" contentEditable={false}>
 					<DropdownMenu modal={false}>
 						<DropdownMenuTrigger asChild>
 							<Button
-								variant="ghostTransparent"
+								variant="ghost"
 								size="icon"
 								className="border-none border-0 text-xl hover:bg-transparent"
 							>

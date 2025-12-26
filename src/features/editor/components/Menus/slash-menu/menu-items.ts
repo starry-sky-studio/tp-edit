@@ -1,5 +1,7 @@
+import { AIState } from "@/types";
 import type { Editor } from "@tiptap/core";
 import {
+	Bot,
 	Code,
 	Heading1,
 	Heading2,
@@ -8,7 +10,7 @@ import {
 	List,
 	ListOrdered,
 	Quote,
-	Text,
+	Text
 } from "lucide-react";
 
 export interface CommandItem {
@@ -20,6 +22,21 @@ export interface CommandItem {
 
 const items: CommandItem[] = [
 	{
+		title: "Ask AI",
+		description: "AI assistant",
+		icon: Bot,
+		command: ({ editor, range }) => {
+			editor
+				.chain()
+				.focus()
+				.deleteRange(range)
+				.setAI({
+					state: AIState.INPUT
+				})
+				.run();
+		}
+	},
+	{
 		title: "Text",
 		description: "Just start typing with plain text",
 		icon: Text,
@@ -30,7 +47,7 @@ const items: CommandItem[] = [
 				.deleteRange(range)
 				.toggleNode("paragraph", "paragraph")
 				.run();
-		},
+		}
 	},
 	{
 		title: "Heading 1",
@@ -43,7 +60,7 @@ const items: CommandItem[] = [
 				.deleteRange(range)
 				.setNode("heading", { level: 1 })
 				.run();
-		},
+		}
 	},
 	{
 		title: "Heading 2",
@@ -56,7 +73,7 @@ const items: CommandItem[] = [
 				.deleteRange(range)
 				.setNode("heading", { level: 2 })
 				.run();
-		},
+		}
 	},
 	{
 		title: "Heading 3",
@@ -69,7 +86,7 @@ const items: CommandItem[] = [
 				.deleteRange(range)
 				.setNode("heading", { level: 3 })
 				.run();
-		},
+		}
 	},
 	{
 		title: "Bullet List",
@@ -77,7 +94,7 @@ const items: CommandItem[] = [
 		icon: List,
 		command: ({ editor, range }) => {
 			editor.chain().focus().deleteRange(range).toggleBulletList().run();
-		},
+		}
 	},
 	{
 		title: "Numbered List",
@@ -85,7 +102,7 @@ const items: CommandItem[] = [
 		icon: ListOrdered,
 		command: ({ editor, range }) => {
 			editor.chain().focus().deleteRange(range).toggleOrderedList().run();
-		},
+		}
 	},
 	{
 		title: "Code Block",
@@ -93,7 +110,7 @@ const items: CommandItem[] = [
 		icon: Code,
 		command: ({ editor, range }) => {
 			editor.chain().focus().deleteRange(range).toggleCodeBlock().run();
-		},
+		}
 	},
 	{
 		title: "Quote",
@@ -101,7 +118,7 @@ const items: CommandItem[] = [
 		icon: Quote,
 		command: ({ editor, range }) => {
 			editor.chain().focus().deleteRange(range).toggleBlockquote().run();
-		},
+		}
 	},
 	{
 		title: "Callout",
@@ -109,8 +126,8 @@ const items: CommandItem[] = [
 		icon: Info,
 		command: ({ editor, range }) => {
 			editor.chain().focus().deleteRange(range).toggleCallout().run();
-		},
-	},
+		}
+	}
 ];
 
 const getSuggestionItems = ({ query }: { query: string }) => {
